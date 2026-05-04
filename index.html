@@ -55,6 +55,142 @@
   </head>
   <body>
     <main>
+      <div class="menu-wrap">
+        <button
+          type="button"
+          class="btn btn--ghost menu-toggle"
+          data-menu-toggle
+          aria-haspopup="true"
+          aria-controls="site-menu"
+          aria-expanded="false"
+          aria-label="Open site menu"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="3" x2="21" y1="6" y2="6" />
+            <line x1="3" x2="21" y1="12" y2="12" />
+            <line x1="3" x2="21" y1="18" y2="18" />
+          </svg>
+        </button>
+        <nav id="site-menu" class="hero-nav" aria-label="Site" data-menu hidden>
+          <button
+            type="button"
+            class="btn btn--ghost"
+            data-open-dialog="dlg-about"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4" />
+              <path d="M12 8h.01" />
+            </svg>
+            About
+          </button>
+          <button
+            type="button"
+            class="btn btn--ghost"
+            data-open-dialog="dlg-blog"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path
+                d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+              />
+            </svg>
+            Blog
+          </button>
+          <button
+            type="button"
+            class="btn btn--ghost"
+            data-open-dialog="dlg-contact"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            Contact
+          </button>
+          <a
+            class="btn btn--ghost"
+            href="https://github.com/pjtunstall/by-a-thread"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+            Code
+          </a>
+          <button type="button" class="btn btn--ghost" data-theme-toggle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2" />
+              <path d="M12 20v2" />
+              <path d="m4.93 4.93 1.41 1.41" />
+              <path d="m17.66 17.66 1.41 1.41" />
+              <path d="M2 12h2" />
+              <path d="M20 12h2" />
+              <path d="m6.34 17.66-1.41 1.41" />
+              <path d="m19.07 4.93-1.41 1.41" />
+            </svg>
+            Toggle Theme
+          </button>
+        </nav>
+      </div>
+
       <h1 class="hero-title">By a Thread</h1>
       <p class="hero-tagline">An Agony in Ten Mazes</p>
 
@@ -93,115 +229,6 @@
         </a>
       </p>
 
-      <nav class="hero-nav" aria-label="Site">
-        <button
-          type="button"
-          class="btn btn--ghost"
-          data-open-dialog="dlg-about"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" />
-          </svg>
-          About
-        </button>
-        <button
-          type="button"
-          class="btn btn--ghost"
-          data-open-dialog="dlg-thread"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path
-              d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
-            />
-          </svg>
-          The Thread
-        </button>
-        <button
-          type="button"
-          class="btn btn--ghost"
-          data-open-dialog="dlg-contact"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <rect width="20" height="16" x="2" y="4" rx="2" />
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-          </svg>
-          Contact
-        </button>
-        <a
-          class="btn btn--ghost"
-          href="https://github.com/pjtunstall/by-a-thread"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <polyline points="16 18 22 12 16 6" />
-            <polyline points="8 6 2 12 8 18" />
-          </svg>
-          Code
-        </a>
-        <button type="button" class="btn btn--ghost" data-theme-toggle>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="4" />
-            <path d="M12 2v2" />
-            <path d="M12 20v2" />
-            <path d="m4.93 4.93 1.41 1.41" />
-            <path d="m17.66 17.66 1.41 1.41" />
-            <path d="M2 12h2" />
-            <path d="M20 12h2" />
-            <path d="m6.34 17.66-1.41 1.41" />
-            <path d="m19.07 4.93-1.41 1.41" />
-          </svg>
-          Toggle Theme
-        </button>
-      </nav>
     </main>
 
     <dialog id="dlg-about" data-dialog aria-labelledby="dlg-about-title">
@@ -221,13 +248,13 @@
       </div>
     </dialog>
 
-    <dialog id="dlg-thread" data-dialog aria-labelledby="dlg-thread-title">
+    <dialog id="dlg-blog" data-dialog aria-labelledby="dlg-blog-title">
       <div class="dialog__panel">
         <div class="dialog__inner">
-          <h2 id="dlg-thread-title" class="dialog__title">The Thread</h2>
+          <h2 id="dlg-blog-title" class="dialog__title">Blog</h2>
           <p class="dialog__body">
             Placeholder for lore, devlog, or supplementary material. Swap this
-            block for the real content from your React <code>ThreadModal</code>.
+            block for the real content from your React <code>BlogModal</code>.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>

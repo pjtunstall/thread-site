@@ -1,6 +1,27 @@
 (function () {
   const themeToggle = document.querySelector("[data-theme-toggle]");
+  const menuToggle = document.querySelector("[data-menu-toggle]");
+  const menu = document.querySelector("[data-menu]");
   const root = document.documentElement;
+  let isMenuOpen = false;
+
+  function setMenuOpen(nextState) {
+    if (!(menu instanceof HTMLElement) || !(menuToggle instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    isMenuOpen = nextState;
+    menu.hidden = !isMenuOpen;
+    menuToggle.setAttribute("aria-expanded", String(isMenuOpen));
+    menuToggle.setAttribute(
+      "aria-label",
+      isMenuOpen ? "Close site menu" : "Open site menu",
+    );
+  }
+
+  function closeMenu() {
+    setMenuOpen(false);
+  }
 
   function readThemePreference() {
     try {
@@ -41,6 +62,33 @@
       currentTheme = next;
       saveThemePreference(currentTheme);
       applyThemePreference(currentTheme);
+    });
+  }
+
+  if (menuToggle instanceof HTMLButtonElement && menu instanceof HTMLElement) {
+    menuToggle.addEventListener("click", function (event) {
+      event.stopPropagation();
+      setMenuOpen(!isMenuOpen);
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!isMenuOpen) return;
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (menu.contains(target) || menuToggle.contains(target)) return;
+      closeMenu();
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && isMenuOpen) {
+        closeMenu();
+      }
+    });
+
+    menu.querySelectorAll("button, a").forEach(function (item) {
+      item.addEventListener("click", function () {
+        closeMenu();
+      });
     });
   }
 
