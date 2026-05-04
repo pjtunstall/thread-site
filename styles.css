@@ -37,6 +37,8 @@
   --meander-tile-h-bottom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,1 H5 V16 H20 V6 H15 V11 H10 V1 H25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
   --meander-tile-v-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 20 25'%3E%3Cpath d='M15,0 V15 H5 V10 H10 V5 H0 V20 H15 V25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
   --meander-tile-v-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 20 25'%3E%3Cpath d='M1,0 V15 H11 V10 H6 V5 H16 V20 H1 V25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  /* Theta fill must match --color-bg exactly; SVG data URIs cannot read CSS variables. */
+  --corner-theta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ctext x='14' y='14' font-family='Georgia%2Cserif' font-size='14' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='%23e6bf95'%3E%CE%98%3C/text%3E%3C/svg%3E");
   color-scheme: light;
 }
 
@@ -50,6 +52,7 @@
   --color-ink-border-strong: #e7bc9261;
   --color-primary-hover: #f1d2b3;
   --shadow-soft: 0 12px 40px #00000059;
+  --corner-theta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ctext x='14' y='14' font-family='Georgia%2Cserif' font-size='14' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='%231a0f0a'%3E%CE%98%3C/text%3E%3C/svg%3E");
   color-scheme: dark;
 }
 
@@ -163,7 +166,7 @@ main {
       var(--meander-unit) repeat-y;
 }
 
-/* Corner disks that cap meander joins and hide seam glitches. */
+/* Corner disks (ink) with a theta (bg color) centred on each, covering meander seam glitches. */
 .hero-image::after {
   content: "";
   position: absolute;
@@ -171,6 +174,14 @@ main {
   border-radius: calc(var(--radius-image) + var(--meander-gap));
   pointer-events: none;
   background:
+    var(--corner-theta) top left / calc(var(--meander-gap) * 1.4)
+      calc(var(--meander-gap) * 1.4) no-repeat,
+    var(--corner-theta) top right / calc(var(--meander-gap) * 1.4)
+      calc(var(--meander-gap) * 1.4) no-repeat,
+    var(--corner-theta) bottom left / calc(var(--meander-gap) * 1.4)
+      calc(var(--meander-gap) * 1.4) no-repeat,
+    var(--corner-theta) bottom right / calc(var(--meander-gap) * 1.4)
+      calc(var(--meander-gap) * 1.4) no-repeat,
     radial-gradient(
         circle,
         var(--color-ink) 0 72%,
