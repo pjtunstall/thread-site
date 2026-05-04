@@ -14,7 +14,18 @@
     }
 
     isMenuOpen = nextState;
-    menu.hidden = !isMenuOpen;
+    if (isMenuOpen) {
+      menu.hidden = false;
+      menu.setAttribute("data-menu-open", "false");
+      window.requestAnimationFrame(function () {
+        if (isMenuOpen) {
+          menu.setAttribute("data-menu-open", "true");
+        }
+      });
+    } else {
+      menu.setAttribute("data-menu-open", "false");
+      menu.hidden = true;
+    }
     menuToggle.setAttribute("aria-expanded", String(isMenuOpen));
     menuToggle.setAttribute(
       "aria-label",

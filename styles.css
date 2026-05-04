@@ -231,9 +231,88 @@ main {
 }
 
 .hero-nav .btn {
+  --flip-duration: 1180ms;
+  position: relative;
   justify-content: flex-start;
   width: 100%;
+  padding: 0;
   text-align: left;
+  border-color: var(--color-transparent);
+  background: var(--color-transparent);
+  perspective: 900px;
+}
+
+.hero-nav .btn:nth-child(1) {
+  --flip-duration: 200ms;
+}
+
+.hero-nav .btn:nth-child(2) {
+  --flip-duration: 400ms;
+}
+
+.hero-nav .btn:nth-child(3) {
+  --flip-duration: 800ms;
+}
+
+.hero-nav .btn:nth-child(4) {
+  --flip-duration: 1600ms;
+}
+
+.hero-nav .btn:nth-child(5) {
+  --flip-duration: 3200ms;
+}
+
+.menu-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--flip-duration) cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+.hero-nav[data-menu-open="true"] .menu-card {
+  transform: rotateX(180deg);
+}
+
+.menu-card__face {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.4em;
+  width: 100%;
+  min-height: 2.1rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--color-ink-faint);
+  border-radius: var(--radius-btn);
+  background: var(--color-transparent);
+  backface-visibility: hidden;
+}
+
+.menu-card__face--front {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(180deg);
+}
+
+.hero-nav .btn:hover .menu-card__face {
+  background: var(--color-ink-hover);
+  border-color: var(--color-ink-border-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-card {
+    transform: none !important;
+    transition: none;
+  }
+
+  .menu-card__face--back {
+    display: none;
+  }
+
+  .menu-card__face--front {
+    position: static;
+    transform: none;
+  }
 }
 
 @media (width < 768px) {
