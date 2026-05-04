@@ -309,6 +309,11 @@ main {
   height: 1rem;
 }
 
+/* Square hit target: .btn--ghost alone uses wider horizontal padding. */
+.btn--ghost.menu-toggle {
+  padding: 0.55rem;
+}
+
 .hero-cta {
   opacity: 0;
   animation: fade-in-up 0.9s ease 0.3s forwards;
@@ -408,7 +413,7 @@ main {
 
 @media (prefers-reduced-motion: reduce) {
   .menu-card {
-    transform: none !important;
+    transform: none !important; /* Here we use !important as a cascade safety net, ensuring that this reduced-motion rule overrides the open-state transform even if their relative order in this style sheet changes. */
     transition: none;
   }
 
