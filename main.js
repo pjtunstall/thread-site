@@ -37,6 +37,12 @@
     setMenuOpen(false);
   }
 
+  function shouldCloseMenuOnClick(item) {
+    const closePreference = item.getAttribute("data-menu-close");
+    if (closePreference === null) return true;
+    return closePreference !== "false";
+  }
+
   function readThemePreference() {
     try {
       const stored = localStorage.getItem("theme-preference");
@@ -104,10 +110,7 @@
 
     menu.querySelectorAll("button, a").forEach(function (item) {
       item.addEventListener("click", function () {
-        if (item instanceof HTMLElement && item.matches("[data-theme-toggle]")) {
-          return;
-        }
-        closeMenu();
+        if (shouldCloseMenuOnClick(item)) closeMenu();
       });
     });
   }
