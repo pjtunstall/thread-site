@@ -31,6 +31,8 @@
   --shadow-soft: 0 12px 40px #1a17141f;
   --radius-shot: 6px;
   --radius-btn: 4px;
+  --meander-tile-horizontal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 14'%3E%3Cpath d='M0 7H9V2H17V12H26' fill='none' stroke='%2323150f' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E");
+  --meander-tile-vertical: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 26'%3E%3Cpath d='M7 0V9H2V17H12V26' fill='none' stroke='%2323150f' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E");
   color-scheme: light;
 }
 
@@ -44,6 +46,8 @@
   --color-ink-border-strong: #e7bc9261;
   --color-primary-hover: #f1d2b3;
   --shadow-soft: 0 12px 40px #00000059;
+  --meander-tile-horizontal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 14'%3E%3Cpath d='M0 7H9V2H17V12H26' fill='none' stroke='%23e7bc92' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E");
+  --meander-tile-vertical: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 26'%3E%3Cpath d='M7 0V9H2V17H12V26' fill='none' stroke='%23e7bc92' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E");
   color-scheme: dark;
 }
 
@@ -116,14 +120,51 @@ main {
 }
 
 .hero-shot {
+  --meander-unit: 26px;
+  --meander-thickness: 3px;
+  --meander-gap: 14px;
   margin: 2.75rem 0 2.5rem;
+  position: relative;
   width: 100%;
   max-width: min(36rem, 92vw);
+  padding: calc(var(--meander-gap) + var(--meander-thickness));
   opacity: 0;
   animation: fade-in-up 0.9s ease 0.2s forwards;
 }
 
+.hero-shot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--radius-shot) + var(--meander-gap));
+  pointer-events: none;
+  background:
+    var(--meander-tile-horizontal)
+      top left / var(--meander-unit) var(--meander-gap) repeat-x,
+    var(--meander-tile-horizontal)
+      bottom left / var(--meander-unit) var(--meander-gap) repeat-x,
+    var(--meander-tile-vertical)
+      top left / var(--meander-gap) var(--meander-unit) repeat-y,
+    var(--meander-tile-vertical)
+      top right / var(--meander-gap) var(--meander-unit) repeat-y;
+}
+
+.hero-shot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--radius-shot) + var(--meander-gap));
+  pointer-events: none;
+  background:
+    radial-gradient(circle, var(--color-ink) 0 72%, var(--color-transparent) 74%) top left / calc(var(--meander-gap) * 1.4) calc(var(--meander-gap) * 1.4) no-repeat,
+    radial-gradient(circle, var(--color-ink) 0 72%, var(--color-transparent) 74%) top right / calc(var(--meander-gap) * 1.4) calc(var(--meander-gap) * 1.4) no-repeat,
+    radial-gradient(circle, var(--color-ink) 0 72%, var(--color-transparent) 74%) bottom left / calc(var(--meander-gap) * 1.4) calc(var(--meander-gap) * 1.4) no-repeat,
+    radial-gradient(circle, var(--color-ink) 0 72%, var(--color-transparent) 74%) bottom right / calc(var(--meander-gap) * 1.4) calc(var(--meander-gap) * 1.4) no-repeat;
+}
+
 .hero-shot img {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: auto;
