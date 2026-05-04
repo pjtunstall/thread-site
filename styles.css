@@ -31,6 +31,20 @@
   --shadow-soft: 0 12px 40px #1a17141f;
   --radius-shot: 6px;
   --radius-btn: 4px;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #17130f;
+  --color-ink: #f2ede6;
+  --color-ink-muted: #c8bfb4;
+  --color-ink-faint: #f2ede629;
+  --color-ink-overlay: #000000ad;
+  --color-ink-hover: #f2ede60f;
+  --color-ink-border-strong: #f2ede64f;
+  --color-primary-hover: #ded7cf;
+  --shadow-soft: 0 12px 40px #00000059;
+  color-scheme: dark;
 }
 
 /* --- Base --- */
