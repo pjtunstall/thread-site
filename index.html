@@ -209,27 +209,48 @@
                 aria-hidden="true"
               ></span>
               <span class="menu-card__face menu-card__face--front">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="4" />
-                  <path d="M12 2v2" />
-                  <path d="M12 20v2" />
-                  <path d="m4.93 4.93 1.41 1.41" />
-                  <path d="m17.66 17.66 1.41 1.41" />
-                  <path d="M2 12h2" />
-                  <path d="M20 12h2" />
-                  <path d="m6.34 17.66-1.41 1.41" />
-                  <path d="m19.07 4.93-1.41 1.41" />
-                </svg>
-                <span class="btn__label">Toggle Theme</span>
+                <span class="theme-toggle-views">
+                  <span class="theme-toggle-view theme-toggle-view--to-light">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="4" />
+                      <path d="M12 2v2" />
+                      <path d="M12 20v2" />
+                      <path d="m4.93 4.93 1.41 1.41" />
+                      <path d="m17.66 17.66 1.41 1.41" />
+                      <path d="M2 12h2" />
+                      <path d="M20 12h2" />
+                      <path d="m6.34 17.66-1.41 1.41" />
+                      <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                    <span class="btn__label">Light mode</span>
+                  </span>
+                  <span class="theme-toggle-view theme-toggle-view--to-dark">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                      />
+                    </svg>
+                    <span class="btn__label">Dark mode</span>
+                  </span>
+                </span>
               </span>
             </span>
           </button>
@@ -282,7 +303,7 @@
           <p class="dialog__body">
             Every nine years, King Minos demands a terrible tribute, turning
             friend against friend. Only one can go free. But don't wait too
-            long--you're never truly alone in a labyrinth.
+            long--you're never really alone in a labyrinth.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>
@@ -298,8 +319,7 @@
         <div class="dialog__inner">
           <h2 id="dlg-blog-title" class="dialog__title">Blog</h2>
           <p class="dialog__body">
-            Placeholder for lore, devlog, or supplementary material. Swap this
-            block for the real content from your React <code>BlogModal</code>.
+            Placeholder for lore, devlog, or supplementary material.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>
@@ -315,8 +335,7 @@
         <div class="dialog__inner">
           <h2 id="dlg-contact-title" class="dialog__title">Contact</h2>
           <p class="dialog__body">
-            Add your preferred contact method (email, social, form) here. This
-            dialog mirrors the old contact modal for layout only.
+            Add contact method (email, social, form) here.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>

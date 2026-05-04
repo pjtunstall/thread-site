@@ -61,7 +61,7 @@
     if (themeToggle instanceof HTMLButtonElement) {
       themeToggle.setAttribute(
         "aria-label",
-        theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
+        theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
       );
       themeToggle.setAttribute(
         "aria-pressed",

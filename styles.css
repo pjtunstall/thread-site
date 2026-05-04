@@ -372,6 +372,25 @@ main {
   --flip-duration: 3200ms;
 }
 
+/* Theme toggle: label + icon reflect the mode you switch to (sun → light, moon → dark). */
+.theme-toggle-views {
+  display: grid;
+  align-items: center;
+  width: 100%;
+}
+
+.theme-toggle-view {
+  display: none;
+  grid-area: 1 / 1;
+  align-items: center;
+  gap: 0.4em;
+}
+
+:root[data-theme="dark"] [data-theme-toggle] .theme-toggle-view--to-light,
+:root[data-theme="light"] [data-theme-toggle] .theme-toggle-view--to-dark {
+  display: flex;
+}
+
 .menu-card {
   position: relative;
   display: block;
