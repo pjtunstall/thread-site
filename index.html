@@ -46,7 +46,7 @@
 
       <figure class="hero-shot">
         <img
-          src="./screenshot.jpg"
+          src="./progressive_screenshot.jpg"
           width="800"
           height="439"
           alt="By a Thread — game screenshot"
@@ -80,7 +80,11 @@
       </p>
 
       <nav class="hero-nav" aria-label="Site">
-        <button type="button" class="btn btn--ghost" data-open-dialog="dlg-about">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-open-dialog="dlg-about"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -97,7 +101,11 @@
           </svg>
           About
         </button>
-        <button type="button" class="btn btn--ghost" data-open-dialog="dlg-thread">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-open-dialog="dlg-thread"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -109,11 +117,17 @@
             aria-hidden="true"
           >
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            <path
+              d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+            />
           </svg>
           The Thread
         </button>
-        <button type="button" class="btn btn--ghost" data-open-dialog="dlg-contact">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-open-dialog="dlg-contact"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -129,7 +143,12 @@
           </svg>
           Contact
         </button>
-        <button type="button" class="btn btn--ghost" data-open-dialog="dlg-donate">
+        <a
+          class="btn btn--ghost"
+          href="https://github.com/pjtunstall/by-a-thread"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -140,12 +159,11 @@
             stroke-linejoin="round"
             aria-hidden="true"
           >
-            <path
-              d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
-            />
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
           </svg>
-          Donate
-        </button>
+          Code
+        </a>
       </nav>
     </main>
 
@@ -154,8 +172,8 @@
         <div class="dialog__inner">
           <h2 id="dlg-about-title" class="dialog__title">About</h2>
           <p class="dialog__body">
-            Placeholder copy for <strong>By a Thread</strong> — replace with your
-            synopsis, credits, and links when you are ready.
+            Placeholder copy for <strong>By a Thread</strong> — replace with
+            your synopsis, credits, and links when you are ready.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>
@@ -190,23 +208,6 @@
           <p class="dialog__body">
             Add your preferred contact method (email, social, form) here. This
             dialog mirrors the old contact modal for layout only.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
-
-    <dialog id="dlg-donate" data-dialog aria-labelledby="dlg-donate-title">
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-donate-title" class="dialog__title">Donate</h2>
-          <p class="dialog__body">
-            Placeholder for Ko-fi, PayPal, or other support links. Paste your real
-            messaging and buttons when you migrate content from the donate modal.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>
