@@ -17,14 +17,14 @@
 
 /* --- Tokens --- */
 :root {
-  --color-bg: #f4f1ea;
-  --color-ink: #1a1714;
-  --color-ink-muted: #4a4540;
-  --color-ink-faint: #1a17141f;
-  --color-ink-overlay: #1a171473;
-  --color-ink-hover: #1a17140f;
-  --color-ink-border-strong: #1a171438;
-  --color-primary-hover: #2e2924;
+  --color-bg: #e6bf95;
+  --color-ink: #23150f;
+  --color-ink-muted: #5f3f30;
+  --color-ink-faint: #23150f2b;
+  --color-ink-overlay: #140c08b3;
+  --color-ink-hover: #23150f14;
+  --color-ink-border-strong: #23150f4a;
+  --color-primary-hover: #4f2e21;
   --color-transparent: #0000;
   --font-display: "Hellenica Serif", "Times New Roman", serif;
   --font-body: "Source Sans 3", system-ui, sans-serif;
@@ -35,14 +35,14 @@
 }
 
 :root[data-theme="dark"] {
-  --color-bg: #17130f;
-  --color-ink: #f2ede6;
-  --color-ink-muted: #c8bfb4;
-  --color-ink-faint: #f2ede629;
+  --color-bg: #1a0f0a;
+  --color-ink: #e7bc92;
+  --color-ink-muted: #c69163;
+  --color-ink-faint: #e7bc9236;
   --color-ink-overlay: #000000ad;
-  --color-ink-hover: #f2ede60f;
-  --color-ink-border-strong: #f2ede64f;
-  --color-primary-hover: #ded7cf;
+  --color-ink-hover: #e7bc9214;
+  --color-ink-border-strong: #e7bc9261;
+  --color-primary-hover: #f1d2b3;
   --shadow-soft: 0 12px 40px #00000059;
   color-scheme: dark;
 }
