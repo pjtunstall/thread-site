@@ -32,12 +32,19 @@
   --shadow-soft: 0 12px 40px #1a17141f;
   --radius-image: 6px;
   --radius-btn: 4px;
-  /* Meander tiles: strokes act as mask stencils; ink color comes from background-color on ::before. */
+  /* Meander tiles: strokes act as mask stencils; ink color comes from
+  background-color on ::before. This technique is used because SVG data URIs
+  cannot read CSS variables. Otherwise, we'd have to repeat the meander
+  definitions for each theme as we do for the corner-theta. */
   --meander-tile-h-top: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,15 H5 V0 H20 V10 H15 V5 H10 V15 H25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
   --meander-tile-h-bottom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,1 H5 V16 H20 V6 H15 V11 H10 V1 H25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
   --meander-tile-v-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 20 25'%3E%3Cpath d='M15,0 V15 H5 V10 H10 V5 H0 V20 H15 V25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
   --meander-tile-v-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 20 25'%3E%3Cpath d='M1,0 V15 H11 V10 H6 V5 H16 V20 H1 V25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
-  /* Theta fill must match --color-bg exactly; SVG data URIs cannot read CSS variables. */
+  /* Theta fill must match --color-bg exactly; SVG data URIs cannot read CSS
+  variables. This one is for the default light theme. The tencil technique could
+  be used here too, but is more complicated to implement due to the fact that
+  the theta is imposed on a corner disk rather than directly on the background.
+  A little repetition seemed preferable in this case. */
   --corner-theta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ctext x='14' y='14' font-family='Georgia%2Cserif' font-size='14' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='%23e6bf95'%3E%CE%98%3C/text%3E%3C/svg%3E");
   color-scheme: light;
 }
