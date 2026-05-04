@@ -1,5 +1,13 @@
 /* --- Fonts --- */
 @font-face {
+  font-family: "Hellenica";
+  src: url("assets/fonts/Hellenica Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Hellenica Serif";
   src: url("assets/fonts/PF Hellenica Serif Pro Regular.ttf") format("truetype");
   font-weight: 400;
@@ -31,8 +39,11 @@
   --shadow-soft: 0 12px 40px #1a17141f;
   --radius-image: 6px;
   --radius-btn: 4px;
-  --meander-tile-horizontal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,15 H5 V0 H20 V10 H15 V5 H10 V15 H25' fill='none' stroke='%23e7bc92' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
-  --meander-tile-vertical: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 40'%3E%3Cpath d='M10,0 V10 H18 V38 H2 V20 H10 V40' fill='none' stroke='%2323150f' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  /* Meander tiles: strokes act as mask stencils; ink color comes from background-color on ::before. */
+  --meander-tile-h-top: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,15 H5 V0 H20 V10 H15 V5 H10 V15 H25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  --meander-tile-h-bottom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,1 H5 V16 H20 V6 H15 V11 H10 V1 H25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  --meander-tile-v-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 20 25'%3E%3Cpath d='M15,0 V15 H5 V10 H10 V5 H0 V20 H15 V25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  --meander-tile-v-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 20 25'%3E%3Cpath d='M1,0 V15 H11 V10 H6 V5 H16 V20 H1 V25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
   color-scheme: light;
 }
 
@@ -46,8 +57,6 @@
   --color-ink-border-strong: #e7bc9261;
   --color-primary-hover: #f1d2b3;
   --shadow-soft: 0 12px 40px #00000059;
-  --meander-tile-horizontal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,15 H5 V0 H20 V10 H15 V5 H10 V15 H25' fill='none' stroke='%23e7bc92' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
-  --meander-tile-vertical: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 40'%3E%3Cpath d='M10,0 V10 H18 V38 H2 V20 H10 V40' fill='none' stroke='%23e7bc92' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
   color-scheme: dark;
 }
 
@@ -109,9 +118,9 @@ main {
 
 .hero-tagline {
   margin: 1rem 0 0;
-  font-family: var(--font-body);
+  font-family: "Hellenica", "Times New Roman", serif;
   font-size: clamp(0.8125rem, 1.6vw, 1rem);
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: var(--color-ink-muted);
@@ -139,14 +148,24 @@ main {
   inset: 0;
   border-radius: calc(var(--radius-image) + var(--meander-gap));
   pointer-events: none;
-  background:
-    var(--meander-tile-horizontal) top left / var(--meander-unit)
+  background: var(--color-ink);
+  -webkit-mask:
+    var(--meander-tile-h-top) top left / var(--meander-unit) var(--meander-gap)
+      repeat-x,
+    var(--meander-tile-h-bottom) bottom left / var(--meander-unit)
       var(--meander-gap) repeat-x,
-    var(--meander-tile-horizontal) bottom left / var(--meander-unit)
+    var(--meander-tile-v-left) top left / var(--meander-gap) var(--meander-unit)
+      repeat-y,
+    var(--meander-tile-v-right) top right / var(--meander-gap)
+      var(--meander-unit) repeat-y;
+  mask:
+    var(--meander-tile-h-top) top left / var(--meander-unit) var(--meander-gap)
+      repeat-x,
+    var(--meander-tile-h-bottom) bottom left / var(--meander-unit)
       var(--meander-gap) repeat-x,
-    var(--meander-tile-vertical) top left / var(--meander-gap)
-      var(--meander-unit) repeat-y,
-    var(--meander-tile-vertical) top right / var(--meander-gap)
+    var(--meander-tile-v-left) top left / var(--meander-gap) var(--meander-unit)
+      repeat-y,
+    var(--meander-tile-v-right) top right / var(--meander-gap)
       var(--meander-unit) repeat-y;
 }
 
@@ -229,6 +248,7 @@ main {
   background: var(--color-ink);
   color: var(--color-bg);
   border-color: var(--color-ink);
+  font-family: "Hellenica", "Times New Roman", serif;
 }
 
 .btn--primary:hover {
@@ -364,6 +384,10 @@ main {
 .hero-nav .btn:hover .menu-card__face {
   background: var(--color-ink-hover);
   border-color: var(--color-ink-border-strong);
+}
+
+.menu-card__face {
+  font-family: "Hellenica", "Times New Roman", serif;
 }
 
 @media (prefers-reduced-motion: reduce) {
