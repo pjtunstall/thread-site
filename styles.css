@@ -31,7 +31,7 @@
   --shadow-soft: 0 12px 40px #1a17141f;
   --radius-image: 6px;
   --radius-btn: 4px;
-  --meander-tile-horizontal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20'%3E%3Cpath d='M0,10 H5 V2 H35 V6 H15 V4 H10 V10 H40' fill='none' stroke='%2323150f' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  --meander-tile-horizontal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,15 H5 V0 H20 V10 H15 V5 H10 V15 H25' fill='none' stroke='%23e7bc92' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
   --meander-tile-vertical: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 40'%3E%3Cpath d='M10,0 V10 H18 V38 H2 V20 H10 V40' fill='none' stroke='%2323150f' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
   color-scheme: light;
 }
