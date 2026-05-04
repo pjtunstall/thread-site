@@ -104,6 +104,9 @@
 
     menu.querySelectorAll("button, a").forEach(function (item) {
       item.addEventListener("click", function () {
+        if (item instanceof HTMLElement && item.matches("[data-theme-toggle]")) {
+          return;
+        }
         closeMenu();
       });
     });
