@@ -6,7 +6,10 @@
   let isMenuOpen = false;
 
   function setMenuOpen(nextState) {
-    if (!(menu instanceof HTMLElement) || !(menuToggle instanceof HTMLButtonElement)) {
+    if (
+      !(menu instanceof HTMLElement) ||
+      !(menuToggle instanceof HTMLButtonElement)
+    ) {
       return;
     }
 
@@ -43,7 +46,10 @@
         "aria-label",
         theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
       );
-      themeToggle.setAttribute("title", themeToggle.getAttribute("aria-label"));
+      themeToggle.setAttribute(
+        "aria-pressed",
+        theme === "dark" ? "true" : "false",
+      );
     }
   }
 
