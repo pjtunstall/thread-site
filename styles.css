@@ -119,7 +119,8 @@ main {
   animation: fade-in-up 0.9s ease 0.1s forwards;
 }
 
-.hero-shot {
+/* Hero section screenshot frame (main game image on landing view). */
+.hero-image {
   --meander-unit: 26px;
   --meander-thickness: 3px;
   --meander-gap: 14px;
@@ -132,7 +133,8 @@ main {
   animation: fade-in-up 0.9s ease 0.2s forwards;
 }
 
-.hero-shot::before {
+/* Decorative Greek-key meander border strips around the screenshot frame. */
+.hero-image::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -149,7 +151,8 @@ main {
       top right / var(--meander-gap) var(--meander-unit) repeat-y;
 }
 
-.hero-shot::after {
+/* Corner disks that cap meander joins and hide seam glitches. */
+.hero-image::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -162,7 +165,7 @@ main {
     radial-gradient(circle, var(--color-ink) 0 72%, var(--color-transparent) 74%) bottom right / calc(var(--meander-gap) * 1.4) calc(var(--meander-gap) * 1.4) no-repeat;
 }
 
-.hero-shot img {
+.hero-image img {
   position: relative;
   z-index: 1;
   display: block;
@@ -365,7 +368,7 @@ main {
 }
 
 @media (width >= 768px) {
-  .hero-shot {
+  .hero-image {
     margin: 3.25rem 0 2.75rem;
     max-width: min(40rem, 88vw);
   }
