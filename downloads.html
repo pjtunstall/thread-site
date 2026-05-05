@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>By a Thread | Downloads</title>
+    <meta
+      name="description"
+      content="Download By a Thread for your platform and get quick setup instructions."
+    />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme-preference");
+          var resolved =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", resolved);
+        } catch (_) {}
+      })();
+    </script>
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="downloads-page">
+    <main>
+      <h1 class="hero-title">By a Thread</h1>
+      <p class="hero-tagline">Choose Your Platform</p>
+      <p class="downloads-intro">
+        Select your platform to start the download and view setup instructions.
+      </p>
+
+      <nav class="hero-nav downloads-nav" aria-label="Downloads" data-menu-open="true">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-platform-download="windows"
+          data-dialog-target="dlg-download-windows"
+        >
+          <menu-card label="Windows">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M3 4.5 11 3v8H3Z" />
+              <path d="M13 3l8-1.5v9h-8Z" />
+              <path d="M3 12h8v9L3 19.5Z" />
+              <path d="M13 12h8v10.5L13 21Z" />
+            </svg>
+          </menu-card>
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-platform-download="macos-apple-silicon"
+          data-dialog-target="dlg-download-macos-apple-silicon"
+        >
+          <menu-card label="macOS Apple Silicon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M12 2v20" />
+              <path d="M5 7h14" />
+              <path d="M5 17h14" />
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+            </svg>
+          </menu-card>
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-platform-download="macos-intel"
+          data-dialog-target="dlg-download-macos-intel"
+        >
+          <menu-card label="macOS Intel">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="12" rx="2" />
+              <path d="M8 20h8" />
+              <path d="M10 16v4" />
+              <path d="M14 16v4" />
+            </svg>
+          </menu-card>
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-platform-download="linux-appimage"
+          data-dialog-target="dlg-download-linux-appimage"
+        >
+          <menu-card label="Linux AppImage">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M12 3v18" />
+              <path d="m7 8 5-5 5 5" />
+              <path d="M4 16h16" />
+              <path d="m9 21 3-3 3 3" />
+            </svg>
+          </menu-card>
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-platform-download="linux-deb"
+          data-dialog-target="dlg-download-linux-deb"
+        >
+          <menu-card label="Linux .deb">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M12 2 4 7v10l8 5 8-5V7Z" />
+              <path d="M4 7l8 5 8-5" />
+              <path d="M12 12v10" />
+            </svg>
+          </menu-card>
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          data-platform-download="linux-rpm"
+          data-dialog-target="dlg-download-linux-rpm"
+        >
+          <menu-card label="Linux .rpm">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="m12 7 3 5h-6Z" />
+              <path d="M12 12v5" />
+            </svg>
+          </menu-card>
+        </button>
+      </nav>
+
+      <p class="downloads-back-link">
+        <a class="btn btn--primary" href="./index.html">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <polyline points="15 18 9 12 15 6" />
+            <line x1="9" x2="21" y1="12" y2="12" />
+          </svg>
+          <span class="btn__label">Back to Main Page</span>
+        </a>
+      </p>
+    </main>
+
+    <dialog
+      id="dlg-download-windows"
+      data-dialog
+      aria-labelledby="dlg-download-windows-title"
+    >
+      <div class="dialog__panel">
+        <div class="dialog__inner">
+          <h2 id="dlg-download-windows-title" class="dialog__title">Windows</h2>
+          <p class="dialog__body">
+            The Windows build has started downloading. When it finishes, extract
+            the archive and launch <code>ByAThread.exe</code>. If SmartScreen
+            warns you, choose More info and then Run anyway.
+          </p>
+          <div class="dialog__footer">
+            <button type="button" class="dialog__close" data-dialog-close>
+              <span class="btn__label">Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog
+      id="dlg-download-macos-apple-silicon"
+      data-dialog
+      aria-labelledby="dlg-download-macos-apple-silicon-title"
+    >
+      <div class="dialog__panel">
+        <div class="dialog__inner">
+          <h2 id="dlg-download-macos-apple-silicon-title" class="dialog__title">
+            macOS Apple Silicon
+          </h2>
+          <p class="dialog__body">
+            The Apple Silicon build is downloading. Open the downloaded
+            <code>.dmg</code>, drag the game into Applications, then launch it.
+            If macOS blocks it, open System Settings, Privacy and Security, and
+            allow the app.
+          </p>
+          <div class="dialog__footer">
+            <button type="button" class="dialog__close" data-dialog-close>
+              <span class="btn__label">Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog
+      id="dlg-download-macos-intel"
+      data-dialog
+      aria-labelledby="dlg-download-macos-intel-title"
+    >
+      <div class="dialog__panel">
+        <div class="dialog__inner">
+          <h2 id="dlg-download-macos-intel-title" class="dialog__title">
+            macOS Intel
+          </h2>
+          <p class="dialog__body">
+            The Intel build is downloading. Open the downloaded
+            <code>.dmg</code>, copy the game to Applications, and start it from
+            there. If Gatekeeper blocks it, allow it from Privacy and Security.
+          </p>
+          <div class="dialog__footer">
+            <button type="button" class="dialog__close" data-dialog-close>
+              <span class="btn__label">Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog
+      id="dlg-download-linux-appimage"
+      data-dialog
+      aria-labelledby="dlg-download-linux-appimage-title"
+    >
+      <div class="dialog__panel">
+        <div class="dialog__inner">
+          <h2 id="dlg-download-linux-appimage-title" class="dialog__title">
+            Linux AppImage
+          </h2>
+          <p class="dialog__body">
+            The AppImage download has started. Mark it executable before
+            launching:
+            <code>chmod +x ByAThread.AppImage</code>. Then run it directly from
+            your file manager or terminal.
+          </p>
+          <div class="dialog__footer">
+            <button type="button" class="dialog__close" data-dialog-close>
+              <span class="btn__label">Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog
+      id="dlg-download-linux-deb"
+      data-dialog
+      aria-labelledby="dlg-download-linux-deb-title"
+    >
+      <div class="dialog__panel">
+        <div class="dialog__inner">
+          <h2 id="dlg-download-linux-deb-title" class="dialog__title">
+            Linux .deb
+          </h2>
+          <p class="dialog__body">
+            The <code>.deb</code> package is downloading. Install with your
+            package manager or run:
+            <code>sudo apt install ./by-a-thread.deb</code>, then launch the
+            game from your app menu.
+          </p>
+          <div class="dialog__footer">
+            <button type="button" class="dialog__close" data-dialog-close>
+              <span class="btn__label">Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog
+      id="dlg-download-linux-rpm"
+      data-dialog
+      aria-labelledby="dlg-download-linux-rpm-title"
+    >
+      <div class="dialog__panel">
+        <div class="dialog__inner">
+          <h2 id="dlg-download-linux-rpm-title" class="dialog__title">
+            Linux .rpm
+          </h2>
+          <p class="dialog__body">
+            The <code>.rpm</code> package is downloading. Install it with your
+            distro tools, for example:
+            <code>sudo dnf install ./by-a-thread.rpm</code>, and launch from
+            your applications menu.
+          </p>
+          <div class="dialog__footer">
+            <button type="button" class="dialog__close" data-dialog-close>
+              <span class="btn__label">Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <template id="menu-card-template">
+      <span
+        class="menu-card__face menu-card__face--back"
+        aria-hidden="true"
+      ></span>
+      <span class="menu-card__face menu-card__face--front">
+        <span class="btn__label" data-menu-card-label></span>
+      </span>
+    </template>
+
+    <script type="module" src="./downloads.js"></script>
+  </body>
+</html>

@@ -380,6 +380,39 @@ main {
   display: none;
 }
 
+.downloads-page main {
+  max-width: 42rem;
+}
+
+.downloads-intro {
+  margin: 1rem 0 0;
+  max-width: 34rem;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  opacity: 0;
+  animation: fade-in-up 0.9s ease 0.2s forwards;
+}
+
+.downloads-nav {
+  position: static;
+  margin-top: 1.75rem;
+  width: min(32rem, 100%);
+  opacity: 0;
+  animation: fade-in-up 0.9s ease 0.3s forwards;
+}
+
+.downloads-nav .btn:nth-child(6) {
+  --flip-duration: 4000ms;
+}
+
+.downloads-back-link {
+  margin: 1.6rem 0 0;
+  opacity: 0;
+  animation: fade-in-up 0.9s ease 0.4s forwards;
+}
+
 .hero-nav .btn {
   --flip-duration: 1180ms;
   position: relative;
@@ -491,6 +524,10 @@ main {
     position: fixed;
     top: 1rem;
     right: 1rem;
+  }
+
+  .downloads-nav {
+    width: min(30rem, calc(100vw - 2.5rem));
   }
 }
 
