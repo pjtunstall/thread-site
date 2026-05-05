@@ -5,9 +5,10 @@ import { initMenu } from "./menu.js";
 import { initTheme } from "./theme.js";
 
 (function () {
-  defineMenuCard();
   const mazeBackground = new MazeBackground();
   mazeBackground.start();
+
+  defineMenuCard();
 
   initTheme({
     onThemeChange: function () {
