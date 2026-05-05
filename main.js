@@ -1,4 +1,43 @@
 (function () {
+  if (!customElements.get("menu-card")) {
+    class MenuCard extends HTMLElement {
+      connectedCallback() {
+        if (this.dataset.hydrated === "true") return;
+
+        const label = this.getAttribute("label") || "";
+        const icon = this.querySelector("svg");
+
+        this.classList.add("menu-card");
+        this.replaceChildren();
+
+        const backFace = document.createElement("span");
+        backFace.className = "menu-card__face menu-card__face--back";
+        backFace.setAttribute("aria-hidden", "true");
+
+        const frontFace = document.createElement("span");
+        frontFace.className = "menu-card__face menu-card__face--front";
+
+        if (icon instanceof SVGElement) {
+          const iconClone = icon.cloneNode(true);
+          if (iconClone instanceof SVGElement) {
+            iconClone.setAttribute("aria-hidden", "true");
+          }
+          frontFace.append(iconClone);
+        }
+
+        const text = document.createElement("span");
+        text.className = "btn__label";
+        text.textContent = label;
+        frontFace.append(text);
+
+        this.append(backFace, frontFace);
+        this.dataset.hydrated = "true";
+      }
+    }
+
+    customElements.define("menu-card", MenuCard);
+  }
+
   const themeToggle = document.querySelector("[data-theme-toggle]");
   const menuToggle = document.querySelector("[data-menu-toggle]");
   const menu = document.querySelector("[data-menu]");
