@@ -45,12 +45,6 @@
     </script>
 
     <link rel="icon" href="./favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -68,11 +62,6 @@
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
             aria-hidden="true"
           >
             <line x1="3" x2="21" y1="6" y2="6" />
@@ -87,15 +76,7 @@
             data-open-dialog="dlg-about"
           >
             <menu-card label="About">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 16v-4" />
                 <path d="M12 8h.01" />
@@ -108,15 +89,7 @@
             data-open-dialog="dlg-blog"
           >
             <menu-card label="Blog">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                 <path
                   d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
@@ -130,15 +103,7 @@
             data-open-dialog="dlg-contact"
           >
             <menu-card label="Contact">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <rect width="20" height="16" x="2" y="4" rx="2" />
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
               </svg>
@@ -151,15 +116,7 @@
             rel="noopener noreferrer"
           >
             <menu-card label="Code">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <polyline points="16 18 22 12 16 6" />
                 <polyline points="8 6 2 12 8 18" />
               </svg>
@@ -182,11 +139,6 @@
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
                       aria-hidden="true"
                     >
                       <circle cx="12" cy="12" r="4" />
@@ -205,11 +157,6 @@
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
                       aria-hidden="true"
                     >
                       <path
@@ -248,11 +195,6 @@
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
             aria-hidden="true"
           >
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -271,7 +213,7 @@
           <p class="dialog__body">
             Every nine years, King Minos demands a terrible tribute, turning
             friend against friend. Only one can go free. But don't wait too
-            long--you're never really alone in a labyrinth.
+            long--you're never alone in a labyrinth.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>
@@ -313,6 +255,16 @@
         </div>
       </div>
     </dialog>
+
+    <template id="menu-card-template">
+      <span
+        class="menu-card__face menu-card__face--back"
+        aria-hidden="true"
+      ></span>
+      <span class="menu-card__face menu-card__face--front">
+        <span class="btn__label" data-menu-card-label></span>
+      </span>
+    </template>
 
     <script src="./main.js" defer></script>
   </body>

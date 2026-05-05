@@ -1,42 +1,5 @@
 (function () {
-  if (!customElements.get("menu-card")) {
-    class MenuCard extends HTMLElement {
-      connectedCallback() {
-        if (this.dataset.hydrated === "true") return;
-
-        const label = this.getAttribute("label") || "";
-        const icon = this.querySelector("svg");
-
-        this.classList.add("menu-card");
-        this.replaceChildren();
-
-        const backFace = document.createElement("span");
-        backFace.className = "menu-card__face menu-card__face--back";
-        backFace.setAttribute("aria-hidden", "true");
-
-        const frontFace = document.createElement("span");
-        frontFace.className = "menu-card__face menu-card__face--front";
-
-        if (icon instanceof SVGElement) {
-          const iconClone = icon.cloneNode(true);
-          if (iconClone instanceof SVGElement) {
-            iconClone.setAttribute("aria-hidden", "true");
-          }
-          frontFace.append(iconClone);
-        }
-
-        const text = document.createElement("span");
-        text.className = "btn__label";
-        text.textContent = label;
-        frontFace.append(text);
-
-        this.append(backFace, frontFace);
-        this.dataset.hydrated = "true";
-      }
-    }
-
-    customElements.define("menu-card", MenuCard);
-  }
+  defineMenuCard();
 
   const themeToggle = document.querySelector("[data-theme-toggle]");
   const menuToggle = document.querySelector("[data-menu-toggle]");
@@ -179,3 +142,61 @@
     });
   });
 })();
+
+function defineMenuCard() {
+  const menuCardTemplateCandidate = document.querySelector(
+    "#menu-card-template",
+  );
+  const menuCardTemplate =
+    menuCardTemplateCandidate instanceof HTMLTemplateElement
+      ? menuCardTemplateCandidate
+      : null;
+
+  if (customElements.get("menu-card")) {
+    return; // Menu card is already defined.
+  }
+
+  class MenuCard extends HTMLElement {
+    connectedCallback() {
+      if (this.dataset.hydrated === "true") return; // Already hydrated.
+
+      const label = this.getAttribute("label") || "";
+      const icon = this.querySelector("svg");
+
+      this.classList.add("menu-card");
+      this.replaceChildren();
+
+      if (menuCardTemplate instanceof HTMLTemplateElement) {
+        const fragment = menuCardTemplate.content.cloneNode(true);
+        const frontFace =
+          fragment.querySelector(".menu-card__face--front") instanceof
+          HTMLElement
+            ? fragment.querySelector(".menu-card__face--front")
+            : null;
+        const labelNode =
+          fragment.querySelector("[data-menu-card-label]") instanceof
+          HTMLElement
+            ? fragment.querySelector("[data-menu-card-label]")
+            : null;
+
+        if (frontFace instanceof HTMLElement && icon instanceof SVGElement) {
+          const iconClone = icon.cloneNode(true);
+          if (iconClone instanceof SVGElement) {
+            iconClone.setAttribute("aria-hidden", "true");
+          }
+          frontFace.prepend(iconClone);
+        }
+
+        if (labelNode instanceof HTMLElement) {
+          labelNode.textContent = label;
+        }
+
+        this.append(fragment);
+      }
+
+      this.dataset.hydrated = "true";
+    }
+  }
+
+  customElements.define("menu-card", MenuCard);
+}
