@@ -2,6 +2,7 @@ export class MazeBackground {
   constructor() {
     this.cellSize = 12;
     this.stepIntervalMs = 0;
+    this.cellsPerFrame = 8;
     this.resizeDebounceMs = 220;
     this.carveCells = [];
     this.nextCarveIndex = 0;
@@ -195,7 +196,11 @@ export class MazeBackground {
     }
     if (timestamp - this.lastStepAt >= this.stepIntervalMs) {
       this.context.fillStyle = this.getBackgroundFillColor();
-      if (this.nextCarveIndex < this.carveCells.length) {
+      const targetIndex = Math.min(
+        this.nextCarveIndex + this.cellsPerFrame,
+        this.carveCells.length,
+      );
+      while (this.nextCarveIndex < targetIndex) {
         this.drawCarveCell(this.carveCells[this.nextCarveIndex]);
         this.nextCarveIndex += 1;
       }
