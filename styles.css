@@ -21,6 +21,7 @@
   --color-ink: #23150f;
   --color-ink-muted: #5f3f30;
   --color-ink-faint: #23150f2b;
+  --color-ink-wall: #23150f1f;
   --color-ink-overlay: #140c08b3;
   --color-ink-hover: #23150f14;
   --color-ink-border-strong: #23150f4a;
@@ -54,6 +55,7 @@
   --color-ink: #e7bc92;
   --color-ink-muted: #c69163;
   --color-ink-faint: #e7bc9236;
+  --color-ink-wall: #e7bc9228;
   --color-ink-overlay: #000000ad;
   --color-ink-hover: #e7bc9214;
   --color-ink-border-strong: #e7bc9261;

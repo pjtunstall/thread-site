@@ -79,7 +79,7 @@ export class MazeBackground {
 
   getWallFillColor() {
     return getComputedStyle(document.documentElement)
-      .getPropertyValue("--color-ink-faint")
+      .getPropertyValue("--color-ink-wall")
       .trim();
   }
 
