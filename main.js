@@ -1,166 +1,28 @@
 import { MazeBackground } from "./maze-background.js";
 import { defineMenuCard } from "./menu-card.js";
+import { initMenu } from "./menu.js";
+import {
+  dialogTriggers,
+  dialogs,
+  getDialogTargetForTrigger,
+} from "./dom-utils.js";
+import { initTheme } from "./theme.js";
 
 (function () {
-  const LOG_PREFIX = "[site-init]";
   defineMenuCard();
   const mazeBackground = new MazeBackground();
   mazeBackground.start();
 
-  function requireElement(candidate, selector, expectedType) {
-    if (candidate instanceof expectedType) return candidate;
-    console.error(
-      `${LOG_PREFIX} Required element ${selector} is missing or has the wrong type.`,
-      candidate,
-    );
-    throw new Error(`${LOG_PREFIX} Missing required element: ${selector}`);
-  }
-
-  const themeToggle = requireElement(
-    document.querySelector("[data-theme-toggle]"),
-    "[data-theme-toggle]",
-    HTMLButtonElement,
-  );
-  const menuToggle = requireElement(
-    document.querySelector("[data-menu-toggle]"),
-    "[data-menu-toggle]",
-    HTMLButtonElement,
-  );
-  const menu = requireElement(
-    document.querySelector("[data-menu]"),
-    "[data-menu]",
-    HTMLElement,
-  );
-  const root = document.documentElement;
-  let isMenuOpen = false;
-
-  function setMenuOpen(nextState) {
-    isMenuOpen = nextState;
-    if (isMenuOpen) {
-      menu.hidden = false;
-      menu.setAttribute("data-menu-open", "false");
-      window.requestAnimationFrame(function () {
-        if (isMenuOpen) {
-          menu.setAttribute("data-menu-open", "true");
-        }
-      });
-    } else {
-      menu.setAttribute("data-menu-open", "false");
-      menu.hidden = true;
-    }
-    menuToggle.setAttribute("aria-expanded", String(isMenuOpen));
-    menuToggle.setAttribute(
-      "aria-label",
-      isMenuOpen ? "Close site menu" : "Open site menu",
-    );
-  }
-
-  function closeMenu() {
-    setMenuOpen(false);
-  }
-
-  function shouldCloseMenuOnClick(item) {
-    const closePreference = item.getAttribute("data-menu-close");
-    if (closePreference === null) return true;
-    return closePreference !== "false";
-  }
-
-  function readThemePreference() {
-    try {
-      const stored = localStorage.getItem("theme-preference");
-      if (stored === "light" || stored === "dark") return stored;
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    } catch (error) {
-      console.warn(
-        `${LOG_PREFIX} Could not access localStorage for theme preference; using system/default theme.`,
-        error,
-      );
-      return "light";
-    }
-  }
-
-  function applyThemePreference(theme) {
-    root.setAttribute("data-theme", theme);
-    themeToggle.setAttribute(
-      "aria-label",
-      theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
-    );
-    themeToggle.setAttribute(
-      "aria-pressed",
-      theme === "dark" ? "true" : "false",
-    );
-  }
-
-  function saveThemePreference(theme) {
-    try {
-      localStorage.setItem("theme-preference", theme);
-    } catch (error) {
-      console.warn(
-        `${LOG_PREFIX} Could not persist theme preference to localStorage.`,
-        error,
-      );
-    }
-  }
-
-  let currentTheme = readThemePreference();
-  applyThemePreference(currentTheme);
-
-  themeToggle.addEventListener("click", function () {
-    const next = currentTheme === "dark" ? "light" : "dark";
-    currentTheme = next;
-    saveThemePreference(currentTheme);
-    applyThemePreference(currentTheme);
-    mazeBackground.restart();
+  initTheme({
+    onThemeChange: function () {
+      mazeBackground.restart();
+    },
   });
+  initMenu();
 
-  menuToggle.addEventListener("click", function (event) {
-    event.stopPropagation();
-    setMenuOpen(!isMenuOpen);
-  });
-
-  document.addEventListener("click", function (event) {
-    if (!isMenuOpen) return;
-    const target = event.target;
-    if (!(target instanceof Node)) return;
-    if (menu.contains(target) || menuToggle.contains(target)) return;
-    closeMenu();
-  });
-
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && isMenuOpen) {
-      closeMenu();
-    }
-  });
-
-  menu.querySelectorAll("button, a").forEach(function (item) {
-    item.addEventListener("click", function () {
-      if (shouldCloseMenuOnClick(item)) closeMenu();
-    });
-  });
-
-  const triggers = document.querySelectorAll("[data-open-dialog]");
-  const dialogs = document.querySelectorAll("dialog[data-dialog]");
-  if (triggers.length === 0) {
-    console.error(
-      `${LOG_PREFIX} No [data-open-dialog] triggers found; dialogs cannot be opened.`,
-    );
-  }
-  if (dialogs.length === 0) {
-    console.error(`${LOG_PREFIX} No dialog[data-dialog] elements found.`);
-  }
-
-  triggers.forEach(function (btn) {
-    const id = btn.getAttribute("data-open-dialog");
-    const dialog = id ? document.getElementById(id) : null;
-    if (!dialog || !(dialog instanceof HTMLDialogElement)) {
-      console.error(
-        `${LOG_PREFIX} Trigger references a missing or non-dialog target.`,
-        { trigger: btn, targetId: id, target: dialog },
-      );
-      return;
-    }
+  dialogTriggers.forEach(function (btn) {
+    const dialog = getDialogTargetForTrigger(btn);
+    if (!dialog) return;
 
     btn.addEventListener("click", function () {
       dialog.showModal();
