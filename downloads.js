@@ -72,11 +72,21 @@ function initDialogs() {
   });
 }
 
+function animateMenuCardsOnLoad() {
+  const downloadsMenu = document.querySelector(".downloads-nav");
+  if (!(downloadsMenu instanceof HTMLElement)) return;
+
+  requestAnimationFrame(function () {
+    downloadsMenu.setAttribute("data-menu-open", "true");
+  });
+}
+
 (function () {
   const mazeBackground = new MazeBackground();
   mazeBackground.start();
 
   defineMenuCard();
+  animateMenuCardsOnLoad();
 
   initPlatformDownloads();
   initDialogs();

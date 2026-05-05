@@ -396,15 +396,35 @@ main {
 }
 
 .downloads-nav {
+  --downloads-flip-extra-duration: 0ms;
   position: static;
   margin-top: 1.75rem;
   width: min(32rem, 100%);
-  opacity: 0;
-  animation: fade-in-up 0.9s ease 0.3s forwards;
+  opacity: 1;
+}
+
+.downloads-nav .btn:nth-child(1) {
+  --flip-duration: calc(200ms + var(--downloads-flip-extra-duration));
+}
+
+.downloads-nav .btn:nth-child(2) {
+  --flip-duration: calc(400ms + var(--downloads-flip-extra-duration));
+}
+
+.downloads-nav .btn:nth-child(3) {
+  --flip-duration: calc(800ms + var(--downloads-flip-extra-duration));
+}
+
+.downloads-nav .btn:nth-child(4) {
+  --flip-duration: calc(1600ms + var(--downloads-flip-extra-duration));
+}
+
+.downloads-nav .btn:nth-child(5) {
+  --flip-duration: calc(3200ms + var(--downloads-flip-extra-duration));
 }
 
 .downloads-nav .btn:nth-child(6) {
-  --flip-duration: 4000ms;
+  --flip-duration: calc(6400ms + var(--downloads-flip-extra-duration));
 }
 
 .downloads-back-link {
