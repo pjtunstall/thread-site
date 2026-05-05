@@ -144,6 +144,7 @@
 })();
 
 function defineMenuCard() {
+  const LOG_PREFIX = "[menu-card]";
   const menuCardTemplateCandidate = document.querySelector(
     "#menu-card-template",
   );
@@ -156,6 +157,13 @@ function defineMenuCard() {
     return; // Menu card is already defined.
   }
 
+  if (!(menuCardTemplate instanceof HTMLTemplateElement)) {
+    console.error(
+      `${LOG_PREFIX} Missing or invalid #menu-card-template; expected an HTMLTemplateElement.`,
+      menuCardTemplateCandidate,
+    );
+  }
+
   class MenuCard extends HTMLElement {
     connectedCallback() {
       if (this.dataset.hydrated === "true") return; // Already hydrated.
@@ -166,37 +174,60 @@ function defineMenuCard() {
       this.classList.add("menu-card");
       this.replaceChildren();
 
-      if (menuCardTemplate instanceof HTMLTemplateElement) {
-        const fragment = menuCardTemplate.content.cloneNode(true);
-        const frontFace =
-          fragment.querySelector(".menu-card__face--front") instanceof
-          HTMLElement
-            ? fragment.querySelector(".menu-card__face--front")
-            : null;
-        const labelNode =
-          fragment.querySelector("[data-menu-card-label]") instanceof
-          HTMLElement
-            ? fragment.querySelector("[data-menu-card-label]")
-            : null;
-
-        if (frontFace instanceof HTMLElement && icon instanceof SVGElement) {
-          const iconClone = icon.cloneNode(true);
-          if (iconClone instanceof SVGElement) {
-            iconClone.setAttribute("aria-hidden", "true");
-          }
-          frontFace.prepend(iconClone);
-        }
-
-        if (labelNode instanceof HTMLElement) {
-          labelNode.textContent = label;
-        }
-
-        this.append(fragment);
+      if (!(menuCardTemplate instanceof HTMLTemplateElement)) {
+        console.error(
+          `${LOG_PREFIX} Cannot hydrate card: #menu-card-template is unavailable.`,
+          this,
+        );
+        return;
       }
 
+      const fragment = menuCardTemplate.content.cloneNode(true);
+      const frontFaceCandidate = fragment.querySelector(".menu-card__face--front");
+      const frontFace =
+        frontFaceCandidate instanceof HTMLElement ? frontFaceCandidate : null;
+      const labelNodeCandidate = fragment.querySelector("[data-menu-card-label]");
+      const labelNode =
+        labelNodeCandidate instanceof HTMLElement ? labelNodeCandidate : null;
+
+      if (!(frontFace instanceof HTMLElement)) {
+        console.error(
+          `${LOG_PREFIX} Template is missing .menu-card__face--front.`,
+          frontFaceCandidate,
+        );
+        return;
+      }
+
+      if (!(labelNode instanceof HTMLElement)) {
+        console.error(
+          `${LOG_PREFIX} Template is missing [data-menu-card-label].`,
+          labelNodeCandidate,
+        );
+        return;
+      }
+
+      if (!(icon instanceof SVGElement)) {
+        console.error(
+          `${LOG_PREFIX} Card is missing child <svg> icon.`,
+          this,
+        );
+      } else {
+        const iconClone = icon.cloneNode(true);
+        if (iconClone instanceof SVGElement) {
+          iconClone.setAttribute("aria-hidden", "true");
+      }
+        frontFace.prepend(iconClone);
+      }
+
+      labelNode.textContent = label;
+      this.append(fragment);
       this.dataset.hydrated = "true";
     }
   }
 
-  customElements.define("menu-card", MenuCard);
+  try {
+    customElements.define("menu-card", MenuCard);
+  } catch (error) {
+    console.error(`${LOG_PREFIX} Failed to define custom element.`, error);
+  }
 }
