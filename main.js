@@ -3,6 +3,7 @@ import { initDialogs } from "./dialogs.js";
 import { defineMenuCard } from "./menu-card.js";
 import { initMenu } from "./menu.js";
 import { initTheme } from "./theme.js";
+import { initCarousel } from "./carousel.js";
 
 (function () {
   const mazeBackground = new MazeBackground();
@@ -15,6 +16,7 @@ import { initTheme } from "./theme.js";
       mazeBackground.restart();
     },
   });
+  initCarousel();
   initMenu();
   initDialogs();
 })();

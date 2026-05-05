@@ -245,8 +245,74 @@ main {
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 800 / 439;
+  object-fit: cover;
+  object-position: center;
   border-radius: var(--radius-image);
   box-shadow: var(--shadow-soft);
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid #e7bc9261;
+  border-radius: 999px;
+  background: #1a0f0af0;
+  color: #e7bc92;
+  box-shadow:
+    0 0 0 2px #1a0f0ac2,
+    0 4px 12px #00000075,
+    0 14px 34px #000000bf;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.carousel-arrow--left {
+  left: calc(var(--meander-gap) + 0.35rem);
+}
+
+.carousel-arrow--right {
+  right: calc(var(--meander-gap) + 0.35rem);
+}
+
+.carousel-arrow:hover {
+  background: #4a2b1cf2;
+  border-color: #f1ccaaa8;
+  box-shadow:
+    0 0 0 2px #1a0f0ad9,
+    0 6px 14px #0000008c,
+    0 18px 38px #000000cf;
+}
+
+.carousel-arrow:active {
+  transform: translateY(calc(-50% + 1px));
+}
+
+.carousel-arrow:focus-visible {
+  outline: 2px solid #e7bc92;
+  outline-offset: 2px;
+}
+
+.carousel-arrow svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* --- Buttons --- */

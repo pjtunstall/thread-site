@@ -45,6 +45,14 @@
     </script>
 
     <link rel="icon" href="./favicon.ico" />
+    <link
+      rel="preload"
+      as="image"
+      href="./screenshot.jpg"
+      fetchpriority="high"
+    />
+    <link rel="preload" as="image" href="./griffin.webp" type="image/webp" />
+    <link rel="preload" as="image" href="./octopus.webp" type="image/webp" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -176,14 +184,43 @@
       <p class="hero-tagline">An Agony in Ten Mazes</p>
 
       <figure class="hero-image">
+        <button
+          type="button"
+          class="carousel-arrow carousel-arrow--left"
+          data-carousel-prev
+          aria-label="Show previous screenshot"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
         <img
-          src="./progressive_screenshot.jpg"
+          src="./screenshot.jpg"
           width="800"
           height="439"
           alt="By a Thread game screenshot"
           loading="eager"
           decoding="async"
+          data-carousel-image
         />
+        <button
+          type="button"
+          class="carousel-arrow carousel-arrow--right"
+          data-carousel-next
+          aria-label="Show next screenshot"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
       </figure>
 
       <p class="hero-cta">
@@ -207,9 +244,9 @@
         <div class="dialog__inner">
           <h2 id="dlg-about-title" class="dialog__title">About</h2>
           <p class="dialog__body">
-            Every nine years, King Minos demands a terrible tribute, turning
-            friend against friend. Only one can go free. But don't wait too
-            long--you're never alone in a labyrinth.
+            By a Thread is a multiplayer first-person shooter, inspired by the
+            1973 classic Maze. It's available as a desktop app for Windows,
+            macOS, and Linux.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>
