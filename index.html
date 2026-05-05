@@ -96,7 +96,7 @@
             class="btn btn--ghost"
             data-open-dialog="dlg-blog"
           >
-            <menu-card label="Blog">
+            <menu-card label="Instructions">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                 <path
@@ -244,9 +244,25 @@
         <div class="dialog__inner">
           <h2 id="dlg-about-title" class="dialog__title">About</h2>
           <p class="dialog__body">
-            By a Thread is a multiplayer first-person shooter, inspired by the
-            1973 classic Maze. It's available as a desktop app for Windows,
-            macOS, and Linux.
+            By a Thread is a battle-royale-style first-person shooter for up to
+            ten players. It's available as a desktop app for Windows, macOS, and
+            Linux. You'll need internet access to play.
+          </p>
+          <br />
+          <p class="dialog__body">
+            I made it as coursework at a coding bootcamp. You can read more
+            about it on
+            <a
+              class="dialog__link"
+              href="https://github.com/pjtunstall/by-a-thread"
+              >GitHub</a
+            >.
+          </p>
+          <br />
+          <p class="dialog__body">
+            It's really a multiplayer game. Maybe one day, I'll add AI
+            opponents. For now, as a single player, just try to escape the maze
+            in time.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>
@@ -260,9 +276,20 @@
     <dialog id="dlg-blog" data-dialog aria-labelledby="dlg-blog-title">
       <div class="dialog__panel">
         <div class="dialog__inner">
-          <h2 id="dlg-blog-title" class="dialog__title">Blog</h2>
+          <h2 id="dlg-blog-title" class="dialog__title">Instructions</h2>
           <p class="dialog__body">
-            Placeholder for lore, devlog, or supplementary material.
+            Launch the app and press ENTER. One player picks Create Game and
+            shares the access code. The others choose Join Game.
+          </p>
+          <br />
+          <p class="dialog__body">
+            The first person to enter their name is the host. They get to pick a
+            level and can start the game when everyone is ready.
+          </p>
+          <br />
+          <p class="dialog__body">
+            W, A, S, D keys to glide, ARROW keys to turn, SPACE to fire. At any
+            time, you can press ESCAPE to exit.
           </p>
           <div class="dialog__footer">
             <button type="button" class="dialog__close" data-dialog-close>

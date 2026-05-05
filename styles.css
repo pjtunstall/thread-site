@@ -27,8 +27,8 @@
   --color-ink-border-strong: #23150f4a;
   --color-primary-hover: #4f2e21;
   --color-transparent: #0000;
-  --font-display: "Hellenica", "Times New Roman", serif;
-  --font-body: "Times New Roman", Georgia, serif;
+  --font-display: "Hellenica", Georgia, serif;
+  --font-body: Georgia, serif;
   --button-text-nudge-y: 0.1em;
   --shadow-soft: 0 12px 40px #1a17141f;
   --radius-image: 6px;
@@ -681,11 +681,16 @@ dialog::backdrop {
 
 .dialog__body {
   margin: 0;
-  font-family: "Times New Roman", serif;
+  /* font-family: "Times New Roman", serif; */
   font-size: 1.2rem;
   line-height: 1.55;
   color: var(--color-ink-muted);
   text-align: left;
+}
+
+.dialog__link {
+  color: var(--color-ink);
+  text-decoration: underline;
 }
 
 .dialog__footer {
