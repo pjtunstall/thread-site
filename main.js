@@ -1,20 +1,35 @@
 (function () {
+  const LOG_PREFIX = "[site-init]";
   defineMenuCard();
 
-  const themeToggle = document.querySelector("[data-theme-toggle]");
-  const menuToggle = document.querySelector("[data-menu-toggle]");
-  const menu = document.querySelector("[data-menu]");
+  function requireElement(candidate, selector, expectedType) {
+    if (candidate instanceof expectedType) return candidate;
+    console.error(
+      `${LOG_PREFIX} Required element ${selector} is missing or has the wrong type.`,
+      candidate,
+    );
+    throw new Error(`${LOG_PREFIX} Missing required element: ${selector}`);
+  }
+
+  const themeToggle = requireElement(
+    document.querySelector("[data-theme-toggle]"),
+    "[data-theme-toggle]",
+    HTMLButtonElement,
+  );
+  const menuToggle = requireElement(
+    document.querySelector("[data-menu-toggle]"),
+    "[data-menu-toggle]",
+    HTMLButtonElement,
+  );
+  const menu = requireElement(
+    document.querySelector("[data-menu]"),
+    "[data-menu]",
+    HTMLElement,
+  );
   const root = document.documentElement;
   let isMenuOpen = false;
 
   function setMenuOpen(nextState) {
-    if (
-      !(menu instanceof HTMLElement) ||
-      !(menuToggle instanceof HTMLButtonElement)
-    ) {
-      return;
-    }
-
     isMenuOpen = nextState;
     if (isMenuOpen) {
       menu.hidden = false;
@@ -52,78 +67,96 @@
       return window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
-    } catch (_) {
+    } catch (error) {
+      console.warn(
+        `${LOG_PREFIX} Could not access localStorage for theme preference; using system/default theme.`,
+        error,
+      );
       return "light";
     }
   }
 
   function applyThemePreference(theme) {
     root.setAttribute("data-theme", theme);
-
-    if (themeToggle instanceof HTMLButtonElement) {
-      themeToggle.setAttribute(
-        "aria-label",
-        theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
-      );
-      themeToggle.setAttribute(
-        "aria-pressed",
-        theme === "dark" ? "true" : "false",
-      );
-    }
+    themeToggle.setAttribute(
+      "aria-label",
+      theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
+    );
+    themeToggle.setAttribute(
+      "aria-pressed",
+      theme === "dark" ? "true" : "false",
+    );
   }
 
   function saveThemePreference(theme) {
     try {
       localStorage.setItem("theme-preference", theme);
-    } catch (_) {}
+    } catch (error) {
+      console.warn(
+        `${LOG_PREFIX} Could not persist theme preference to localStorage.`,
+        error,
+      );
+    }
   }
 
   let currentTheme = readThemePreference();
   applyThemePreference(currentTheme);
 
-  if (themeToggle instanceof HTMLButtonElement) {
-    themeToggle.addEventListener("click", function () {
-      const next = currentTheme === "dark" ? "light" : "dark";
-      currentTheme = next;
-      saveThemePreference(currentTheme);
-      applyThemePreference(currentTheme);
-    });
-  }
+  themeToggle.addEventListener("click", function () {
+    const next = currentTheme === "dark" ? "light" : "dark";
+    currentTheme = next;
+    saveThemePreference(currentTheme);
+    applyThemePreference(currentTheme);
+  });
 
-  if (menuToggle instanceof HTMLButtonElement && menu instanceof HTMLElement) {
-    menuToggle.addEventListener("click", function (event) {
-      event.stopPropagation();
-      setMenuOpen(!isMenuOpen);
-    });
+  menuToggle.addEventListener("click", function (event) {
+    event.stopPropagation();
+    setMenuOpen(!isMenuOpen);
+  });
 
-    document.addEventListener("click", function (event) {
-      if (!isMenuOpen) return;
-      const target = event.target;
-      if (!(target instanceof Node)) return;
-      if (menu.contains(target) || menuToggle.contains(target)) return;
+  document.addEventListener("click", function (event) {
+    if (!isMenuOpen) return;
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (menu.contains(target) || menuToggle.contains(target)) return;
+    closeMenu();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && isMenuOpen) {
       closeMenu();
-    });
+    }
+  });
 
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && isMenuOpen) {
-        closeMenu();
-      }
+  menu.querySelectorAll("button, a").forEach(function (item) {
+    item.addEventListener("click", function () {
+      if (shouldCloseMenuOnClick(item)) closeMenu();
     });
-
-    menu.querySelectorAll("button, a").forEach(function (item) {
-      item.addEventListener("click", function () {
-        if (shouldCloseMenuOnClick(item)) closeMenu();
-      });
-    });
-  }
+  });
 
   const triggers = document.querySelectorAll("[data-open-dialog]");
   const dialogs = document.querySelectorAll("dialog[data-dialog]");
+  if (triggers.length === 0) {
+    console.error(
+      `${LOG_PREFIX} No [data-open-dialog] triggers found; dialogs cannot be opened.`,
+    );
+  }
+  if (dialogs.length === 0) {
+    console.error(
+      `${LOG_PREFIX} No dialog[data-dialog] elements found.`,
+    );
+  }
 
   triggers.forEach(function (btn) {
     const id = btn.getAttribute("data-open-dialog");
     const dialog = id ? document.getElementById(id) : null;
-    if (!dialog || !(dialog instanceof HTMLDialogElement)) return;
+    if (!dialog || !(dialog instanceof HTMLDialogElement)) {
+      console.error(
+        `${LOG_PREFIX} Trigger references a missing or non-dialog target.`,
+        { trigger: btn, targetId: id, target: dialog },
+      );
+      return;
+    }
 
     btn.addEventListener("click", function () {
       dialog.showModal();
@@ -215,7 +248,7 @@ function defineMenuCard() {
         const iconClone = icon.cloneNode(true);
         if (iconClone instanceof SVGElement) {
           iconClone.setAttribute("aria-hidden", "true");
-      }
+        }
         frontFace.prepend(iconClone);
       }
 
