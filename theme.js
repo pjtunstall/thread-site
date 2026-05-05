@@ -1,5 +1,3 @@
-import { themeToggle } from "./dom-utils.js";
-
 const LOG_PREFIX = "[site-init]";
 const root = document.documentElement;
 
@@ -19,8 +17,9 @@ function readThemePreference() {
   }
 }
 
-function applyThemePreference(theme) {
+function applyThemePreference(theme, themeToggle) {
   root.setAttribute("data-theme", theme);
+  if (!(themeToggle instanceof HTMLButtonElement)) return;
   themeToggle.setAttribute(
     "aria-label",
     theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
@@ -39,16 +38,26 @@ function saveThemePreference(theme) {
   }
 }
 
+export function applyStoredThemePreference(options = {}) {
+  const { themeToggle } = options;
+  const currentTheme = readThemePreference();
+  applyThemePreference(currentTheme, themeToggle);
+  return currentTheme;
+}
+
 export function initTheme(options = {}) {
   const { onThemeChange } = options;
+  const themeToggle = document.querySelector("[data-theme-toggle]");
+  if (!(themeToggle instanceof HTMLButtonElement)) {
+    return applyStoredThemePreference();
+  }
 
-  let currentTheme = readThemePreference();
-  applyThemePreference(currentTheme);
+  let currentTheme = applyStoredThemePreference({ themeToggle });
 
   themeToggle.addEventListener("click", function () {
     currentTheme = currentTheme === "dark" ? "light" : "dark";
     saveThemePreference(currentTheme);
-    applyThemePreference(currentTheme);
+    applyThemePreference(currentTheme, themeToggle);
     if (typeof onThemeChange === "function") onThemeChange(currentTheme);
   });
 }

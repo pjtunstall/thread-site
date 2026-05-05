@@ -26,30 +26,3 @@ export const menu = requireElement(
   "[data-menu]",
   HTMLElement,
 );
-
-export const dialogTriggers = document.querySelectorAll("[data-open-dialog]");
-export const dialogs = document.querySelectorAll("dialog[data-dialog]");
-
-if (dialogTriggers.length === 0) {
-  console.error(
-    `${LOG_PREFIX} No [data-open-dialog] triggers found; dialogs cannot be opened.`,
-  );
-}
-
-if (dialogs.length === 0) {
-  console.error(`${LOG_PREFIX} No dialog[data-dialog] elements found.`);
-}
-
-export function getDialogTargetForTrigger(trigger) {
-  const id = trigger.getAttribute("data-open-dialog");
-  const dialog = id ? document.getElementById(id) : null;
-  if (!dialog || !(dialog instanceof HTMLDialogElement)) {
-    console.error(`${LOG_PREFIX} Trigger references a missing or non-dialog target.`, {
-      trigger,
-      targetId: id,
-      target: dialog,
-    });
-    return null;
-  }
-  return dialog;
-}

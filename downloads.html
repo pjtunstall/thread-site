@@ -8,20 +8,6 @@
       name="description"
       content="Download By a Thread for your platform and get quick setup instructions."
     />
-    <script>
-      (function () {
-        try {
-          var stored = localStorage.getItem("theme-preference");
-          var resolved =
-            stored === "light" || stored === "dark"
-              ? stored
-              : window.matchMedia("(prefers-color-scheme: dark)").matches
-                ? "dark"
-                : "light";
-          document.documentElement.setAttribute("data-theme", resolved);
-        } catch (_) {}
-      })();
-    </script>
     <link rel="icon" href="./favicon.ico" />
     <link rel="stylesheet" href="./styles.css" />
   </head>

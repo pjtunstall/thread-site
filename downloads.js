@@ -1,5 +1,7 @@
 import { MazeBackground } from "./maze-background.js";
+import { initDialogs } from "./dialogs.js";
 import { defineMenuCard } from "./menu-card.js";
+import { applyStoredThemePreference } from "./theme.js";
 
 const DOWNLOAD_FILES = {
   windows: "by-a-thread-windows-placeholder.txt",
@@ -55,38 +57,23 @@ function initPlatformDownloads() {
   });
 }
 
-function initDialogs() {
-  const dialogs = Array.from(document.querySelectorAll("dialog[data-dialog]"));
-  dialogs.forEach(function (dialog) {
-    if (!(dialog instanceof HTMLDialogElement)) return;
+function revealDownloadsNavCards() {
+  const downloadsNav = document.querySelector(".downloads-nav");
+  if (!(downloadsNav instanceof HTMLElement)) return;
 
-    dialog.addEventListener("click", function (event) {
-      if (event.target === dialog) dialog.close();
-    });
-
-    dialog.querySelectorAll("[data-dialog-close]").forEach(function (element) {
-      element.addEventListener("click", function () {
-        dialog.close();
-      });
-    });
-  });
-}
-
-function animateMenuCardsOnLoad() {
-  const downloadsMenu = document.querySelector(".downloads-nav");
-  if (!(downloadsMenu instanceof HTMLElement)) return;
-
-  requestAnimationFrame(function () {
-    downloadsMenu.setAttribute("data-menu-open", "true");
+  window.requestAnimationFrame(function () {
+    downloadsNav.setAttribute("data-menu-open", "true");
   });
 }
 
 (function () {
+  applyStoredThemePreference();
+
   const mazeBackground = new MazeBackground();
   mazeBackground.start();
 
   defineMenuCard();
-  animateMenuCardsOnLoad();
+  revealDownloadsNavCards();
 
   initPlatformDownloads();
   initDialogs();
