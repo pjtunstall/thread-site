@@ -3,8 +3,8 @@ export class MazeBackground {
     this.cellSize = 12;
     this.stepIntervalMs = 0;
     this.resizeDebounceMs = 220;
-    this.wallCells = [];
-    this.nextWallIndex = 0;
+    this.carveCells = [];
+    this.nextCarveIndex = 0;
     this.lastStepAt = 0;
     this.frameRequest = null;
     this.resizeTimer = null;
@@ -43,13 +43,13 @@ export class MazeBackground {
     }
 
     this.resizeCanvas();
-    this.wallCells = this.buildWallCells();
-    this.nextWallIndex = 0;
+    this.carveCells = this.buildCarveCells();
+    this.nextCarveIndex = 0;
     this.lastStepAt = 0;
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.paintFullWallLayer();
 
     if (this.reduceMotionQuery.matches) {
-      this.drawAllWalls();
+      this.drawAllCarves();
       return;
     }
 
@@ -83,7 +83,18 @@ export class MazeBackground {
       .trim();
   }
 
-  buildWallCells() {
+  getBackgroundFillColor() {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue("--color-bg")
+      .trim();
+  }
+
+  paintFullWallLayer() {
+    this.context.fillStyle = this.getWallFillColor();
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  buildCarveCells() {
     const cols = Math.max(7, Math.ceil(window.innerWidth / this.cellSize));
     const rows = Math.max(7, Math.ceil(window.innerHeight / this.cellSize));
     const mazeCols = cols % 2 === 0 ? cols + 1 : cols;
@@ -98,7 +109,7 @@ export class MazeBackground {
       Array.from({ length: cellCols }, () => false),
     );
     const stack = [];
-    const traversalEvents = [];
+    const carveOrder = [];
     const startCell = {
       x: Math.floor(Math.random() * cellCols),
       y: Math.floor(Math.random() * cellRows),
@@ -106,7 +117,9 @@ export class MazeBackground {
 
     stack.push(startCell);
     visited[startCell.y][startCell.x] = true;
-    carved[startCell.y * 2 + 1][startCell.x * 2 + 1] = true;
+    const startGridCell = { x: startCell.x * 2 + 1, y: startCell.y * 2 + 1 };
+    carved[startGridCell.y][startGridCell.x] = true;
+    carveOrder.push(startGridCell);
 
     const directions = [
       { dx: 1, dy: 0 },
@@ -117,9 +130,6 @@ export class MazeBackground {
 
     while (stack.length > 0) {
       const current = stack[stack.length - 1];
-      // Revisited cells are intentionally recorded so reveal timing reflects
-      // both forward carving and backtracking moments.
-      traversalEvents.push({ x: current.x * 2 + 1, y: current.y * 2 + 1 });
       const unvisitedNeighbors = [];
 
       for (const direction of directions) {
@@ -150,71 +160,33 @@ export class MazeBackground {
       const wallBetweenY = currentGridY + nextNeighbor.direction.dy;
 
       carved[nextGridY][nextGridX] = true;
+      carveOrder.push({ x: nextGridX, y: nextGridY });
+
       carved[wallBetweenY][wallBetweenX] = true;
-      traversalEvents.push({ x: wallBetweenX, y: wallBetweenY });
-      traversalEvents.push({ x: nextGridX, y: nextGridY });
+      carveOrder.push({ x: wallBetweenX, y: wallBetweenY });
+
       stack.push({ x: nextNeighbor.x, y: nextNeighbor.y });
     }
 
-    const wallByKey = new Map();
-    // Assign reveal order directly from DFS events (including backtracking).
-    const assignRevealStep = (x, y, step) => {
-      if (x < 0 || x >= mazeCols || y < 0 || y >= mazeRows) return;
-      if (carved[y][x]) return;
-
-      const key = `${x},${y}`;
-      const existingWall = wallByKey.get(key);
-      if (existingWall) {
-        if (step < existingWall.revealStep) existingWall.revealStep = step;
-        return;
-      }
-
-      wallByKey.set(key, {
-        x,
-        y,
-        revealStep: step,
-        // Tie-breaker because multiple walls can share
-        // the same revealStep from one traversal event.
-        tieBreaker: Math.random(),
-      });
-    };
-    for (let step = 0; step < traversalEvents.length; step += 1) {
-      const event = traversalEvents[step];
-      assignRevealStep(event.x - 1, event.y, step);
-      assignRevealStep(event.x + 1, event.y, step);
-      assignRevealStep(event.x, event.y - 1, step);
-      assignRevealStep(event.x, event.y + 1, step);
-    }
-
-    const walls = Array.from(wallByKey.values());
-    walls.sort((a, b) => {
-      if (a.revealStep !== b.revealStep) return a.revealStep - b.revealStep;
-      return a.tieBreaker - b.tieBreaker;
-    });
-
-    return walls.map(({ x, y }) => ({ x, y }));
+    return carveOrder;
   }
 
-  drawWallCell(cell, index, total) {
-    const progress = total <= 1 ? 1 : index / (total - 1);
-    const alphaMin = 0.4;
-    this.context.globalAlpha = alphaMin + (1 - alphaMin) * progress;
+  drawCarveCell(cell) {
     this.context.fillRect(
       cell.x * this.cellSize,
       cell.y * this.cellSize,
       this.cellSize,
       this.cellSize,
     );
-    this.context.globalAlpha = 1;
   }
 
-  drawAllWalls() {
-    this.context.fillStyle = this.getWallFillColor();
-    const total = this.wallCells.length;
+  drawAllCarves() {
+    this.context.fillStyle = this.getBackgroundFillColor();
+    const total = this.carveCells.length;
     for (let i = 0; i < total; i += 1) {
-      this.drawWallCell(this.wallCells[i], i, total);
+      this.drawCarveCell(this.carveCells[i]);
     }
-    this.nextWallIndex = this.wallCells.length;
+    this.nextCarveIndex = this.carveCells.length;
   }
 
   tick(timestamp) {
@@ -222,19 +194,15 @@ export class MazeBackground {
       this.lastStepAt = timestamp;
     }
     if (timestamp - this.lastStepAt >= this.stepIntervalMs) {
-      this.context.fillStyle = this.getWallFillColor();
-      if (this.nextWallIndex < this.wallCells.length) {
-        this.drawWallCell(
-          this.wallCells[this.nextWallIndex],
-          this.nextWallIndex,
-          this.wallCells.length,
-        );
-        this.nextWallIndex += 1;
+      this.context.fillStyle = this.getBackgroundFillColor();
+      if (this.nextCarveIndex < this.carveCells.length) {
+        this.drawCarveCell(this.carveCells[this.nextCarveIndex]);
+        this.nextCarveIndex += 1;
       }
       this.lastStepAt = timestamp;
     }
 
-    if (this.nextWallIndex >= this.wallCells.length) {
+    if (this.nextCarveIndex >= this.carveCells.length) {
       this.frameRequest = null;
       return;
     }
