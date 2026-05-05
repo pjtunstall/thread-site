@@ -128,16 +128,24 @@ main {
   line-height: 1.15;
   opacity: 0;
   animation: fade-in-up 0.9s ease forwards;
+  text-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-bg) 75%, var(--color-transparent)),
+    0 2px 10px
+      color-mix(in srgb, var(--color-ink) 42%, var(--color-transparent));
 }
 
 .hero-tagline {
   margin: 1rem 0 0;
   font-family: var(--font-display);
-  font-size: clamp(0.8125rem, 1.6vw, 1rem);
-  font-weight: 400;
-  letter-spacing: 0.35em;
+  font-size: clamp(0.95rem, 2.2vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--color-ink-muted);
+  color: var(--color-ink);
+  text-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-bg) 75%, var(--color-transparent)),
+    0 2px 10px
+      color-mix(in srgb, var(--color-ink) 42%, var(--color-transparent));
   opacity: 0;
   animation: fade-in-up 0.9s ease 0.1s forwards;
 }
@@ -252,12 +260,21 @@ main {
   text-decoration: none;
   border: 1px solid var(--color-transparent);
   border-radius: var(--radius-btn);
+  box-shadow: 0 6px 16px
+    color-mix(in srgb, var(--color-ink) 34%, var(--color-transparent));
   cursor: pointer;
   transition:
     background 0.2s ease,
     color 0.2s ease,
     border-color 0.2s ease,
+    box-shadow 0.2s ease,
     transform 0.15s ease;
+}
+
+.btn:hover {
+  box-shadow: 0 10px 24px
+    color-mix(in srgb, var(--color-ink) 44%, var(--color-transparent));
+  transform: translateY(-1px);
 }
 
 .btn:focus-visible {
@@ -327,6 +344,12 @@ main {
 /* Square hit target: .btn--ghost alone uses wider horizontal padding. */
 .btn--ghost.menu-toggle {
   padding: 0.55rem;
+  /* For visibility contrast against the maze background. */
+  background: var(--color-bg);
+}
+
+.btn--ghost.menu-toggle:hover {
+  background: color-mix(in srgb, var(--color-bg) 88%, var(--color-ink));
 }
 
 .hero-cta {

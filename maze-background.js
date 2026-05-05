@@ -1,14 +1,16 @@
 export class MazeBackground {
   constructor() {
-    this.cellSize = 12; // Fine-grained grid for detailed maze walls.
-    this.stepIntervalMs = 28;
+    this.cellSize = 12;
+    this.stepIntervalMs = 0;
     this.resizeDebounceMs = 220;
     this.wallCells = [];
     this.nextWallIndex = 0;
     this.lastStepAt = 0;
     this.frameRequest = null;
     this.resizeTimer = null;
-    this.reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    this.reduceMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
     this.handleResize = this.handleResize.bind(this);
     this.handleMotionPreferenceChange =
       this.handleMotionPreferenceChange.bind(this);
@@ -134,7 +136,9 @@ export class MazeBackground {
 
       // Fully random branch selection on every run.
       const nextNeighbor =
-        unvisitedNeighbors[Math.floor(Math.random() * unvisitedNeighbors.length)];
+        unvisitedNeighbors[
+          Math.floor(Math.random() * unvisitedNeighbors.length)
+        ];
       visited[nextNeighbor.y][nextNeighbor.x] = true;
 
       const currentGridX = current.x * 2 + 1;
