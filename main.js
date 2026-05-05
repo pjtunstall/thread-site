@@ -1,10 +1,9 @@
+import { MazeBackground } from "./maze-background.js";
+
 (function () {
   const LOG_PREFIX = "[site-init]";
   defineMenuCard();
-  if (typeof window.MazeBackground !== "function") {
-    throw new Error("[site-init] MazeBackground module failed to load.");
-  }
-  const mazeBackground = new window.MazeBackground();
+  const mazeBackground = new MazeBackground();
   mazeBackground.start();
 
   function requireElement(candidate, selector, expectedType) {

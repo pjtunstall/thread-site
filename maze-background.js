@@ -1,4 +1,4 @@
-class MazeBackground {
+export class MazeBackground {
   constructor() {
     this.cellSize = 12; // Fine-grained grid for detailed maze walls.
     this.stepIntervalMs = 28;
@@ -226,5 +226,3 @@ class MazeBackground {
     this.frameRequest = window.requestAnimationFrame(this.tick);
   }
 }
-
-window.MazeBackground = MazeBackground;
