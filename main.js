@@ -1,6 +1,11 @@
 (function () {
   const LOG_PREFIX = "[site-init]";
   defineMenuCard();
+  if (typeof window.MazeBackground !== "function") {
+    throw new Error("[site-init] MazeBackground module failed to load.");
+  }
+  const mazeBackground = new window.MazeBackground();
+  mazeBackground.start();
 
   function requireElement(candidate, selector, expectedType) {
     if (candidate instanceof expectedType) return candidate;
@@ -107,6 +112,7 @@
     currentTheme = next;
     saveThemePreference(currentTheme);
     applyThemePreference(currentTheme);
+    mazeBackground.restart();
   });
 
   menuToggle.addEventListener("click", function (event) {
@@ -142,9 +148,7 @@
     );
   }
   if (dialogs.length === 0) {
-    console.error(
-      `${LOG_PREFIX} No dialog[data-dialog] elements found.`,
-    );
+    console.error(`${LOG_PREFIX} No dialog[data-dialog] elements found.`);
   }
 
   triggers.forEach(function (btn) {
@@ -216,10 +220,14 @@ function defineMenuCard() {
       }
 
       const fragment = menuCardTemplate.content.cloneNode(true);
-      const frontFaceCandidate = fragment.querySelector(".menu-card__face--front");
+      const frontFaceCandidate = fragment.querySelector(
+        ".menu-card__face--front",
+      );
       const frontFace =
         frontFaceCandidate instanceof HTMLElement ? frontFaceCandidate : null;
-      const labelNodeCandidate = fragment.querySelector("[data-menu-card-label]");
+      const labelNodeCandidate = fragment.querySelector(
+        "[data-menu-card-label]",
+      );
       const labelNode =
         labelNodeCandidate instanceof HTMLElement ? labelNodeCandidate : null;
 
@@ -240,10 +248,7 @@ function defineMenuCard() {
       }
 
       if (!(icon instanceof SVGElement)) {
-        console.error(
-          `${LOG_PREFIX} Card is missing child <svg> icon.`,
-          this,
-        );
+        console.error(`${LOG_PREFIX} Card is missing child <svg> icon.`, this);
       } else {
         const iconClone = icon.cloneNode(true);
         if (iconClone instanceof SVGElement) {
