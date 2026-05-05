@@ -338,6 +338,11 @@ main {
   height: 0.85rem;
 }
 
+.btn svg.brand-icon {
+  fill: currentColor;
+  stroke: none;
+}
+
 .menu-toggle svg {
   width: 1rem;
   height: 1rem;
