@@ -408,30 +408,6 @@ main {
   opacity: 1;
 }
 
-.downloads-nav .btn:nth-child(1) {
-  --flip-duration: calc(200ms + var(--downloads-flip-extra-duration));
-}
-
-.downloads-nav .btn:nth-child(2) {
-  --flip-duration: calc(400ms + var(--downloads-flip-extra-duration));
-}
-
-.downloads-nav .btn:nth-child(3) {
-  --flip-duration: calc(800ms + var(--downloads-flip-extra-duration));
-}
-
-.downloads-nav .btn:nth-child(4) {
-  --flip-duration: calc(1600ms + var(--downloads-flip-extra-duration));
-}
-
-.downloads-nav .btn:nth-child(5) {
-  --flip-duration: calc(3200ms + var(--downloads-flip-extra-duration));
-}
-
-.downloads-nav .btn:nth-child(6) {
-  --flip-duration: calc(6400ms + var(--downloads-flip-extra-duration));
-}
-
 .downloads-back-link {
   margin: 1.6rem 0 0;
   opacity: 0;
@@ -450,24 +426,28 @@ main {
   perspective: 900px;
 }
 
-.hero-nav .btn:nth-child(1) {
+:is(.hero-nav, .downloads-nav) .btn:nth-child(1) {
   --flip-duration: 200ms;
 }
 
-.hero-nav .btn:nth-child(2) {
+:is(.hero-nav, .downloads-nav) .btn:nth-child(2) {
   --flip-duration: 400ms;
 }
 
-.hero-nav .btn:nth-child(3) {
+:is(.hero-nav, .downloads-nav) .btn:nth-child(3) {
   --flip-duration: 800ms;
 }
 
-.hero-nav .btn:nth-child(4) {
+:is(.hero-nav, .downloads-nav) .btn:nth-child(4) {
   --flip-duration: 1600ms;
 }
 
-.hero-nav .btn:nth-child(5) {
+:is(.hero-nav, .downloads-nav) .btn:nth-child(5) {
   --flip-duration: 3200ms;
+}
+
+.downloads-nav .btn:nth-child(6) {
+  --flip-duration: calc(6400ms + var(--downloads-flip-extra-duration));
 }
 
 /* Theme toggle: label + icon reflect the mode you switch to (sun → light, moon → dark). */
