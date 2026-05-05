@@ -136,7 +136,6 @@ export class MazeBackground {
         continue;
       }
 
-      // Fully random branch selection on every run.
       const nextNeighbor =
         unvisitedNeighbors[
           Math.floor(Math.random() * unvisitedNeighbors.length)
@@ -158,28 +157,26 @@ export class MazeBackground {
     }
 
     const wallByKey = new Map();
-    const walls = [];
-    for (let y = 0; y < mazeRows; y += 1) {
-      for (let x = 0; x < mazeCols; x += 1) {
-        if (carved[y][x]) continue;
-        const wall = {
-          x,
-          y,
-          revealStep: Number.POSITIVE_INFINITY,
-          // Tie-breaker because multiple walls can share
-          // the same revealStep from one traversal event.
-          tieBreaker: Math.random(),
-        };
-        wallByKey.set(`${x},${y}`, wall);
-        walls.push(wall);
-      }
-    }
-
-    // Assign reveal step from DFS event stream (including backtracking revisits).
+    // Assign reveal order directly from DFS events (including backtracking).
     const assignRevealStep = (x, y, step) => {
-      const wall = wallByKey.get(`${x},${y}`);
-      if (!wall) return;
-      if (step < wall.revealStep) wall.revealStep = step;
+      if (x < 0 || x >= mazeCols || y < 0 || y >= mazeRows) return;
+      if (carved[y][x]) return;
+
+      const key = `${x},${y}`;
+      const existingWall = wallByKey.get(key);
+      if (existingWall) {
+        if (step < existingWall.revealStep) existingWall.revealStep = step;
+        return;
+      }
+
+      wallByKey.set(key, {
+        x,
+        y,
+        revealStep: step,
+        // Tie-breaker because multiple walls can share
+        // the same revealStep from one traversal event.
+        tieBreaker: Math.random(),
+      });
     };
     for (let step = 0; step < traversalEvents.length; step += 1) {
       const event = traversalEvents[step];
@@ -189,6 +186,7 @@ export class MazeBackground {
       assignRevealStep(event.x, event.y + 1, step);
     }
 
+    const walls = Array.from(wallByKey.values());
     walls.sort((a, b) => {
       if (a.revealStep !== b.revealStep) return a.revealStep - b.revealStep;
       return a.tieBreaker - b.tieBreaker;
