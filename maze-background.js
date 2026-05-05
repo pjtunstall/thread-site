@@ -98,7 +98,7 @@ export class MazeBackground {
       Array.from({ length: cellCols }, () => false),
     );
     const stack = [];
-    const traversalCells = [];
+    const traversalEvents = [];
     const startCell = {
       x: Math.floor(Math.random() * cellCols),
       y: Math.floor(Math.random() * cellRows),
@@ -107,7 +107,6 @@ export class MazeBackground {
     stack.push(startCell);
     visited[startCell.y][startCell.x] = true;
     carved[startCell.y * 2 + 1][startCell.x * 2 + 1] = true;
-    traversalCells.push({ x: startCell.x * 2 + 1, y: startCell.y * 2 + 1 });
 
     const directions = [
       { dx: 1, dy: 0 },
@@ -118,6 +117,9 @@ export class MazeBackground {
 
     while (stack.length > 0) {
       const current = stack[stack.length - 1];
+      // Revisited cells are intentionally recorded so reveal timing reflects
+      // both forward carving and backtracking moments.
+      traversalEvents.push({ x: current.x * 2 + 1, y: current.y * 2 + 1 });
       const unvisitedNeighbors = [];
 
       for (const direction of directions) {
@@ -150,38 +152,49 @@ export class MazeBackground {
 
       carved[nextGridY][nextGridX] = true;
       carved[wallBetweenY][wallBetweenX] = true;
-      traversalCells.push({ x: wallBetweenX, y: wallBetweenY });
-      traversalCells.push({ x: nextGridX, y: nextGridY });
+      traversalEvents.push({ x: wallBetweenX, y: wallBetweenY });
+      traversalEvents.push({ x: nextGridX, y: nextGridY });
       stack.push({ x: nextNeighbor.x, y: nextNeighbor.y });
     }
 
+    const wallByKey = new Map();
     const walls = [];
-    const seenWallKeys = new Set();
-    const addWallIfSolid = (x, y) => {
-      if (x < 0 || x >= mazeCols || y < 0 || y >= mazeRows) return;
-      if (carved[y][x]) return;
-      const key = `${x},${y}`;
-      if (seenWallKeys.has(key)) return;
-      seenWallKeys.add(key);
-      walls.push({ x, y });
-    };
-
-    // Build wall paint sequence according to DFS/backtracking traversal context.
-    for (const cell of traversalCells) {
-      addWallIfSolid(cell.x - 1, cell.y);
-      addWallIfSolid(cell.x + 1, cell.y);
-      addWallIfSolid(cell.x, cell.y - 1);
-      addWallIfSolid(cell.x, cell.y + 1);
-    }
-
-    // Add any remaining walls not reached by adjacency ordering.
     for (let y = 0; y < mazeRows; y += 1) {
       for (let x = 0; x < mazeCols; x += 1) {
-        addWallIfSolid(x, y);
+        if (carved[y][x]) continue;
+        const wall = {
+          x,
+          y,
+          revealStep: Number.POSITIVE_INFINITY,
+          // Tie-breaker because multiple walls can share
+          // the same revealStep from one traversal event.
+          tieBreaker: Math.random(),
+        };
+        wallByKey.set(`${x},${y}`, wall);
+        walls.push(wall);
       }
     }
 
-    return walls;
+    // Assign reveal step from DFS event stream (including backtracking revisits).
+    const assignRevealStep = (x, y, step) => {
+      const wall = wallByKey.get(`${x},${y}`);
+      if (!wall) return;
+      if (step < wall.revealStep) wall.revealStep = step;
+    };
+    for (let step = 0; step < traversalEvents.length; step += 1) {
+      const event = traversalEvents[step];
+      assignRevealStep(event.x - 1, event.y, step);
+      assignRevealStep(event.x + 1, event.y, step);
+      assignRevealStep(event.x, event.y - 1, step);
+      assignRevealStep(event.x, event.y + 1, step);
+    }
+
+    walls.sort((a, b) => {
+      if (a.revealStep !== b.revealStep) return a.revealStep - b.revealStep;
+      return a.tieBreaker - b.tieBreaker;
+    });
+
+    return walls.map(({ x, y }) => ({ x, y }));
   }
 
   drawWallCell(cell, index, total) {
