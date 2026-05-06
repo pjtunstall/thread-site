@@ -60,7 +60,7 @@ const DEFAULT_DIALOGS = [
             href: "https://pjtunstall.itch.io/by-a-thread",
             text: "itch.io",
           },
-          ".",
+          ". (Scroll to the bottom of the page to leave a comment.)",
         ],
       },
     ],
