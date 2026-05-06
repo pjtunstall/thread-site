@@ -12,12 +12,12 @@ const CAROUSEL_ITEMS = [
     alt: "By a Thread game screenshot featuring glowing circuits on a Minoan-style fresco",
   },
   {
-    src: "./assets/images/ants.jpg",
-    alt: "By a Thread game screenshot featuring a maze with Minoan-style ant frescoes",
-  },
-  {
     src: "./assets/images/octopus.webp",
     alt: "By a Thread screencast featuring a maze of Minoan-style octopus frescoes",
+  },
+  {
+    src: "./assets/images/ants.jpg",
+    alt: "By a Thread game screenshot featuring a maze with Minoan-style ant frescoes",
   },
 ];
 
