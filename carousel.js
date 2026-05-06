@@ -57,6 +57,43 @@ export function initCarousel() {
     render();
   };
 
+  const isTypingTarget = function (target) {
+    if (!(target instanceof HTMLElement)) {
+      return false;
+    }
+
+    if (target.isContentEditable) {
+      return true;
+    }
+
+    const tagName = target.tagName;
+    return (
+      tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT"
+    );
+  };
+
+  const onKeydown = function (event) {
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
+
+    if (isTypingTarget(event.target)) {
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveBy(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveBy(1);
+    }
+  };
+
   prevButton.addEventListener("click", function () {
     moveBy(-1);
   });
@@ -64,6 +101,8 @@ export function initCarousel() {
   nextButton.addEventListener("click", function () {
     moveBy(1);
   });
+
+  document.addEventListener("keydown", onKeydown);
 
   render();
   warmImageCache();
