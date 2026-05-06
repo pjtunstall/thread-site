@@ -455,17 +455,6 @@ main {
   max-width: 42rem;
 }
 
-.downloads-intro {
-  margin: 1rem 0 0;
-  max-width: 34rem;
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  line-height: 1.5;
-  color: var(--color-ink-muted);
-  opacity: 0;
-  animation: fade-in-up 0.9s ease 0.2s forwards;
-}
-
 .downloads-nav {
   --downloads-flip-extra-duration: 0ms;
   position: static;

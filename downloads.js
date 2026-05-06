@@ -3,19 +3,6 @@ import { initDialogs } from "./dialogs.js";
 import { defineMenuCard } from "./menu-card.js";
 import { applyStoredThemePreference } from "./theme.js";
 
-(function () {
-  applyStoredThemePreference();
-
-  const mazeBackground = new MazeBackground();
-  mazeBackground.start();
-
-  defineMenuCard();
-  revealDownloadsNavCards();
-
-  initDialogs({ dialogs: DOWNLOAD_DIALOGS });
-  initPlatformDownloads();
-})();
-
 const DOWNLOAD_FILES = {
   windows: "by-a-thread-windows-placeholder.txt",
   "macos-apple-silicon": "by-a-thread-macos-apple-silicon-placeholder.txt",
@@ -170,3 +157,16 @@ function revealDownloadsNavCards() {
     downloadsNav.setAttribute("data-menu-open", "true");
   });
 }
+
+(function () {
+  applyStoredThemePreference();
+
+  const mazeBackground = new MazeBackground();
+  mazeBackground.start();
+
+  defineMenuCard();
+  revealDownloadsNavCards();
+
+  initDialogs({ dialogs: DOWNLOAD_DIALOGS });
+  initPlatformDownloads();
+})();

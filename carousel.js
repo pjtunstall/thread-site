@@ -19,6 +19,10 @@ const CAROUSEL_ITEMS = [
     src: "./assets/images/ants.jpg",
     alt: "By a Thread game screenshot featuring a maze with Minoan-style ant frescoes",
   },
+  {
+    src: "./assets/images/marble.jpg",
+    alt: "By a Thread game screenshot featuring a maze with black marble walls under a starry sky",
+  },
 ];
 
 export function initCarousel() {
