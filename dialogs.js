@@ -25,7 +25,7 @@ const DEFAULT_DIALOGS = [
       },
       {
         type: "paragraph",
-        text: "It's really a multiplayer game. Maybe one day, I'll add AI opponents. For now, as a single player, just try to escape the maze in time.",
+        text: "It's really a multiplayer game. The server is hosted in Germany, so the lag might be unacceptable if you're outside Europe. Maybe one day, I'll add AI opponents. For now, as a single player, just try to escape the maze in time.",
       },
     ],
   },
@@ -39,7 +39,7 @@ const DEFAULT_DIALOGS = [
       },
       {
         type: "paragraph",
-        text: "The first person to enter their name is the host. They get to pick a level and can start the game when everyone is ready.",
+        text: "The first person to enter their name and join the chat lobby is the host. They start the game when everyone is ready.",
       },
       {
         type: "paragraph",
@@ -53,7 +53,15 @@ const DEFAULT_DIALOGS = [
     body: [
       {
         type: "paragraph",
-        text: "Add contact method (email, social, form) here.",
+        parts: [
+          "You can get in touch via ",
+          {
+            type: "link",
+            href: "https://pjtunstall.itch.io/by-a-thread",
+            text: "itch.io",
+          },
+          ".",
+        ],
       },
     ],
   },
@@ -63,11 +71,14 @@ function getDialogTargetForTrigger(trigger) {
   const id = trigger.getAttribute("data-open-dialog");
   const dialog = id ? document.getElementById(id) : null;
   if (!dialog || !(dialog instanceof HTMLDialogElement)) {
-    console.error(`${LOG_PREFIX} Trigger references a missing or non-dialog target.`, {
-      trigger,
-      targetId: id,
-      target: dialog,
-    });
+    console.error(
+      `${LOG_PREFIX} Trigger references a missing or non-dialog target.`,
+      {
+        trigger,
+        targetId: id,
+        target: dialog,
+      },
+    );
     return null;
   }
   return dialog;
@@ -162,7 +173,9 @@ function renderDialogs(dialogDefs) {
 
 export function initDialogs(options) {
   const config = options || {};
-  const dialogDefs = Array.isArray(config.dialogs) ? config.dialogs : DEFAULT_DIALOGS;
+  const dialogDefs = Array.isArray(config.dialogs)
+    ? config.dialogs
+    : DEFAULT_DIALOGS;
   renderDialogs(dialogDefs);
 
   const dialogTriggers = document.querySelectorAll("[data-open-dialog]");
