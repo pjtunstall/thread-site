@@ -142,151 +142,21 @@
       </p>
     </main>
 
-    <dialog
-      id="dlg-download-windows"
-      data-dialog
-      aria-labelledby="dlg-download-windows-title"
-    >
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-download-windows-title" class="dialog__title">Windows</h2>
-          <p class="dialog__body">
-            The Windows build has started downloading. When it finishes, extract
-            the archive and launch <code>ByAThread.exe</code>. If SmartScreen
-            warns you, choose More info and then Run anyway.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              <span class="btn__label">Close</span>
-            </button>
+    <template id="dialog-template">
+      <dialog data-dialog>
+        <div class="dialog__panel">
+          <div class="dialog__inner">
+            <h2 class="dialog__title" data-dialog-title></h2>
+            <div data-dialog-body></div>
+            <div class="dialog__footer">
+              <button type="button" class="dialog__close" data-dialog-close>
+                <span class="btn__label">Close</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </dialog>
-
-    <dialog
-      id="dlg-download-macos-apple-silicon"
-      data-dialog
-      aria-labelledby="dlg-download-macos-apple-silicon-title"
-    >
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-download-macos-apple-silicon-title" class="dialog__title">
-            macOS Apple Silicon
-          </h2>
-          <p class="dialog__body">
-            The Apple Silicon build is downloading. Open the downloaded
-            <code>.dmg</code>, drag the game into Applications, then launch it.
-            If macOS blocks it, open System Settings, Privacy and Security, and
-            allow the app.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              <span class="btn__label">Close</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
-
-    <dialog
-      id="dlg-download-macos-intel"
-      data-dialog
-      aria-labelledby="dlg-download-macos-intel-title"
-    >
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-download-macos-intel-title" class="dialog__title">
-            macOS Intel
-          </h2>
-          <p class="dialog__body">
-            The macOS Intel build is downloading. Open the downloaded
-            <code>.dmg</code>, copy the game to Applications, and start it from
-            there. If Gatekeeper blocks it, allow it from Privacy and Security.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              <span class="btn__label">Close</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
-
-    <dialog
-      id="dlg-download-linux-appimage"
-      data-dialog
-      aria-labelledby="dlg-download-linux-appimage-title"
-    >
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-download-linux-appimage-title" class="dialog__title">
-            Linux AppImage
-          </h2>
-          <p class="dialog__body">
-            The AppImage download has started. Mark it executable before
-            launching:
-            <code>chmod +x ByAThread.AppImage</code>. Then run it directly from
-            your file manager or terminal.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              <span class="btn__label">Close</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
-
-    <dialog
-      id="dlg-download-linux-deb"
-      data-dialog
-      aria-labelledby="dlg-download-linux-deb-title"
-    >
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-download-linux-deb-title" class="dialog__title">
-            Linux .deb
-          </h2>
-          <p class="dialog__body">
-            The <code>.deb</code> package is downloading. Install with your
-            package manager or run:
-            <code>sudo apt install ./by-a-thread.deb</code>, then launch the
-            game from your app menu.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              <span class="btn__label">Close</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
-
-    <dialog
-      id="dlg-download-linux-rpm"
-      data-dialog
-      aria-labelledby="dlg-download-linux-rpm-title"
-    >
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-download-linux-rpm-title" class="dialog__title">
-            Linux .rpm
-          </h2>
-          <p class="dialog__body">
-            The <code>.rpm</code> package is downloading. Install it with your
-            distro tools, for example:
-            <code>sudo dnf install ./by-a-thread.rpm</code>, and launch from
-            your applications menu.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              <span class="btn__label">Close</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
+      </dialog>
+    </template>
 
     <template id="menu-card-template">
       <span

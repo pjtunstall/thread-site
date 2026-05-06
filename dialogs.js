@@ -1,5 +1,62 @@
 const LOG_PREFIX = "[site-init]";
 
+const DEFAULT_DIALOGS = [
+  {
+    id: "dlg-about",
+    title: "About",
+    body: [
+      {
+        type: "paragraph",
+        text: "By a Thread is a battle-royale-style first-person shooter for up to ten players. It's available as a desktop app for Windows, macOS, and Linux. You'll need internet access to play.",
+      },
+      {
+        type: "paragraph",
+        parts: [
+          "I made it as coursework at a coding bootcamp. You can read more about it on ",
+          {
+            type: "link",
+            href: "https://github.com/pjtunstall/by-a-thread",
+            text: "GitHub",
+          },
+          ".",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "It's really a multiplayer game. Maybe one day, I'll add AI opponents. For now, as a single player, just try to escape the maze in time.",
+      },
+    ],
+  },
+  {
+    id: "dlg-instructions",
+    title: "Instructions",
+    body: [
+      {
+        type: "paragraph",
+        text: "Launch the app and press ENTER. One player picks Create Game and shares the access code. The others choose Join Game.",
+      },
+      {
+        type: "paragraph",
+        text: "The first person to enter their name is the host. They get to pick a level and can start the game when everyone is ready.",
+      },
+      {
+        type: "paragraph",
+        text: "W, A, S, D keys to glide, ARROW keys to turn, SPACE to fire. At any time, you can press ESCAPE to exit.",
+      },
+    ],
+  },
+  {
+    id: "dlg-contact",
+    title: "Contact",
+    body: [
+      {
+        type: "paragraph",
+        text: "Add contact method (email, social, form) here.",
+      },
+    ],
+  },
+];
+
 function getDialogTargetForTrigger(trigger) {
   const id = trigger.getAttribute("data-open-dialog");
   const dialog = id ? document.getElementById(id) : null;
@@ -14,7 +71,95 @@ function getDialogTargetForTrigger(trigger) {
   return dialog;
 }
 
-export function initDialogs() {
+function getDialogTemplate() {
+  const template = document.getElementById("dialog-template");
+  if (!(template instanceof HTMLTemplateElement)) {
+    console.error(`${LOG_PREFIX} Missing required dialog template.`);
+    return null;
+  }
+  return template;
+}
+
+function appendPart(parent, part) {
+  if (typeof part === "string") {
+    parent.append(document.createTextNode(part));
+    return;
+  }
+
+  if (part.type === "code") {
+    const code = document.createElement("code");
+    code.textContent = part.text;
+    parent.append(code);
+    return;
+  }
+
+  if (part.type === "link") {
+    const link = document.createElement("a");
+    link.className = "dialog__link";
+    link.href = part.href;
+    link.textContent = part.text;
+    parent.append(link);
+    return;
+  }
+}
+
+function renderParagraph(bodyContainer, paragraph) {
+  const p = document.createElement("p");
+  p.className = "dialog__body";
+
+  if (paragraph.text) {
+    p.textContent = paragraph.text;
+  } else if (paragraph.parts) {
+    paragraph.parts.forEach(function (part) {
+      appendPart(p, part);
+    });
+  }
+
+  bodyContainer.append(p);
+}
+
+function renderDialogs(dialogDefs) {
+  const template = getDialogTemplate();
+  if (!template) return;
+
+  dialogDefs.forEach(function (dialogDef) {
+    const existing = document.getElementById(dialogDef.id);
+    if (existing) existing.remove();
+
+    const fragment = template.content.cloneNode(true);
+    const dialog = fragment.querySelector("dialog[data-dialog]");
+    const title = fragment.querySelector("[data-dialog-title]");
+    const body = fragment.querySelector("[data-dialog-body]");
+
+    if (
+      !(dialog instanceof HTMLDialogElement) ||
+      !(title instanceof HTMLElement) ||
+      !(body instanceof HTMLElement)
+    ) {
+      console.error(`${LOG_PREFIX} Dialog template has unexpected structure.`);
+      return;
+    }
+
+    const titleId = `${dialogDef.id}-title`;
+    dialog.id = dialogDef.id;
+    dialog.setAttribute("aria-labelledby", titleId);
+    title.id = titleId;
+    title.textContent = dialogDef.title;
+
+    dialogDef.body.forEach(function (paragraph, idx) {
+      if (idx > 0) body.append(document.createElement("br"));
+      renderParagraph(body, paragraph);
+    });
+
+    document.body.append(fragment);
+  });
+}
+
+export function initDialogs(options) {
+  const config = options || {};
+  const dialogDefs = Array.isArray(config.dialogs) ? config.dialogs : DEFAULT_DIALOGS;
+  renderDialogs(dialogDefs);
+
   const dialogTriggers = document.querySelectorAll("[data-open-dialog]");
   const dialogs = document.querySelectorAll("dialog[data-dialog]");
 

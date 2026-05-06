@@ -239,86 +239,21 @@
       </p>
     </main>
 
-    <dialog id="dlg-about" data-dialog aria-labelledby="dlg-about-title">
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-about-title" class="dialog__title">About</h2>
-          <p class="dialog__body">
-            By a Thread is a battle-royale-style first-person shooter for up to
-            ten players. It's available as a desktop app for Windows, macOS, and
-            Linux. You'll need internet access to play.
-          </p>
-          <br />
-          <p class="dialog__body">
-            I made it as coursework at a coding bootcamp. You can read more
-            about it on
-            <a
-              class="dialog__link"
-              href="https://github.com/pjtunstall/by-a-thread"
-              >GitHub</a
-            >.
-          </p>
-          <br />
-          <p class="dialog__body">
-            It's really a multiplayer game. Maybe one day, I'll add AI
-            opponents. For now, as a single player, just try to escape the maze
-            in time.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              <span class="btn__label">Close</span>
-            </button>
+    <template id="dialog-template">
+      <dialog data-dialog>
+        <div class="dialog__panel">
+          <div class="dialog__inner">
+            <h2 class="dialog__title" data-dialog-title></h2>
+            <div data-dialog-body></div>
+            <div class="dialog__footer">
+              <button type="button" class="dialog__close" data-dialog-close>
+                <span class="btn__label">Close</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </dialog>
-
-    <dialog
-      id="dlg-instructions"
-      data-dialog
-      aria-labelledby="dlg-instructions-title"
-    >
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-instructions-title" class="dialog__title">Instructions</h2>
-          <p class="dialog__body">
-            Launch the app and press ENTER. One player picks Create Game and
-            shares the access code. The others choose Join Game.
-          </p>
-          <br />
-          <p class="dialog__body">
-            The first person to enter their name is the host. They get to pick a
-            level and can start the game when everyone is ready.
-          </p>
-          <br />
-          <p class="dialog__body">
-            W, A, S, D keys to glide, ARROW keys to turn, SPACE to fire. At any
-            time, you can press ESCAPE to exit.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              <span class="btn__label">Close</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
-
-    <dialog id="dlg-contact" data-dialog aria-labelledby="dlg-contact-title">
-      <div class="dialog__panel">
-        <div class="dialog__inner">
-          <h2 id="dlg-contact-title" class="dialog__title">Contact</h2>
-          <p class="dialog__body">
-            Add contact method (email, social, form) here.
-          </p>
-          <div class="dialog__footer">
-            <button type="button" class="dialog__close" data-dialog-close>
-              <span class="btn__label">Close</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </dialog>
+      </dialog>
+    </template>
 
     <template id="menu-card-template">
       <span
