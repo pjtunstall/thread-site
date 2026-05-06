@@ -1,17 +1,19 @@
+import { MENU_CARD_TEMPLATE_HTML } from "./templates.js";
+
 export function defineMenuCard() {
   if (customElements.get("menu-card")) {
     return; // Already defined.
   }
 
   const LOG_PREFIX = "[menu-card]";
-  const templateCandidate = document.querySelector("#menu-card-template");
-
+  const templateId = "menu-card-template";
+  let templateCandidate = document.querySelector(`#${templateId}`);
   if (!(templateCandidate instanceof HTMLTemplateElement)) {
-    console.error(
-      `${LOG_PREFIX} Missing or invalid #menu-card-template; expected an HTMLTemplateElement.`,
-      templateCandidate,
-    );
-    return;
+    const template = document.createElement("template");
+    template.id = templateId;
+    template.innerHTML = MENU_CARD_TEMPLATE_HTML;
+    document.body.append(template);
+    templateCandidate = template;
   }
 
   const menuCardTemplate = templateCandidate;

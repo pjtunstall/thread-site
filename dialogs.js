@@ -1,3 +1,5 @@
+import { DIALOG_TEMPLATE_HTML } from "./templates.js";
+
 const LOG_PREFIX = "[site-init]";
 
 const DEFAULT_DIALOGS = [
@@ -72,10 +74,13 @@ function getDialogTargetForTrigger(trigger) {
 }
 
 function getDialogTemplate() {
-  const template = document.getElementById("dialog-template");
+  let template = document.getElementById("dialog-template");
   if (!(template instanceof HTMLTemplateElement)) {
-    console.error(`${LOG_PREFIX} Missing required dialog template.`);
-    return null;
+    const created = document.createElement("template");
+    created.id = "dialog-template";
+    created.innerHTML = DIALOG_TEMPLATE_HTML;
+    document.body.append(created);
+    template = created;
   }
   return template;
 }
