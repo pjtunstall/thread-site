@@ -4,6 +4,10 @@ const CAROUSEL_ITEMS = [
     alt: "By a Thread game screenshot featuring a maze with Minoan-style octopus frescoes",
   },
   {
+    src: "./assets/images/antikythera.jpg",
+    alt: "By a Thread game screenshot featuring the player avatar as a bronze sphere in the style of the Antikythera Mechanism",
+  },
+  {
     src: "./assets/images/griffin.webp",
     alt: "By a Thread game screencast featuring the Minoan griffin fresco from Knossos",
   },
