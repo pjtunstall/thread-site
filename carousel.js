@@ -85,15 +85,27 @@ export function initCarousel() {
       return;
     }
 
+    const isArrowKey = event.key === "ArrowLeft" || event.key === "ArrowRight";
+    if (!isArrowKey) {
+      return;
+    }
+
     if (isTypingTarget(event.target)) {
       return;
     }
 
+    const openDialogs = document.querySelectorAll("dialog[data-dialog][open]");
+    const openDialog = openDialogs[openDialogs.length - 1];
+    if (openDialog instanceof HTMLDialogElement) {
+      event.preventDefault();
+      openDialog.close();
+      return;
+    }
+
+    event.preventDefault();
     if (event.key === "ArrowLeft") {
-      event.preventDefault();
       moveBy(-1);
-    } else if (event.key === "ArrowRight") {
-      event.preventDefault();
+    } else {
       moveBy(1);
     }
   };
