@@ -19,7 +19,7 @@ const DEFAULT_DIALOGS = [
     body: [
       {
         type: "paragraph",
-        text: "By a Thread is a battle-royale-style first-person shooter for up to ten players. It's available as a desktop app for Windows, macOS, and Linux. You'll need internet access to play.",
+        text: "By a Thread is a battle-royale first-person shooter for up to ten players. It's available as a desktop app for Windows, macOS, and Linux. You'll need internet access to play.",
       },
       {
         type: "paragraph",
