@@ -89,8 +89,11 @@ export function initCarousel() {
       return;
     }
 
-    const isArrowKey = event.key === "ArrowLeft" || event.key === "ArrowRight";
-    if (!isArrowKey) {
+    const isDialogDismissKey =
+      event.key === "ArrowLeft" ||
+      event.key === "ArrowRight" ||
+      event.key === "Escape";
+    if (!isDialogDismissKey) {
       return;
     }
 
@@ -103,6 +106,10 @@ export function initCarousel() {
     if (openDialog instanceof HTMLDialogElement) {
       event.preventDefault();
       openDialog.close();
+      return;
+    }
+
+    if (event.key === "Escape") {
       return;
     }
 
