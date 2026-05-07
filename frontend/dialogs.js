@@ -63,15 +63,7 @@ const DEFAULT_DIALOGS = [
     body: [
       {
         type: "paragraph",
-        parts: [
-          "You can get in touch via ",
-          {
-            type: "link",
-            href: "https://pjtunstall.itch.io/by-a-thread",
-            text: "itch.io",
-          },
-          ". (Scroll to the bottom of the page to leave a comment.)",
-        ],
+        text: "Coming soon...",
       },
     ],
   },

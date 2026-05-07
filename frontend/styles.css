@@ -1,6 +1,6 @@
 /* --- Fonts --- */
 @font-face {
-  font-family: "Hellenica";
+  font-family: Hellenica;
   src: url("assets/fonts/PF Hellenica Serif Pro Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
@@ -8,11 +8,16 @@
 }
 
 @font-face {
-  font-family: "Hellenica";
+  font-family: Hellenica;
   src: url("assets/fonts/PF Hellenica Serif Pro Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+}
+
+@font-face {
+  font-family: Papyrus;
+  src: url("assets/fonts/papyrus.ttf") format("truetype");
 }
 
 /* --- Tokens --- */
@@ -27,8 +32,8 @@
   --color-ink-border-strong: #23150f4a;
   --color-primary-hover: #4f2e21;
   --color-transparent: #0000;
-  --font-display: "Hellenica", Georgia, serif;
-  --font-body: Georgia, serif;
+  --font-display: Hellenica;
+  --font-body: Papyrus;
   --button-text-nudge-y: 0.1em;
   --shadow-soft: 0 12px 40px #1a17141f;
   --radius-image: 6px;
