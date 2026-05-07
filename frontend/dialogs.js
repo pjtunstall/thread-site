@@ -4,6 +4,16 @@ const LOG_PREFIX = "[site-init]";
 
 const DEFAULT_DIALOGS = [
   {
+    id: "dlg-story",
+    title: "Story",
+    body: [
+      {
+        type: "paragraph",
+        text: "Every nine years, King Minos demands a terrible tribute, turning friend against friend. Only one can go free. But don't wait too long--you're never alone in a labyrinth.",
+      },
+    ],
+  },
+  {
     id: "dlg-about",
     title: "About",
     body: [

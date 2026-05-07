@@ -501,8 +501,8 @@ main {
   --flip-duration: 3200ms;
 }
 
-.downloads-nav .btn:nth-child(6) {
-  --flip-duration: calc(6400ms + var(--downloads-flip-extra-duration));
+:is(.hero-nav, .downloads-nav) .btn:nth-child(6) {
+  --flip-duration: 4800ms;
 }
 
 /* Theme toggle: label + icon reflect the mode you switch to (sun → light, moon → dark). */
@@ -648,7 +648,9 @@ dialog::backdrop {
   border: 1px solid var(--color-ink-faint);
   border-radius: var(--radius-image);
   background: var(--color-bg);
-  box-shadow: inset 0 0 0 1px var(--color-ink-faint), var(--shadow-soft);
+  box-shadow:
+    inset 0 0 0 1px var(--color-ink-faint),
+    var(--shadow-soft);
 }
 
 .dialog__inner {
