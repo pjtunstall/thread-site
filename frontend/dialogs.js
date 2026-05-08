@@ -24,7 +24,7 @@ const DEFAULT_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "I made it as coursework at a coding bootcamp. You can read more about it on ",
+          "I made it as coursework at a coding bootcamp. You can read more on ",
           {
             type: "link",
             href: "https://github.com/pjtunstall/by-a-thread",
