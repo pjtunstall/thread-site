@@ -1,3 +1,5 @@
+# Replace this with documentation showing what secrets to push with wrangler.
+
 # Copy this file to .dev.vars and fill in real values for local development.
 # The .dev.vars file is gitignored. wrangler dev loads it automatically.
 
