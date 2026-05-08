@@ -716,3 +716,128 @@ dialog::backdrop {
   outline: 2px solid var(--color-ink);
   outline-offset: 2px;
 }
+
+/* --- Contact form --- */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+  text-align: left;
+}
+
+.contact-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.contact-form__label {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+}
+
+.contact-form__control {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  padding: 0.55rem 0.7rem;
+  background: color-mix(in srgb, var(--color-bg) 92%, var(--color-ink));
+  border: 1px solid var(--color-ink-faint);
+  border-radius: var(--radius-btn);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.contact-form__control:focus {
+  border-color: var(--color-ink-border-strong);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--color-ink) 18%, var(--color-transparent));
+}
+
+.contact-form__control[aria-invalid="true"],
+.contact-form__control:invalid:not(:placeholder-shown) {
+  border-color: color-mix(in srgb, var(--color-ink) 60%, #c44);
+}
+
+textarea.contact-form__control {
+  resize: vertical;
+  min-height: 6em;
+  line-height: 1.45;
+}
+
+/* Honeypot: visually hidden but still focusable for accessibility tools that
+ignore display:none. Real users won't reach it; bots that auto-fill every
+input will trip it. */
+.contact-form__honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact-form__status {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--color-ink-muted);
+}
+
+.contact-form__status--pending {
+  color: var(--color-ink-muted);
+}
+
+.contact-form__status--success {
+  color: var(--color-ink);
+}
+
+.contact-form__status--error {
+  color: color-mix(in srgb, var(--color-ink) 55%, #c44);
+}
+
+.contact-form__submit {
+  align-self: flex-end;
+  padding: 0.55rem 1.25rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-bg);
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease,
+    opacity 0.2s ease;
+}
+
+.contact-form__submit:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.contact-form__submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.contact-form__submit:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.contact-form__submit:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}

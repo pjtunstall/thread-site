@@ -1,0 +1,253 @@
+/**
+ * Contact form Worker for by-a-thread.de.
+ *
+ * Accepts POST /api/contact with a JSON body, validates the input, verifies
+ * the Cloudflare Turnstile token, applies a per-IP rate limit, and forwards
+ * the message to Resend for delivery to the configured inbox.
+ *
+ * Bindings (set via wrangler.jsonc and `wrangler secret put`):
+ *   RATE_LIMITER       - rate-limit binding (declared in wrangler.jsonc)
+ *   TURNSTILE_SECRET   - Turnstile site secret (secret)
+ *   RESEND_API_KEY     - Resend API key (secret)
+ *   RESEND_FROM        - "Display Name <verified@sender.tld>" (var or secret)
+ *   CONTACT_TO         - destination inbox (secret)
+ */
+
+const ALLOWED_ORIGINS_EXACT = [
+  "https://by-a-thread.de",
+  "https://www.by-a-thread.de",
+];
+const ALLOWED_ORIGIN_PATTERNS = [
+  /^https?:\/\/localhost(:\d+)?$/,
+  /^https?:\/\/127\.0\.0\.1(:\d+)?$/,
+];
+
+const MAX_BODY_BYTES = 16 * 1024;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function corsHeaders(origin) {
+  if (!origin) return {};
+  const allowed =
+    ALLOWED_ORIGINS_EXACT.includes(origin) ||
+    ALLOWED_ORIGIN_PATTERNS.some((re) => re.test(origin));
+  if (!allowed) return {};
+  return {
+    "Access-Control-Allow-Origin": origin,
+    Vary: "Origin",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+  };
+}
+
+function jsonResponse(body, status, extraHeaders = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      ...extraHeaders,
+    },
+  });
+}
+
+async function readJsonBody(request) {
+  const declared = parseInt(
+    request.headers.get("Content-Length") || "0",
+    10,
+  );
+  if (declared > MAX_BODY_BYTES) {
+    return { error: "payload_too_large" };
+  }
+  const text = await request.text();
+  if (text.length > MAX_BODY_BYTES) {
+    return { error: "payload_too_large" };
+  }
+  try {
+    return { json: JSON.parse(text) };
+  } catch {
+    return { error: "invalid_json" };
+  }
+}
+
+function validateBody(body) {
+  if (typeof body !== "object" || body === null) return "invalid";
+
+  const honeypot =
+    typeof body.website === "string" ? body.website.trim() : "";
+  if (honeypot) return "invalid";
+
+  const email = typeof body.email === "string" ? body.email.trim() : "";
+  if (!EMAIL_REGEX.test(email) || email.length > 254) return "invalid";
+
+  const message =
+    typeof body.message === "string" ? body.message.trim() : "";
+  if (message.length < 10 || message.length > 4000) return "invalid";
+
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  if (name.length > 100) return "invalid";
+
+  const subject =
+    typeof body.subject === "string" ? body.subject.trim() : "";
+  if (subject.length > 200) return "invalid";
+
+  const token =
+    typeof body["cf-turnstile-response"] === "string"
+      ? body["cf-turnstile-response"]
+      : "";
+  if (!token) return "invalid";
+
+  return null;
+}
+
+async function verifyTurnstile(secret, token, remoteIp) {
+  const form = new FormData();
+  form.append("secret", secret);
+  form.append("response", token);
+  if (remoteIp) form.append("remoteip", remoteIp);
+
+  try {
+    const res = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      { method: "POST", body: form },
+    );
+    if (!res.ok) {
+      console.error("turnstile siteverify non-2xx", res.status);
+      return false;
+    }
+    const data = await res.json();
+    return Boolean(data.success);
+  } catch (err) {
+    console.error("turnstile siteverify threw", err);
+    return false;
+  }
+}
+
+function buildEmailPayload(env, body) {
+  const from = env.RESEND_FROM || "Contact <onboarding@resend.dev>";
+  const subject = body.subject
+    ? `[Site] ${body.subject}`
+    : "[Site] New contact form message";
+  const text = [
+    `From: ${body.name || "(anonymous)"} <${body.email}>`,
+    body.subject ? `Subject: ${body.subject}` : null,
+    "",
+    body.message,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return {
+    from,
+    to: [env.CONTACT_TO],
+    reply_to: body.email,
+    subject,
+    text,
+  };
+}
+
+async function sendViaResend(env, payload) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    console.error("resend send failed", res.status, detail);
+    throw new Error(`resend_${res.status}`);
+  }
+}
+
+export default {
+  async fetch(request, env) {
+    const origin = request.headers.get("Origin");
+    const cors = corsHeaders(origin);
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: cors });
+    }
+
+    const url = new URL(request.url);
+    if (url.pathname !== "/api/contact") {
+      return jsonResponse({ ok: false, error: "not_found" }, 404, cors);
+    }
+    if (request.method !== "POST") {
+      return jsonResponse(
+        { ok: false, error: "method_not_allowed" },
+        405,
+        { ...cors, Allow: "POST, OPTIONS" },
+      );
+    }
+
+    const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+
+    if (env.RATE_LIMITER) {
+      try {
+        const { success } = await env.RATE_LIMITER.limit({ key: ip });
+        if (!success) {
+          return jsonResponse(
+            { ok: false, error: "rate_limited" },
+            429,
+            cors,
+          );
+        }
+      } catch (err) {
+        // If the binding is unavailable we fall through; Turnstile and the
+        // body validation still gate the request.
+        console.error("rate limit check threw", err);
+      }
+    }
+
+    const { json: body, error: parseErr } = await readJsonBody(request);
+    if (parseErr) {
+      return jsonResponse({ ok: false, error: parseErr }, 400, cors);
+    }
+
+    const validationErr = validateBody(body);
+    if (validationErr) {
+      return jsonResponse({ ok: false, error: validationErr }, 400, cors);
+    }
+
+    if (!env.TURNSTILE_SECRET) {
+      console.error("missing TURNSTILE_SECRET binding");
+      return jsonResponse(
+        { ok: false, error: "server_misconfigured" },
+        500,
+        cors,
+      );
+    }
+
+    const turnstileOk = await verifyTurnstile(
+      env.TURNSTILE_SECRET,
+      body["cf-turnstile-response"],
+      ip,
+    );
+    if (!turnstileOk) {
+      return jsonResponse(
+        { ok: false, error: "turnstile_failed" },
+        403,
+        cors,
+      );
+    }
+
+    if (!env.RESEND_API_KEY || !env.CONTACT_TO) {
+      console.error("missing RESEND_API_KEY or CONTACT_TO binding");
+      return jsonResponse(
+        { ok: false, error: "server_misconfigured" },
+        500,
+        cors,
+      );
+    }
+
+    try {
+      await sendViaResend(env, buildEmailPayload(env, body));
+    } catch {
+      return jsonResponse({ ok: false, error: "send_failed" }, 502, cors);
+    }
+
+    return jsonResponse({ ok: true }, 200, cors);
+  },
+};
