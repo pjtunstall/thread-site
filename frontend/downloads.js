@@ -172,6 +172,6 @@ function revealDownloadsNavCards() {
   defineMenuCard();
   revealDownloadsNavCards();
 
-  initDialogs({ dialogs: DOWNLOAD_DIALOGS });
+  initDialogs({ dialogs: DOWNLOAD_DIALOGS, noBackdropClose: true });
   initPlatformDownloads();
 })();

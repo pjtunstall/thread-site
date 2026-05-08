@@ -222,6 +222,10 @@ export function initDialogs(options) {
   const dialogDefs = Array.isArray(config.dialogs)
     ? config.dialogs
     : DEFAULT_DIALOGS;
+  // When true, none of the dialogs in this batch are closable via a
+  // backdrop click. Useful for groups of dialogs whose content the user
+  // may want to read carefully (e.g. post-download install instructions).
+  const blockBackdropCloseAll = config.noBackdropClose === true;
   renderDialogs(dialogDefs);
 
   const dialogTriggers = document.querySelectorAll("[data-open-dialog]");
@@ -243,11 +247,15 @@ export function initDialogs(options) {
   });
 
   dialogs.forEach(function (dialog) {
-    // Backdrop-click-to-close is convenient for prose dialogs but risky for
-    // dialogs with forms: an accidental misclick would discard partially
-    // typed input. Only wire it where there's no form. ESC and the explicit
-    // Close button still work in either case.
-    if (!dialog.querySelector("form")) {
+    // Backdrop-click-to-close is convenient for prose dialogs but risky
+    // when content matters: forms can lose partially typed input, and
+    // dialogs flagged via noBackdropClose contain content the user may
+    // be mid-reading. ESC and the explicit Close button still work in
+    // every case.
+    const allowBackdropClose =
+      !blockBackdropCloseAll && !dialog.querySelector("form");
+
+    if (allowBackdropClose) {
       dialog.addEventListener("click", function (event) {
         if (event.target === dialog) dialog.close();
       });
