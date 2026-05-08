@@ -3,13 +3,21 @@ import { initDialogs } from "./dialogs.js";
 import { defineMenuCard } from "./menu-card.js";
 import { applyStoredThemePreference } from "./theme.js";
 
+// Base URL that always resolves to the latest published GitHub Release of
+// the game. Each platform key maps to the asset filename uploaded by the
+// game repo's release workflow; together they form the full download URL.
+// New releases on GitHub are picked up automatically with no website
+// redeploy required.
+const RELEASE_BASE =
+  "https://github.com/pjtunstall/by-a-thread/releases/latest/download";
+
 const DOWNLOAD_FILES = {
-  windows: "by-a-thread-windows-placeholder.txt",
-  "macos-apple-silicon": "by-a-thread-macos-apple-silicon-placeholder.txt",
-  "macos-intel": "by-a-thread-macos-intel-placeholder.txt",
-  "linux-appimage": "by-a-thread-linux-appimage-placeholder.txt",
-  "linux-deb": "by-a-thread-linux-deb-placeholder.txt",
-  "linux-rpm": "by-a-thread-linux-rpm-placeholder.txt",
+  windows: "ByAThread-windows.zip",
+  "macos-apple-silicon": "ByAThread-macos-silicon.zip",
+  "macos-intel": "ByAThread-macos-intel.zip",
+  "linux-appimage": "ByAThread-linux.AppImage",
+  "linux-deb": "ByAThread-linux.deb",
+  "linux-rpm": "ByAThread-linux.rpm",
 };
 
 const DOWNLOAD_DIALOGS = [
@@ -34,9 +42,11 @@ const DOWNLOAD_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "The Apple Silicon build is downloading. Open the downloaded ",
-          { type: "code", text: ".dmg" },
-          ", drag the game into Applications, then launch it. If macOS blocks it, open System Settings, Privacy and Security, and allow the app.",
+          "The Apple Silicon build is downloading. When it finishes, double-click the ",
+          { type: "code", text: ".zip" },
+          " to extract it, drag ",
+          { type: "code", text: "ByAThread.app" },
+          " into Applications, then launch it. If macOS blocks it, open System Settings, Privacy and Security, and allow the app.",
         ],
       },
     ],
@@ -48,9 +58,11 @@ const DOWNLOAD_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "The macOS Intel build is downloading. Open the downloaded ",
-          { type: "code", text: ".dmg" },
-          ", copy the game to Applications, and start it from there. If Gatekeeper blocks it, allow it from Privacy and Security.",
+          "The macOS Intel build is downloading. When it finishes, double-click the ",
+          { type: "code", text: ".zip" },
+          " to extract it, drag ",
+          { type: "code", text: "ByAThread.app" },
+          " into Applications, then launch it. If Gatekeeper blocks it, allow it from Privacy and Security.",
         ],
       },
     ],
@@ -103,28 +115,21 @@ const DOWNLOAD_DIALOGS = [
   },
 ];
 
-function triggerPlaceholderDownload(platform) {
+function triggerDownload(platform) {
   const fileName = DOWNLOAD_FILES[platform];
   if (!fileName) {
-    console.warn(`[downloads] Missing placeholder file name for ${platform}.`);
+    console.warn(`[downloads] No file mapped for ${platform}.`);
     return;
   }
 
-  // Placeholder behavior until real hosted files are wired in.
-  console.info(`[downloads] Placeholder download triggered: ${platform}`);
-
-  const fileContent = `Placeholder download for ${platform}.
-Replace this logic in downloads.js with the real build artifact URL.`;
-  const blob = new Blob([fileContent], { type: "text/plain" });
-  const blobUrl = URL.createObjectURL(blob);
+  // GitHub serves release assets with Content-Disposition: attachment, so
+  // navigating to the URL produces a download rather than a page nav.
   const anchor = document.createElement("a");
-  anchor.href = blobUrl;
-  anchor.download = fileName;
+  anchor.href = `${RELEASE_BASE}/${fileName}`;
   anchor.style.display = "none";
   document.body.append(anchor);
   anchor.click();
   anchor.remove();
-  URL.revokeObjectURL(blobUrl);
 }
 
 function initPlatformDownloads() {
@@ -143,7 +148,7 @@ function initPlatformDownloads() {
 
     button.addEventListener("click", function () {
       if (!platform) return;
-      triggerPlaceholderDownload(platform);
+      triggerDownload(platform);
       if (dialog) dialog.showModal();
     });
   });
