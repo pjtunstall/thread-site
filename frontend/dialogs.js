@@ -1,5 +1,5 @@
+import { getContactEndpoint, getTurnstileSitekey } from "./config.js";
 import { DIALOG_TEMPLATE_HTML } from "./templates.js";
-import { getTurnstileSitekey, getContactEndpoint } from "./config.js";
 
 const LOG_PREFIX = "[site-init]";
 
@@ -294,15 +294,22 @@ function renderForm(bodyContainer, formDef) {
 
   renderHoneypot(form);
 
-  const turnstileMount = document.createElement("div");
-  turnstileMount.className = "contact-form__turnstile";
-  form.append(turnstileMount);
-
   const statusEl = document.createElement("p");
   statusEl.className = "contact-form__status";
   statusEl.setAttribute("role", "status");
   statusEl.setAttribute("aria-live", "polite");
   form.append(statusEl);
+
+  // Bottom row: Turnstile on the left, action buttons on the right.
+  const actions = document.createElement("div");
+  actions.className = "contact-form__actions";
+
+  const turnstileMount = document.createElement("div");
+  turnstileMount.className = "contact-form__turnstile";
+  actions.append(turnstileMount);
+
+  const buttons = document.createElement("div");
+  buttons.className = "contact-form__buttons";
 
   const submit = document.createElement("button");
   submit.type = "submit";
@@ -311,7 +318,29 @@ function renderForm(bodyContainer, formDef) {
   submitLabel.className = "btn__label";
   submitLabel.textContent = formDef.submitLabel || "Send";
   submit.append(submitLabel);
-  form.append(submit);
+  buttons.append(submit);
+
+  // If this form lives inside a dialog, take ownership of the dialog's Close
+  // button so it ends up on the same row as Send. The template-supplied
+  // footer is removed to avoid a duplicate.
+  const owningDialog = bodyContainer.closest("dialog");
+  if (owningDialog) {
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "dialog__close contact-form__close";
+    close.setAttribute("data-dialog-close", "");
+    const closeLabel = document.createElement("span");
+    closeLabel.className = "btn__label";
+    closeLabel.textContent = "Close";
+    close.append(closeLabel);
+    buttons.append(close);
+
+    const existingFooter = owningDialog.querySelector(".dialog__footer");
+    if (existingFooter) existingFooter.remove();
+  }
+
+  actions.append(buttons);
+  form.append(actions);
 
   bodyContainer.append(form);
 
@@ -346,11 +375,7 @@ function renderForm(bodyContainer, formDef) {
     };
 
     if (!data.email || !data.message) {
-      setStatus(
-        statusEl,
-        "error",
-        "Email and message are both required.",
-      );
+      setStatus(statusEl, "error", "Email and message are both required.");
       return;
     }
     if (data.message.length < 10) {
@@ -365,7 +390,7 @@ function renderForm(bodyContainer, formDef) {
       setStatus(
         statusEl,
         "error",
-        "Please complete the verification challenge.",
+        "Verification didn't complete. Please wait a moment and try again, or reload the page.",
       );
       return;
     }
@@ -398,11 +423,7 @@ function renderForm(bodyContainer, formDef) {
           form.reset();
           if (widget) widget.reset();
           turnstileToken = null;
-          setStatus(
-            statusEl,
-            "success",
-            "Thanks! Your message is on its way.",
-          );
+          setStatus(statusEl, "success", "Thanks! Your message is on its way.");
         } else {
           const code = result.json && result.json.error;
           let message = "Something went wrong. Please try again.";
