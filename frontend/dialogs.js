@@ -1,5 +1,5 @@
 import { getContactEndpoint } from "./config.js";
-import { renderForm } from "./contactForm.js";
+import { renderForm } from "./contact.js";
 import { DIALOG_TEMPLATE_HTML } from "./templates.js";
 
 const LOG_PREFIX = "[site-init]";
