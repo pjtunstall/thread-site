@@ -428,7 +428,8 @@ function renderForm(bodyContainer, formDef) {
           const code = result.json && result.json.error;
           let message = "Something went wrong. Please try again.";
           if (code === "rate_limited") {
-            message = "Too many messages from this address. Try again later.";
+            message =
+              "You've sent a couple of messages already. Please wait a minute and try again.";
           } else if (code === "turnstile_failed") {
             message = "Verification failed. Please try the challenge again.";
           } else if (code === "invalid") {
