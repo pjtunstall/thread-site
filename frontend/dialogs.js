@@ -523,9 +523,15 @@ export function initDialogs(options) {
   });
 
   dialogs.forEach(function (dialog) {
-    dialog.addEventListener("click", function (event) {
-      if (event.target === dialog) dialog.close();
-    });
+    // Backdrop-click-to-close is convenient for prose dialogs but risky for
+    // dialogs with forms: an accidental misclick would discard partially
+    // typed input. Only wire it where there's no form. ESC and the explicit
+    // Close button still work in either case.
+    if (!dialog.querySelector("form")) {
+      dialog.addEventListener("click", function (event) {
+        if (event.target === dialog) dialog.close();
+      });
+    }
 
     dialog.querySelectorAll("[data-dialog-close]").forEach(function (el) {
       el.addEventListener("click", function () {
