@@ -10,9 +10,11 @@
   },
 
   // Per-IP rate limit binding. namespace_id is local to this Worker (any
-  // small integer); period is in seconds (10 or 60). 5 requests/minute is
-  // generous for legitimate users and tight enough to bound abuse, with
-  // Turnstile already gating bots.
+  // small integer); period is in seconds (10 or 60). 2 requests/minute is
+  // sized for a contact form: legitimate visitors send one message (maybe
+  // two if they spot a typo), while bots and abusers are capped tightly.
+  // Turnstile + honeypot are the primary spam gates; this is defence in
+  // depth.
   "unsafe": {
     "bindings": [
       {
@@ -20,7 +22,7 @@
         "type": "ratelimit",
         "namespace_id": "1001",
         "simple": {
-          "limit": 5,
+          "limit": 2,
           "period": 60,
         },
       },
