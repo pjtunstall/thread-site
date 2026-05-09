@@ -1,5 +1,5 @@
 import { initDialogs } from "./dialogs.js";
-import { MazeBackground } from "./maze-background.js";
+import { MazeBackground } from "./maze.js";
 import { defineMenuCard } from "./menu-card.js";
 import { applyStoredThemePreference } from "./theme.js";
 

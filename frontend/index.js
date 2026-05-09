@@ -1,4 +1,4 @@
-import { MazeBackground } from "./maze-background.js";
+import { MazeBackground } from "./maze.js";
 import { initDialogs } from "./dialogs.js";
 import { defineMenuCard } from "./menu-card.js";
 import { initMenu } from "./menu.js";
