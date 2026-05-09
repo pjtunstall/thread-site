@@ -5,6 +5,7 @@ export class MazeBackground {
     this.cellsPerFrame = 8;
     this.resizeDebounceMs = 220;
     this.carveCells = [];
+    this.iterativeStartIndex = 0;
     this.nextCarveIndex = 0;
     this.lastStepAt = 0;
     this.frameRequest = null;
@@ -44,10 +45,13 @@ export class MazeBackground {
     }
 
     this.resizeCanvas();
-    this.carveCells = this.buildCarveCells();
-    this.nextCarveIndex = 0;
+    const carvePlan = this.buildCarveCells();
+    this.carveCells = carvePlan.cells;
+    this.iterativeStartIndex = carvePlan.iterativeStartIndex;
+    this.nextCarveIndex = this.iterativeStartIndex;
     this.lastStepAt = 0;
     this.paintFullWallLayer();
+    this.drawInstantCarves(0, this.iterativeStartIndex);
 
     if (this.reduceMotionQuery.matches) {
       this.drawAllCarves();
@@ -110,10 +114,12 @@ export class MazeBackground {
     const algorithms = [
       this.buildCarveCellsDepthFirst.bind(this),
       this.buildCarveCellsWilson.bind(this),
+      this.buildCarveCellsKruskal.bind(this),
     ];
     return algorithms[Math.floor(Math.random() * algorithms.length)];
   }
 
+  // Depth-first backtracking: walk forward randomly until stuck, then backtrack.
   buildCarveCellsDepthFirst({ cellCols, cellRows }) {
     const visited = Array.from({ length: cellRows }, () =>
       Array.from({ length: cellCols }, () => false),
@@ -149,9 +155,10 @@ export class MazeBackground {
       stack.push({ x: nextNeighbor.x, y: nextNeighbor.y });
     }
 
-    return carveOrder;
+    return { cells: carveOrder, iterativeStartIndex: 0 };
   }
 
+  // Wilson's algorithm: add loop-erased random walks from unvisited cells.
   buildCarveCellsWilson({ cellCols, cellRows }) {
     const allCells = [];
     for (let y = 0; y < cellRows; y += 1) {
@@ -210,7 +217,56 @@ export class MazeBackground {
       }
     }
 
-    return carveOrder;
+    return { cells: carveOrder, iterativeStartIndex: 0 };
+  }
+
+  // Kruskal's algorithm: treat rooms as disjoint sets and carve walls that join sets.
+  buildCarveCellsKruskal({ cellCols, cellRows }) {
+    const carveOrder = [];
+    const roomCount = cellCols * cellRows;
+    const parent = Array.from({ length: roomCount }, (_, i) => i);
+    const rank = Array.from({ length: roomCount }, () => 0);
+    const walls = [];
+
+    for (let y = 0; y < cellRows; y += 1) {
+      for (let x = 0; x < cellCols; x += 1) {
+        carveOrder.push(this.cellToGrid({ x, y }));
+
+        if (x + 1 < cellCols) {
+          walls.push({
+            from: { x, y },
+            to: { x: x + 1, y },
+          });
+        }
+        if (y + 1 < cellRows) {
+          walls.push({
+            from: { x, y },
+            to: { x, y: y + 1 },
+          });
+        }
+      }
+    }
+
+    this.shuffleInPlace(walls);
+
+    for (const wall of walls) {
+      const fromIndex = this.cellToIndex(wall.from, cellCols);
+      const toIndex = this.cellToIndex(wall.to, cellCols);
+      const fromRoot = this.findSetRoot(parent, fromIndex);
+      const toRoot = this.findSetRoot(parent, toIndex);
+
+      if (fromRoot === toRoot) {
+        continue;
+      }
+
+      this.unionSets(parent, rank, fromRoot, toRoot);
+      carveOrder.push(this.wallBetweenCells(wall.from, wall.to));
+    }
+
+    return {
+      cells: carveOrder,
+      iterativeStartIndex: roomCount,
+    };
   }
 
   pickRandomCell(cellCols, cellRows) {
@@ -224,8 +280,19 @@ export class MazeBackground {
     return items[Math.floor(Math.random() * items.length)];
   }
 
+  shuffleInPlace(items) {
+    for (let i = items.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [items[i], items[j]] = [items[j], items[i]];
+    }
+  }
+
   cellToGrid(cell) {
     return { x: cell.x * 2 + 1, y: cell.y * 2 + 1 };
+  }
+
+  cellToIndex(cell, cellCols) {
+    return cell.y * cellCols + cell.x;
   }
 
   cellKey(cell) {
@@ -260,6 +327,29 @@ export class MazeBackground {
     return neighbors;
   }
 
+  findSetRoot(parent, index) {
+    if (parent[index] !== index) {
+      parent[index] = this.findSetRoot(parent, parent[index]);
+    }
+    return parent[index];
+  }
+
+  unionSets(parent, rank, a, b) {
+    if (a === b) {
+      return;
+    }
+    if (rank[a] < rank[b]) {
+      parent[a] = b;
+      return;
+    }
+    if (rank[a] > rank[b]) {
+      parent[b] = a;
+      return;
+    }
+    parent[b] = a;
+    rank[a] += 1;
+  }
+
   drawCarveCell(cell) {
     this.context.fillRect(
       cell.x * this.cellSize,
@@ -267,6 +357,16 @@ export class MazeBackground {
       this.cellSize,
       this.cellSize,
     );
+  }
+
+  drawInstantCarves(startIndex, endIndex) {
+    if (endIndex <= startIndex) {
+      return;
+    }
+    this.context.fillStyle = this.getBackgroundFillColor();
+    for (let i = startIndex; i < endIndex; i += 1) {
+      this.drawCarveCell(this.carveCells[i]);
+    }
   }
 
   drawAllCarves() {
