@@ -510,6 +510,10 @@ main {
   --flip-duration: 4800ms;
 }
 
+:is(.hero-nav, .downloads-nav) .btn:nth-child(7) {
+  --flip-duration: 5200ms;
+}
+
 /* Theme toggle: label + icon reflect the mode you switch to (sun → light, moon → dark). */
 .theme-toggle-views {
   display: grid;

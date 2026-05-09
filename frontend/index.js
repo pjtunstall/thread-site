@@ -8,6 +8,12 @@ import { initCarousel } from "./carousel.js";
 (function () {
   const mazeBackground = new MazeBackground();
   mazeBackground.start();
+  const newMazeButton = document.querySelector("[data-new-maze]");
+  if (newMazeButton instanceof HTMLButtonElement) {
+    newMazeButton.addEventListener("click", function () {
+      mazeBackground.restart();
+    });
+  }
 
   defineMenuCard();
 
