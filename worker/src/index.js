@@ -24,12 +24,18 @@ const ALLOWED_ORIGIN_PATTERNS = [
 
 const MAX_BODY_BYTES = 16 * 1024;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CONTROL_CHARS_REGEX = /[\u0000-\u001F\u007F]/;
+
+function isAllowedOrigin(origin) {
+  return (
+    ALLOWED_ORIGINS_EXACT.includes(origin) ||
+    ALLOWED_ORIGIN_PATTERNS.some((re) => re.test(origin))
+  );
+}
 
 function corsHeaders(origin) {
   if (!origin) return {};
-  const allowed =
-    ALLOWED_ORIGINS_EXACT.includes(origin) ||
-    ALLOWED_ORIGIN_PATTERNS.some((re) => re.test(origin));
+  const allowed = isAllowedOrigin(origin);
   if (!allowed) return {};
   return {
     "Access-Control-Allow-Origin": origin,
@@ -77,18 +83,26 @@ function validateBody(body) {
   if (honeypot) return "invalid";
 
   const email = typeof body.email === "string" ? body.email.trim() : "";
-  if (!EMAIL_REGEX.test(email) || email.length > 254) return "invalid";
+  if (
+    !EMAIL_REGEX.test(email) ||
+    email.length > 254 ||
+    CONTROL_CHARS_REGEX.test(email)
+  ) {
+    return "invalid";
+  }
 
   const message =
     typeof body.message === "string" ? body.message.trim() : "";
   if (message.length < 10 || message.length > 4000) return "invalid";
 
   const name = typeof body.name === "string" ? body.name.trim() : "";
-  if (name.length > 100) return "invalid";
+  if (name.length > 100 || CONTROL_CHARS_REGEX.test(name)) return "invalid";
 
   const subject =
     typeof body.subject === "string" ? body.subject.trim() : "";
-  if (subject.length > 200) return "invalid";
+  if (subject.length > 200 || CONTROL_CHARS_REGEX.test(subject)) {
+    return "invalid";
+  }
 
   const token =
     typeof body["cf-turnstile-response"] === "string"
@@ -165,6 +179,11 @@ export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin");
     const cors = corsHeaders(origin);
+    const isContactRoute = new URL(request.url).pathname === "/api/contact";
+
+    if (isContactRoute && (!origin || !isAllowedOrigin(origin))) {
+      return jsonResponse({ ok: false, error: "origin_not_allowed" }, 403);
+    }
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: cors });
@@ -195,9 +214,12 @@ export default {
           );
         }
       } catch (err) {
-        // If the binding is unavailable we fall through; Turnstile and the
-        // body validation still gate the request.
         console.error("rate limit check threw", err);
+        return jsonResponse(
+          { ok: false, error: "rate_limit_unavailable" },
+          503,
+          cors,
+        );
       }
     }
 
