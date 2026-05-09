@@ -1,3 +1,8 @@
+import { buildCarveCellsDepthFirst } from "./algorithms/depth-first.js";
+import { buildCarveCellsKruskal } from "./algorithms/kruskal.js";
+import { buildCarveCellsPrim } from "./algorithms/prim.js";
+import { buildCarveCellsWilson } from "./algorithms/wilson.js";
+
 export class MazeBackground {
   constructor() {
     this.cellSize = 12;
@@ -107,200 +112,37 @@ export class MazeBackground {
     const cellCols = Math.floor((mazeCols - 1) / 2);
     const cellRows = Math.floor((mazeRows - 1) / 2);
     const generator = this.pickMazeGenerator();
-    return generator({ cellCols, cellRows });
+    return generator({
+      cellCols,
+      cellRows,
+      helpers: this.getGeneratorHelpers(),
+    });
   }
 
   pickMazeGenerator() {
     const algorithms = [
-      this.buildCarveCellsDepthFirst.bind(this),
-      this.buildCarveCellsWilson.bind(this),
-      this.buildCarveCellsKruskal.bind(this),
-      this.buildCarveCellsPrim.bind(this),
+      buildCarveCellsDepthFirst,
+      buildCarveCellsWilson,
+      buildCarveCellsKruskal,
+      buildCarveCellsPrim,
     ];
     return algorithms[Math.floor(Math.random() * algorithms.length)];
   }
 
-  // Depth-first backtracking: walk forward randomly until stuck, then backtrack.
-  buildCarveCellsDepthFirst({ cellCols, cellRows }) {
-    const visited = Array.from({ length: cellRows }, () =>
-      Array.from({ length: cellCols }, () => false),
-    );
-    const stack = [];
-    const carveOrder = [];
-    const startCell = this.pickRandomCell(cellCols, cellRows);
-
-    stack.push(startCell);
-    visited[startCell.y][startCell.x] = true;
-    carveOrder.push(this.cellToGrid(startCell));
-
-    while (stack.length > 0) {
-      const current = stack[stack.length - 1];
-      const unvisitedNeighbors = this.getCellNeighbors(
-        current,
-        cellCols,
-        cellRows,
-      ).filter((neighbor) => !visited[neighbor.y][neighbor.x]);
-
-      if (unvisitedNeighbors.length === 0) {
-        stack.pop();
-        continue;
-      }
-
-      const nextNeighbor = this.pickRandomFrom(unvisitedNeighbors);
-      visited[nextNeighbor.y][nextNeighbor.x] = true;
-
-      const wallBetween = this.wallBetweenCells(current, nextNeighbor);
-      carveOrder.push(this.cellToGrid(nextNeighbor));
-      carveOrder.push(wallBetween);
-
-      stack.push({ x: nextNeighbor.x, y: nextNeighbor.y });
-    }
-
-    return { cells: carveOrder, iterativeStartIndex: 0 };
-  }
-
-  // Wilson's algorithm: add loop-erased random walks from unvisited cells.
-  buildCarveCellsWilson({ cellCols, cellRows }) {
-    const allCells = [];
-    for (let y = 0; y < cellRows; y += 1) {
-      for (let x = 0; x < cellCols; x += 1) {
-        allCells.push({ x, y });
-      }
-    }
-
-    const finalized = new Set();
-    const carveOrder = [];
-    const initialCell = this.pickRandomFrom(allCells);
-
-    finalized.add(this.cellKey(initialCell));
-    carveOrder.push(this.cellToGrid(initialCell));
-
-    while (finalized.size < allCells.length) {
-      const candidates = allCells.filter(
-        (cell) => !finalized.has(this.cellKey(cell)),
-      );
-      const startOfWalk = this.pickRandomFrom(candidates);
-      const walk = [startOfWalk];
-      const walkPositions = new Map([[this.cellKey(startOfWalk), 0]]);
-      let current = startOfWalk;
-
-      while (!finalized.has(this.cellKey(current))) {
-        const next = this.pickRandomFrom(
-          this.getCellNeighbors(current, cellCols, cellRows),
-        );
-        const nextKey = this.cellKey(next);
-
-        if (walkPositions.has(nextKey)) {
-          const loopStart = walkPositions.get(nextKey);
-          walk.splice(loopStart + 1);
-          walkPositions.clear();
-          for (let i = 0; i < walk.length; i += 1) {
-            walkPositions.set(this.cellKey(walk[i]), i);
-          }
-        } else {
-          walk.push(next);
-          walkPositions.set(nextKey, walk.length - 1);
-        }
-
-        current = next;
-      }
-
-      for (let i = 0; i < walk.length - 1; i += 1) {
-        const from = walk[i];
-        const to = walk[i + 1];
-        const fromKey = this.cellKey(from);
-
-        if (!finalized.has(fromKey)) {
-          finalized.add(fromKey);
-          carveOrder.push(this.cellToGrid(from));
-        }
-        carveOrder.push(this.wallBetweenCells(from, to));
-      }
-    }
-
-    return { cells: carveOrder, iterativeStartIndex: 0 };
-  }
-
-  // Kruskal's algorithm: treat rooms as disjoint sets and carve walls that join sets.
-  buildCarveCellsKruskal({ cellCols, cellRows }) {
-    const carveOrder = [];
-    const roomCount = cellCols * cellRows;
-    const parent = Array.from({ length: roomCount }, (_, i) => i);
-    const rank = Array.from({ length: roomCount }, () => 0);
-    const walls = [];
-
-    for (let y = 0; y < cellRows; y += 1) {
-      for (let x = 0; x < cellCols; x += 1) {
-        carveOrder.push(this.cellToGrid({ x, y }));
-
-        if (x + 1 < cellCols) {
-          walls.push({
-            from: { x, y },
-            to: { x: x + 1, y },
-          });
-        }
-        if (y + 1 < cellRows) {
-          walls.push({
-            from: { x, y },
-            to: { x, y: y + 1 },
-          });
-        }
-      }
-    }
-
-    this.shuffleInPlace(walls);
-
-    for (const wall of walls) {
-      const fromIndex = this.cellToIndex(wall.from, cellCols);
-      const toIndex = this.cellToIndex(wall.to, cellCols);
-      const fromRoot = this.findSetRoot(parent, fromIndex);
-      const toRoot = this.findSetRoot(parent, toIndex);
-
-      if (fromRoot === toRoot) {
-        continue;
-      }
-
-      this.unionSets(parent, rank, fromRoot, toRoot);
-      carveOrder.push(this.wallBetweenCells(wall.from, wall.to));
-    }
-
+  getGeneratorHelpers() {
     return {
-      cells: carveOrder,
-      iterativeStartIndex: roomCount,
+      pickRandomCell: this.pickRandomCell.bind(this),
+      pickRandomFrom: this.pickRandomFrom.bind(this),
+      shuffleInPlace: this.shuffleInPlace.bind(this),
+      cellToGrid: this.cellToGrid.bind(this),
+      cellToIndex: this.cellToIndex.bind(this),
+      cellKey: this.cellKey.bind(this),
+      wallBetweenCells: this.wallBetweenCells.bind(this),
+      getCellNeighbors: this.getCellNeighbors.bind(this),
+      addFrontierWalls: this.addFrontierWalls.bind(this),
+      findSetRoot: this.findSetRoot.bind(this),
+      unionSets: this.unionSets.bind(this),
     };
-  }
-
-  // Prim's algorithm: grow a tree by carving random frontier walls outward.
-  buildCarveCellsPrim({ cellCols, cellRows }) {
-    const carveOrder = [];
-    const visited = new Set();
-    const frontier = new Map();
-    const initialCell = this.pickRandomCell(cellCols, cellRows);
-
-    visited.add(this.cellKey(initialCell));
-    carveOrder.push(this.cellToGrid(initialCell));
-    this.addFrontierWalls(initialCell, cellCols, cellRows, frontier, visited);
-
-    while (frontier.size > 0) {
-      const wallKey = this.pickRandomFrom(Array.from(frontier.keys()));
-      const wall = frontier.get(wallKey);
-      frontier.delete(wallKey);
-
-      const fromVisited = visited.has(this.cellKey(wall.from));
-      const toVisited = visited.has(this.cellKey(wall.to));
-
-      if (fromVisited === toVisited) {
-        continue;
-      }
-
-      const newCell = fromVisited ? wall.to : wall.from;
-      visited.add(this.cellKey(newCell));
-      carveOrder.push(this.wallBetweenCells(wall.from, wall.to));
-      carveOrder.push(this.cellToGrid(newCell));
-      this.addFrontierWalls(newCell, cellCols, cellRows, frontier, visited);
-    }
-
-    return { cells: carveOrder, iterativeStartIndex: 0 };
   }
 
   pickRandomCell(cellCols, cellRows) {
