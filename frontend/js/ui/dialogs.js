@@ -1,6 +1,6 @@
-import { getContactEndpoint } from "./config.js";
+import { getContactEndpoint } from "../shared/config.js";
+import { DIALOG_TEMPLATE_HTML } from "../shared/templates.js";
 import { renderForm } from "./contact.js";
-import { DIALOG_TEMPLATE_HTML } from "./templates.js";
 
 const LOG_PREFIX = "[site-init]";
 
@@ -65,7 +65,7 @@ const MAIN_MENU_DIALOGS = [
     body: [
       {
         type: "paragraph",
-        text: "Spotted a bug, want to say hello, or have a question? Drop me a line.",
+        text: "Bug reports, questions, offers of marriage? Drop me a line.",
       },
       {
         type: "form",

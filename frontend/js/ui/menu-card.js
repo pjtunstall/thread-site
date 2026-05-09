@@ -1,4 +1,4 @@
-import { MENU_CARD_TEMPLATE_HTML } from "./templates.js";
+import { MENU_CARD_TEMPLATE_HTML } from "../shared/templates.js";
 
 export function defineMenuCard() {
   if (customElements.get("menu-card")) {

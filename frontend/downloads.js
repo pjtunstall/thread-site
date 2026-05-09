@@ -1,7 +1,7 @@
-import { initDialogs } from "./dialogs.js";
-import { MazeBackground } from "./maze.js";
-import { defineMenuCard } from "./menu-card.js";
-import { applyStoredThemePreference } from "./theme.js";
+import { MazeBackground } from "./js/maze/maze.js";
+import { initDialogs } from "./js/ui/dialogs.js";
+import { defineMenuCard } from "./js/ui/menu-card.js";
+import { applyStoredThemePreference } from "./js/ui/theme.js";
 
 // Base URL that always resolves to the latest published GitHub Release of
 // the game. Each platform key maps to the asset filename uploaded by the
@@ -87,14 +87,14 @@ const DOWNLOAD_DIALOGS = [
   },
   {
     id: "dlg-download-linux-deb",
-    title: "Linux .deb",
+    title: "When the Linux .deb",
     body: [
       {
         type: "paragraph",
         parts: [
           "The ",
           { type: "code", text: ".deb" },
-          " package is downloading. Install with your package manager or run: ",
+          " package has finished downloading, install it with your package manager or run: ",
           { type: "code", text: "sudo apt install ./by-a-thread.deb" },
           ", then launch the game from your app menu.",
         ],
@@ -103,14 +103,14 @@ const DOWNLOAD_DIALOGS = [
   },
   {
     id: "dlg-download-linux-rpm",
-    title: "Linux .rpm",
+    title: "When the Linux .rpm",
     body: [
       {
         type: "paragraph",
         parts: [
           "The ",
           { type: "code", text: ".rpm" },
-          " package is downloading. Install it with your distro tools, for example: ",
+          " package has finished downloading, install it with your distro tools, for example: ",
           { type: "code", text: "sudo dnf install ./by-a-thread.rpm" },
           ", and launch from your applications menu.",
         ],

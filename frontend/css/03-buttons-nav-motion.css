@@ -138,6 +138,16 @@
   max-width: 42rem;
 }
 
+.downloads-note {
+  margin: 0.2rem 0 0;
+  font-size: 1.2rem;
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+  text-align: left;
+  opacity: 0;
+  animation: fade-in-up 0.9s ease 0.2s forwards;
+}
+
 .downloads-nav {
   --downloads-flip-extra-duration: 0ms;
   position: static;

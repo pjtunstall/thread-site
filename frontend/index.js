@@ -1,9 +1,9 @@
-import { MazeBackground } from "./maze.js";
-import { initDialogs } from "./dialogs.js";
-import { defineMenuCard } from "./menu-card.js";
-import { initMenu } from "./menu.js";
-import { initTheme } from "./theme.js";
-import { initCarousel } from "./carousel.js";
+import { MazeBackground } from "./js/maze/maze.js";
+import { initDialogs } from "./js/ui/dialogs.js";
+import { defineMenuCard } from "./js/ui/menu-card.js";
+import { initMenu } from "./js/ui/menu.js";
+import { initTheme } from "./js/ui/theme.js";
+import { initCarousel } from "./js/ui/carousel.js";
 
 (function () {
   const mazeBackground = new MazeBackground();

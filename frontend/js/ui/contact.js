@@ -1,4 +1,4 @@
-import { getTurnstileSitekey } from "./config.js";
+import { getTurnstileSitekey } from "../shared/config.js";
 
 const LOG_PREFIX = "[site-init]";
 
