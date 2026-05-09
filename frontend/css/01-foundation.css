@@ -1,0 +1,134 @@
+/* --- Fonts --- */
+@font-face {
+  font-family: Hellenica;
+  src: url("../assets/fonts/PF Hellenica Serif Pro Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Hellenica;
+  src: url("../assets/fonts/PF Hellenica Serif Pro Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Papyrus;
+  src: url("../assets/fonts/papyrus.ttf") format("truetype");
+}
+
+/* --- Tokens --- */
+:root {
+  --color-bg: #e6bf95;
+  --color-ink: #23150f;
+  --color-ink-muted: #5f3f30;
+  --color-ink-faint: #23150f2b;
+  --color-ink-wall: #23150f12;
+  --color-ink-overlay: #140c08b3;
+  --color-ink-hover: #23150f14;
+  --color-ink-border-strong: #23150f4a;
+  --color-primary-hover: #4f2e21;
+  --color-transparent: #0000;
+  --font-display: Hellenica;
+  --font-body: Papyrus;
+  --button-text-nudge-y: 0.1em;
+  --shadow-soft: 0 12px 40px #1a17141f;
+  --radius-image: 6px;
+  --radius-btn: 4px;
+  --carousel-arrow-border: #e7bc9261;
+  --carousel-arrow-bg: #1a0f0af0;
+  --carousel-arrow-color: #e7bc92;
+  --carousel-arrow-shadow:
+    0 0 0 2px #1a0f0ac2,
+    0 4px 12px #00000075,
+    0 14px 34px #000000bf;
+  --carousel-arrow-hover-bg: #4a2b1cf2;
+  --carousel-arrow-hover-border: #f1ccaaa8;
+  --carousel-arrow-hover-shadow:
+    0 0 0 2px #1a0f0ad9,
+    0 6px 14px #0000008c,
+    0 18px 38px #000000cf;
+  --carousel-arrow-focus-outline: #e7bc92;
+  /* Meander tiles: strokes act as mask stencils; ink color comes from
+  background-color on ::before. This technique is used because SVG data URIs
+  cannot read CSS variables. Otherwise, we'd have to repeat the meander
+  definitions for each theme as we do for the corner-theta. */
+  --meander-tile-h-top: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,15 H5 V0 H20 V10 H15 V5 H10 V15 H25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  --meander-tile-h-bottom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 25 20'%3E%3Cpath d='M0,1 H5 V16 H20 V6 H15 V11 H10 V1 H25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  --meander-tile-v-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 20 25'%3E%3Cpath d='M15,0 V15 H5 V10 H10 V5 H0 V20 H15 V25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  --meander-tile-v-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 20 25'%3E%3Cpath d='M1,0 V15 H11 V10 H6 V5 H16 V20 H1 V25' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='butt' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  /* Theta fill must match --color-bg exactly; SVG data URIs cannot read CSS
+  variables. This one is for the default light theme. The tencil technique could
+  be used here too, but is more complicated to implement due to the fact that
+  the theta is imposed on a corner disk rather than directly on the background.
+  A little repetition seemed preferable in this case. */
+  --corner-theta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ctext x='14' y='14' font-family='Georgia%2Cserif' font-size='14' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='%23e6bf95'%3E%CE%98%3C/text%3E%3C/svg%3E");
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #1a0f0a;
+  --color-ink: #e7bc92;
+  --color-ink-muted: #c69163;
+  --color-ink-faint: #e7bc9236;
+  --color-ink-wall: #e7bc9228;
+  --color-ink-overlay: #000000ad;
+  --color-ink-hover: #e7bc9214;
+  --color-ink-border-strong: #e7bc9261;
+  --color-primary-hover: #f1d2b3;
+  --shadow-soft: 0 12px 40px #00000059;
+  --carousel-arrow-border: #e7bc9261;
+  --carousel-arrow-bg: #1a0f0af0;
+  --carousel-arrow-color: #e7bc92;
+  --carousel-arrow-shadow:
+    0 0 0 2px #1a0f0ac2,
+    0 4px 12px #00000075,
+    0 14px 34px #000000bf;
+  --carousel-arrow-hover-bg: #4a2b1cf2;
+  --carousel-arrow-hover-border: #f1ccaaa8;
+  --carousel-arrow-hover-shadow:
+    0 0 0 2px #1a0f0ad9,
+    0 6px 14px #0000008c,
+    0 18px 38px #000000cf;
+  --carousel-arrow-focus-outline: #e7bc92;
+  --corner-theta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ctext x='14' y='14' font-family='Georgia%2Cserif' font-size='14' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='%231a0f0a'%3E%CE%98%3C/text%3E%3C/svg%3E");
+  color-scheme: dark;
+}
+
+/* --- Base --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.25rem;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+}
+
+.maze-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}

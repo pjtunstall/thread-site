@@ -1,0 +1,302 @@
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border: 1px solid var(--color-transparent);
+  border-radius: var(--radius-btn);
+  box-shadow: 0 6px 16px
+    color-mix(in srgb, var(--color-ink) 34%, var(--color-transparent));
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.btn:hover {
+  box-shadow: 0 10px 24px
+    color-mix(in srgb, var(--color-ink) 44%, var(--color-transparent));
+  transform: translateY(-1px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.btn--primary {
+  padding: 0.95rem 1.75rem;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  border-color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.btn--primary:active {
+  transform: translateY(1px);
+}
+
+.btn--ghost {
+  padding: 0.55rem 1rem;
+  background: var(--color-transparent);
+  color: var(--color-ink);
+  border-color: var(--color-ink-faint);
+}
+
+.btn--ghost:hover {
+  background: var(--color-ink-hover);
+  border-color: var(--color-ink-border-strong);
+}
+
+.btn svg {
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.btn__label {
+  display: inline-block;
+  transform: translateY(var(--button-text-nudge-y));
+}
+
+.btn--primary svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.btn--ghost svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.btn svg.brand-icon {
+  fill: currentColor;
+  stroke: none;
+}
+
+.menu-toggle svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Square hit target: .btn--ghost alone uses wider horizontal padding. */
+.btn--ghost.menu-toggle {
+  padding: 0.55rem;
+  /* For visibility contrast against the maze background. */
+  background: var(--color-bg);
+}
+
+.btn--ghost.menu-toggle:hover {
+  background: color-mix(in srgb, var(--color-bg) 88%, var(--color-ink));
+}
+
+.hero-cta {
+  opacity: 0;
+  animation: fade-in-up 0.9s ease 0.3s forwards;
+}
+
+.hero-nav {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-width: min(16rem, calc(100vw - 2.5rem));
+  padding: 0.65rem;
+  border: 1px solid var(--color-ink-faint);
+  border-radius: var(--radius-image);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-soft);
+}
+
+.hero-nav[hidden] {
+  display: none;
+}
+
+.downloads-page main {
+  max-width: 42rem;
+}
+
+.downloads-nav {
+  --downloads-flip-extra-duration: 0ms;
+  position: static;
+  margin-top: 1.75rem;
+  width: min(32rem, 100%);
+  opacity: 1;
+}
+
+.downloads-back-link {
+  margin: 1.6rem 0 0;
+  opacity: 0;
+  animation: fade-in-up 0.9s ease 0.4s forwards;
+}
+
+.hero-nav .btn {
+  --flip-duration: 1180ms;
+  position: relative;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  border-color: var(--color-transparent);
+  background: var(--color-transparent);
+  perspective: 900px;
+}
+
+:is(.hero-nav, .downloads-nav) .btn:nth-child(1) {
+  --flip-duration: 200ms;
+}
+
+:is(.hero-nav, .downloads-nav) .btn:nth-child(2) {
+  --flip-duration: 400ms;
+}
+
+:is(.hero-nav, .downloads-nav) .btn:nth-child(3) {
+  --flip-duration: 800ms;
+}
+
+:is(.hero-nav, .downloads-nav) .btn:nth-child(4) {
+  --flip-duration: 1600ms;
+}
+
+:is(.hero-nav, .downloads-nav) .btn:nth-child(5) {
+  --flip-duration: 3200ms;
+}
+
+:is(.hero-nav, .downloads-nav) .btn:nth-child(6) {
+  --flip-duration: 4800ms;
+}
+
+:is(.hero-nav, .downloads-nav) .btn:nth-child(7) {
+  --flip-duration: 5200ms;
+}
+
+/* Theme toggle: label + icon reflect the mode you switch to (sun → light, moon → dark). */
+.theme-toggle-views {
+  display: grid;
+  align-items: center;
+  width: 100%;
+}
+
+.theme-toggle-view {
+  display: none;
+  grid-area: 1 / 1;
+  align-items: center;
+  gap: 0.4em;
+}
+
+:root[data-theme="dark"] [data-theme-toggle] .theme-toggle-view--to-light,
+:root[data-theme="light"] [data-theme-toggle] .theme-toggle-view--to-dark {
+  display: flex;
+}
+
+.menu-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--flip-duration) cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+.hero-nav[data-menu-open="true"] .menu-card {
+  transform: rotateX(180deg);
+}
+
+.menu-card__face {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.4em;
+  width: 100%;
+  min-height: 2.1rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--color-ink-faint);
+  border-radius: var(--radius-btn);
+  background: var(--color-transparent);
+  backface-visibility: hidden;
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.menu-card__face--front {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(180deg);
+}
+
+.hero-nav .btn:hover .menu-card__face {
+  background: var(--color-ink-hover);
+  border-color: var(--color-ink-border-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-card {
+    transform: none !important; /* Here we use !important as a cascade safety net, ensuring that this reduced-motion rule overrides the open-state transform even if their relative order in this style sheet changes. */
+    transition: none;
+  }
+
+  .menu-card__face--back {
+    display: none;
+  }
+
+  .menu-card__face--front {
+    position: static;
+    transform: none;
+  }
+}
+
+@media (width < 768px) {
+  .menu-wrap {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .downloads-nav {
+    width: min(30rem, calc(100vw - 2.5rem));
+  }
+}
+
+@media (width >= 768px) {
+  .hero-image {
+    margin: 3.25rem 0 2.75rem;
+    max-width: min(40rem, 88vw);
+  }
+
+  .btn--primary {
+    padding: 1.05rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
