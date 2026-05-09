@@ -140,6 +140,7 @@
 
 .downloads-note {
   margin: 0.2rem 0 0;
+  font-family: var(--font-dialog-body);
   font-size: 1.2rem;
   line-height: 1.55;
   color: var(--color-ink-muted);

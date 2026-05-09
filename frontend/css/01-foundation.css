@@ -1,23 +1,18 @@
 /* --- Fonts --- */
 @font-face {
-  font-family: Hellenica;
-  src: url("../assets/fonts/PF Hellenica Serif Pro Regular.ttf") format("truetype");
+  font-family: "Caesar Dressing";
+  src: url("../assets/fonts/CaesarDressing-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: Hellenica;
-  src: url("../assets/fonts/PF Hellenica Serif Pro Bold.ttf") format("truetype");
-  font-weight: 700;
+  font-family: "Macondo Swash Caps";
+  src: url("../assets/fonts/MacondoSwashCaps-Regular.ttf") format("truetype");
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
-}
-
-@font-face {
-  font-family: Papyrus;
-  src: url("../assets/fonts/papyrus.ttf") format("truetype");
 }
 
 /* --- Tokens --- */
@@ -32,8 +27,9 @@
   --color-ink-border-strong: #23150f4a;
   --color-primary-hover: #4f2e21;
   --color-transparent: #0000;
-  --font-display: Hellenica;
-  --font-body: Papyrus;
+  --font-display: "Caesar Dressing", fantasy, serif;
+  --font-body: "Caesar Dressing", fantasy, serif;
+  --font-dialog-body: "Macondo Swash Caps", fantasy, serif;
   --button-text-nudge-y: 0.1em;
   --shadow-soft: 0 12px 40px #1a17141f;
   --radius-image: 6px;
