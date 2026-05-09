@@ -4,7 +4,7 @@ import { DIALOG_TEMPLATE_HTML } from "./templates.js";
 
 const LOG_PREFIX = "[site-init]";
 
-const DEFAULT_DIALOGS = [
+const MAIN_MENU_DIALOGS = [
   {
     id: "dlg-story",
     title: "Story",
@@ -221,7 +221,7 @@ export function initDialogs(options) {
   const config = options || {};
   const dialogDefs = Array.isArray(config.dialogs)
     ? config.dialogs
-    : DEFAULT_DIALOGS;
+    : MAIN_MENU_DIALOGS;
   // When true, none of the dialogs in this batch are closable via a
   // backdrop click. Useful for groups of dialogs whose content the user
   // may want to read carefully (e.g. post-download install instructions).
