@@ -115,6 +115,7 @@ export class MazeBackground {
       this.buildCarveCellsDepthFirst.bind(this),
       this.buildCarveCellsWilson.bind(this),
       this.buildCarveCellsKruskal.bind(this),
+      this.buildCarveCellsPrim.bind(this),
     ];
     return algorithms[Math.floor(Math.random() * algorithms.length)];
   }
@@ -269,6 +270,39 @@ export class MazeBackground {
     };
   }
 
+  // Prim's algorithm: grow a tree by carving random frontier walls outward.
+  buildCarveCellsPrim({ cellCols, cellRows }) {
+    const carveOrder = [];
+    const visited = new Set();
+    const frontier = new Map();
+    const initialCell = this.pickRandomCell(cellCols, cellRows);
+
+    visited.add(this.cellKey(initialCell));
+    carveOrder.push(this.cellToGrid(initialCell));
+    this.addFrontierWalls(initialCell, cellCols, cellRows, frontier, visited);
+
+    while (frontier.size > 0) {
+      const wallKey = this.pickRandomFrom(Array.from(frontier.keys()));
+      const wall = frontier.get(wallKey);
+      frontier.delete(wallKey);
+
+      const fromVisited = visited.has(this.cellKey(wall.from));
+      const toVisited = visited.has(this.cellKey(wall.to));
+
+      if (fromVisited === toVisited) {
+        continue;
+      }
+
+      const newCell = fromVisited ? wall.to : wall.from;
+      visited.add(this.cellKey(newCell));
+      carveOrder.push(this.wallBetweenCells(wall.from, wall.to));
+      carveOrder.push(this.cellToGrid(newCell));
+      this.addFrontierWalls(newCell, cellCols, cellRows, frontier, visited);
+    }
+
+    return { cells: carveOrder, iterativeStartIndex: 0 };
+  }
+
   pickRandomCell(cellCols, cellRows) {
     return {
       x: Math.floor(Math.random() * cellCols),
@@ -325,6 +359,28 @@ export class MazeBackground {
     }
 
     return neighbors;
+  }
+
+  addFrontierWalls(cell, cellCols, cellRows, frontier, visited) {
+    const neighbors = this.getCellNeighbors(cell, cellCols, cellRows);
+    for (const neighbor of neighbors) {
+      if (visited.has(this.cellKey(neighbor))) {
+        continue;
+      }
+      const wall = this.normalizeWall(cell, neighbor);
+      frontier.set(this.wallKey(wall), wall);
+    }
+  }
+
+  normalizeWall(a, b) {
+    if (a.y < b.y || (a.y === b.y && a.x <= b.x)) {
+      return { from: a, to: b };
+    }
+    return { from: b, to: a };
+  }
+
+  wallKey(wall) {
+    return `${this.cellKey(wall.from)}|${this.cellKey(wall.to)}`;
   }
 
   findSetRoot(parent, index) {
