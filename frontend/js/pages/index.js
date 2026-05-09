@@ -146,7 +146,7 @@ const HASH_DOWNLOADS = "#downloads";
 
   initTheme({
     onThemeChange: function () {
-      mazeBackground.restart();
+      mazeBackground.repaintCurrentState();
     },
   });
   initCarousel();

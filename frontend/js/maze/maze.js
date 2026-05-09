@@ -66,6 +66,18 @@ export class MazeBackground {
     this.frameRequest = window.requestAnimationFrame(this.tick);
   }
 
+  // Same layout: re-read --color-* from the document and redraw what is already carved.
+  repaintCurrentState() {
+    if (this.carveCells.length === 0) {
+      return;
+    }
+    // Opaque base so translucent --color-ink-wall does not stack on old pixels each toggle.
+    this.context.fillStyle = this.getBackgroundFillColor();
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.paintFullWallLayer();
+    this.drawInstantCarves(0, this.nextCarveIndex);
+  }
+
   handleResize() {
     if (this.resizeTimer !== null) {
       window.clearTimeout(this.resizeTimer);
