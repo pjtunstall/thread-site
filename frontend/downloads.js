@@ -28,7 +28,7 @@ const DOWNLOAD_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "The Windows build has started downloading. When it finishes, extract the archive and launch ",
+          "When your Windows build has finished downloading, extract the archive and launch ",
           { type: "code", text: "ByAThread.exe" },
           ". If SmartScreen warns you, choose More info and then Run anyway.",
         ],
@@ -42,7 +42,7 @@ const DOWNLOAD_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "The Apple Silicon build is downloading. When it finishes, double-click the ",
+          "When your Apple Silicon build has finsished downloading, double-click the ",
           { type: "code", text: ".zip" },
           " to extract it, drag ",
           { type: "code", text: "ByAThread.app" },
@@ -58,7 +58,7 @@ const DOWNLOAD_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "The macOS Intel build is downloading. When it finishes, double-click the ",
+          "When your macOS Intel build has finished downloading, double-click the ",
           { type: "code", text: ".zip" },
           " to extract it, drag ",
           { type: "code", text: "ByAThread.app" },
@@ -74,9 +74,13 @@ const DOWNLOAD_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "The AppImage download has started. Mark it executable before launching: ",
-          { type: "code", text: "chmod +x ByAThread.AppImage" },
-          ". Then run it directly from your file manager or terminal.",
+          "Install ",
+          {
+            type: "link",
+            href: "https://github.com/TheAssassin/AppImageLauncher/releases",
+            text: "AppImageLauncher",
+          },
+          ". When you your ByAThread AppImage has finished downloading, double click on it and choose integrate. Finally, right click on it and select Properties > Permissions > 'Allow executing file as program'.",
         ],
       },
     ],
