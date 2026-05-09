@@ -28,8 +28,6 @@ npx wrangler secret put CONTACT_TO
 npx wrangler secret put TURNSTILE_SECRET
 ```
 
-For local development, you could create `worker/.dev.vars` (gitignored) with the same variable names and values; `wrangler dev` loads it automatically. But only do this if your setup definitely prevents agents reading them; `.cursorignore` does not guarantee compliance.
-
 ## Deployment
 
 Push to see changes to frontend in production, and hard refresh in a private window. To see changes to the worker, `npx wrangler deploy` from the `worker` folder.

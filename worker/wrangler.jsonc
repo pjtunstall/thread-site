@@ -33,4 +33,6 @@
     { "pattern": "by-a-thread.de/api/*", "zone_name": "by-a-thread.de" },
     { "pattern": "www.by-a-thread.de/api/*", "zone_name": "by-a-thread.de" },
   ],
+
+  "workers_dev": false,
 }

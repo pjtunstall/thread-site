@@ -17,20 +17,13 @@ const ALLOWED_ORIGINS_EXACT = [
   "https://by-a-thread.de",
   "https://www.by-a-thread.de",
 ];
-const ALLOWED_ORIGIN_PATTERNS = [
-  /^https?:\/\/localhost(:\d+)?$/,
-  /^https?:\/\/127\.0\.0\.1(:\d+)?$/,
-];
 
 const MAX_BODY_BYTES = 16 * 1024;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONTROL_CHARS_REGEX = /[\u0000-\u001F\u007F]/;
 
 function isAllowedOrigin(origin) {
-  return (
-    ALLOWED_ORIGINS_EXACT.includes(origin) ||
-    ALLOWED_ORIGIN_PATTERNS.some((re) => re.test(origin))
-  );
+  return ALLOWED_ORIGINS_EXACT.includes(origin);
 }
 
 function corsHeaders(origin) {
@@ -57,10 +50,7 @@ function jsonResponse(body, status, extraHeaders = {}) {
 }
 
 async function readJsonBody(request) {
-  const declared = parseInt(
-    request.headers.get("Content-Length") || "0",
-    10,
-  );
+  const declared = parseInt(request.headers.get("Content-Length") || "0", 10);
   if (declared > MAX_BODY_BYTES) {
     return { error: "payload_too_large" };
   }
@@ -78,8 +68,7 @@ async function readJsonBody(request) {
 function validateBody(body) {
   if (typeof body !== "object" || body === null) return "invalid";
 
-  const honeypot =
-    typeof body.website === "string" ? body.website.trim() : "";
+  const honeypot = typeof body.website === "string" ? body.website.trim() : "";
   if (honeypot) return "invalid";
 
   const email = typeof body.email === "string" ? body.email.trim() : "";
@@ -91,15 +80,13 @@ function validateBody(body) {
     return "invalid";
   }
 
-  const message =
-    typeof body.message === "string" ? body.message.trim() : "";
+  const message = typeof body.message === "string" ? body.message.trim() : "";
   if (message.length < 10 || message.length > 4000) return "invalid";
 
   const name = typeof body.name === "string" ? body.name.trim() : "";
   if (name.length > 100 || CONTROL_CHARS_REGEX.test(name)) return "invalid";
 
-  const subject =
-    typeof body.subject === "string" ? body.subject.trim() : "";
+  const subject = typeof body.subject === "string" ? body.subject.trim() : "";
   if (subject.length > 200 || CONTROL_CHARS_REGEX.test(subject)) {
     return "invalid";
   }
@@ -194,11 +181,10 @@ export default {
       return jsonResponse({ ok: false, error: "not_found" }, 404, cors);
     }
     if (request.method !== "POST") {
-      return jsonResponse(
-        { ok: false, error: "method_not_allowed" },
-        405,
-        { ...cors, Allow: "POST, OPTIONS" },
-      );
+      return jsonResponse({ ok: false, error: "method_not_allowed" }, 405, {
+        ...cors,
+        Allow: "POST, OPTIONS",
+      });
     }
 
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
@@ -207,11 +193,7 @@ export default {
       try {
         const { success } = await env.RATE_LIMITER.limit({ key: ip });
         if (!success) {
-          return jsonResponse(
-            { ok: false, error: "rate_limited" },
-            429,
-            cors,
-          );
+          return jsonResponse({ ok: false, error: "rate_limited" }, 429, cors);
         }
       } catch (err) {
         console.error("rate limit check threw", err);
@@ -248,11 +230,7 @@ export default {
       ip,
     );
     if (!turnstileOk) {
-      return jsonResponse(
-        { ok: false, error: "turnstile_failed" },
-        403,
-        cors,
-      );
+      return jsonResponse({ ok: false, error: "turnstile_failed" }, 403, cors);
     }
 
     if (!env.RESEND_API_KEY || !env.CONTACT_TO) {
