@@ -1,5 +1,5 @@
-import { MazeBackground } from "./maze-background.js";
 import { initDialogs } from "./dialogs.js";
+import { MazeBackground } from "./maze-background.js";
 import { defineMenuCard } from "./menu-card.js";
 import { applyStoredThemePreference } from "./theme.js";
 
@@ -80,7 +80,7 @@ const DOWNLOAD_DIALOGS = [
             href: "https://github.com/TheAssassin/AppImageLauncher/releases",
             text: "AppImageLauncher",
           },
-          ". When you your ByAThread AppImage has finished downloading, double click on it and choose integrate. Finally, right click on it and select Properties > Permissions > 'Allow executing file as program'.",
+          ". Then, double click on your ByAThread AppImage and choose integrate. Finally, right click on it and select Properties > Permissions > 'Allow executing file as program'.",
         ],
       },
     ],
