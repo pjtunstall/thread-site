@@ -4,7 +4,7 @@ import { renderForm } from "./contact.js";
 
 const LOG_PREFIX = "[site-init]";
 
-const MAIN_MENU_DIALOGS = [
+export const MAIN_MENU_DIALOGS = [
   {
     id: "dlg-story",
     title: "Story",
@@ -204,6 +204,10 @@ function renderDialogs(dialogDefs) {
     title.id = titleId;
     title.textContent = dialogDef.title;
 
+    if (dialogDef.noBackdropClose === true) {
+      dialog.setAttribute("data-dialog-no-backdrop-close", "");
+    }
+
     dialogDef.body.forEach(function (entry, idx) {
       if (idx > 0) body.append(document.createElement("br"));
       if (entry.type === "form") {
@@ -253,7 +257,9 @@ export function initDialogs(options) {
     // be mid-reading. ESC and the explicit Close button still work in
     // every case.
     const allowBackdropClose =
-      !blockBackdropCloseAll && !dialog.querySelector("form");
+      !blockBackdropCloseAll &&
+      !dialog.hasAttribute("data-dialog-no-backdrop-close") &&
+      !dialog.querySelector("form");
 
     if (allowBackdropClose) {
       dialog.addEventListener("click", function (event) {

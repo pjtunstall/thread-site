@@ -1,7 +1,7 @@
 /* --- Main --- */
 main {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-main);
   width: 100%;
   max-width: 56rem;
   display: flex;
@@ -10,11 +10,33 @@ main {
   text-align: center;
 }
 
+.view-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.view-downloads {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* After .view-* display rules: inactive views must not use flex layout or stack under home. */
+main > [data-view][hidden] {
+  display: none !important;
+}
+
+/* Fixed to the viewport so the control stays put when main height changes
+   (body centers main; shorter downloads content was shifting main upward). */
 .menu-wrap {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 40;
+  position: fixed;
+  top: 2.5rem;
+  right: 1.25rem;
+  z-index: var(--z-menu-wrap);
   opacity: 0;
   animation: fade-in-up 0.9s ease 0.4s forwards;
 }
@@ -54,7 +76,7 @@ main {
 .hero-image {
   --meander-unit: 25px;
   --meander-gap: 20px;
-  margin: 2.75rem 0 2.5rem;
+  margin: 2.75rem auto 2.5rem;
   position: relative;
   width: 100%;
   max-width: min(36rem, 92vw);
@@ -139,7 +161,7 @@ main {
 
 .hero-image img {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-hero-image);
   display: block;
   width: 100%;
   height: auto;
@@ -153,7 +175,7 @@ main {
 .carousel-arrow {
   position: absolute;
   top: 50%;
-  z-index: 2;
+  z-index: var(--z-carousel-arrow);
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -1,8 +1,3 @@
-import { MazeBackground } from "./js/maze/maze.js";
-import { initDialogs } from "./js/ui/dialogs.js";
-import { defineMenuCard } from "./js/ui/menu-card.js";
-import { applyStoredThemePreference } from "./js/ui/theme.js";
-
 // Base URL that always resolves to the latest published GitHub Release of
 // the game. Each platform key maps to the asset filename uploaded by the
 // game repo's release workflow; together they form the full download URL.
@@ -20,10 +15,11 @@ const DOWNLOAD_FILES = {
   "linux-rpm": "ByAThread-linux.rpm",
 };
 
-const DOWNLOAD_DIALOGS = [
+export const DOWNLOAD_DIALOGS = [
   {
     id: "dlg-download-windows",
     title: "Windows",
+    noBackdropClose: true,
     body: [
       {
         type: "paragraph",
@@ -38,6 +34,7 @@ const DOWNLOAD_DIALOGS = [
   {
     id: "dlg-download-macos-apple-silicon",
     title: "macOS Apple Silicon",
+    noBackdropClose: true,
     body: [
       {
         type: "paragraph",
@@ -54,6 +51,7 @@ const DOWNLOAD_DIALOGS = [
   {
     id: "dlg-download-macos-intel",
     title: "macOS Intel",
+    noBackdropClose: true,
     body: [
       {
         type: "paragraph",
@@ -70,6 +68,7 @@ const DOWNLOAD_DIALOGS = [
   {
     id: "dlg-download-linux-appimage",
     title: "Linux AppImage",
+    noBackdropClose: true,
     body: [
       {
         type: "paragraph",
@@ -88,6 +87,7 @@ const DOWNLOAD_DIALOGS = [
   {
     id: "dlg-download-linux-deb",
     title: "When the Linux .deb",
+    noBackdropClose: true,
     body: [
       {
         type: "paragraph",
@@ -104,6 +104,7 @@ const DOWNLOAD_DIALOGS = [
   {
     id: "dlg-download-linux-rpm",
     title: "When the Linux .rpm",
+    noBackdropClose: true,
     body: [
       {
         type: "paragraph",
@@ -126,8 +127,6 @@ function triggerDownload(platform) {
     return;
   }
 
-  // GitHub serves release assets with Content-Disposition: attachment, so
-  // navigating to the URL produces a download rather than a page nav.
   const anchor = document.createElement("a");
   anchor.href = `${RELEASE_BASE}/${fileName}`;
   anchor.style.display = "none";
@@ -136,7 +135,7 @@ function triggerDownload(platform) {
   anchor.remove();
 }
 
-function initPlatformDownloads() {
+export function initPlatformDownloads() {
   const platformButtons = Array.from(
     document.querySelectorAll("[data-platform-download]"),
   );
@@ -158,7 +157,7 @@ function initPlatformDownloads() {
   });
 }
 
-function revealDownloadsNavCards() {
+export function revealDownloadsNavCards() {
   const downloadsNav = document.querySelector(".downloads-nav");
   if (!(downloadsNav instanceof HTMLElement)) return;
 
@@ -167,15 +166,8 @@ function revealDownloadsNavCards() {
   });
 }
 
-(function () {
-  applyStoredThemePreference();
-
-  const mazeBackground = new MazeBackground();
-  mazeBackground.start();
-
-  defineMenuCard();
-  revealDownloadsNavCards();
-
-  initDialogs({ dialogs: DOWNLOAD_DIALOGS, noBackdropClose: true });
-  initPlatformDownloads();
-})();
+export function resetDownloadsNavCards() {
+  const downloadsNav = document.querySelector(".downloads-nav");
+  if (!(downloadsNav instanceof HTMLElement)) return;
+  downloadsNav.removeAttribute("data-menu-open");
+}
