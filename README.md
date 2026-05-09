@@ -30,4 +30,9 @@ npx wrangler secret put TURNSTILE_SECRET
 
 ## Deployment
 
-Push to see changes to frontend in production, and hard refresh in a private window. To see changes to the worker, `npx wrangler deploy` from the `worker` folder.
+Push to see changes to frontend in production, and hard refresh in a private window. To see changes to the worker,
+
+```sh
+cd worker
+npx wrangler deploy
+```
