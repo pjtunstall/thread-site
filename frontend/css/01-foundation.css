@@ -1,15 +1,15 @@
 /* --- Fonts --- */
 @font-face {
-  font-family: "Caesar Dressing";
-  src: url("../assets/fonts/CaesarDressing-Regular.ttf") format("truetype");
+  font-family: "Neucha";
+  src: url("../assets/fonts/Neucha-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Macondo Swash Caps";
-  src: url("../assets/fonts/MacondoSwashCaps-Regular.ttf") format("truetype");
+  font-family: "Macondo";
+  src: url("../assets/fonts/Macondo-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -17,6 +17,58 @@
 
 /* --- Tokens --- */
 :root {
+  /*
+   * Font contexts (swap stacks to try typefaces; first family should match an
+   * @font-face above, or use a system / web-safe stack you prefer).
+   *   --font-stack-ui       titles, buttons, nav, page chrome, default body weight.
+   *   --font-stack-prose    dialog body copy, download page note.
+   *   --font-stack-download platform labels on the downloads view.
+   */
+  --font-stack-ui: "Neucha", fantasy, serif;
+  --font-stack-prose: "Macondo", fantasy, serif;
+  --font-stack-download: "Macondo", fantasy, serif;
+
+  /*
+   * Typography scale (rem / weights). Menu cards, dialog chrome, contact
+   * labels, and hero CTAs share --font-size-accent (+ -wide at >=768px in
+   * each sheet). Contact fields use --font-size-contact-control* (separate).
+   * Single-weight webfonts use synthetic bold where needed.
+   */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --font-size-btn: 0.9375rem;
+  --font-size-btn-primary: 1rem;
+
+  --font-size-accent: 1.0625rem;
+  --font-size-accent-wide: 1.125rem;
+
+  --font-size-dialog-title: 1.55rem;
+  --font-size-dialog-title-wide: 1.75rem;
+  --font-size-dialog-body: 1.2rem;
+
+  /* Inputs / textarea only (larger than accent labels & dialog chrome). */
+  --font-size-contact-control: 1.2rem;
+  --font-size-contact-control-wide: 1.3rem;
+  --font-weight-contact-control: var(--font-weight-bold);
+
+  --font-weight-cta-primary: var(--font-weight-bold);
+  --font-weight-menu-card: var(--font-weight-bold);
+  --font-weight-dialog-title: var(--font-weight-extrabold);
+  --font-weight-dialog-close: var(--font-weight-bold);
+  --font-weight-contact-label: var(--font-weight-bold);
+  --font-weight-field-required-mark: var(--font-weight-regular);
+  --font-weight-contact-status: var(--font-weight-medium);
+  --font-weight-contact-status-error: var(--font-weight-semibold);
+  --font-weight-contact-submit: var(--font-weight-bold);
+
+  --letter-spacing-dialog-title: 0.055em;
+  --letter-spacing-dialog-close: 0.03em;
+  --letter-spacing-ui-caps: 0.04em;
+
   /* Stacking order (meaningful only vs siblings / same stacking context). */
   --z-maze-bg: 0;
   --z-main: 1;
@@ -36,9 +88,9 @@
   --color-ink-border-strong: #23150f4a;
   --color-primary-hover: #4f2e21;
   --color-transparent: #0000;
-  --font-display: "Caesar Dressing", fantasy, serif;
-  --font-body: "Caesar Dressing", fantasy, serif;
-  --font-dialog-body: "Macondo Swash Caps", fantasy, serif;
+  --font-display: var(--font-stack-ui);
+  --font-body: var(--font-stack-ui);
+  --font-dialog-body: var(--font-stack-prose);
   --button-text-nudge-y: 0.1em;
   --shadow-soft: 0 12px 40px #1a17141f;
   --radius-image: 6px;

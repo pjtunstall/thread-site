@@ -13,7 +13,7 @@ export const DIALOG_TEMPLATE_HTML = `
         <div data-dialog-body></div>
         <div class="dialog__footer">
           <button type="button" class="dialog__close" data-dialog-close>
-            <span class="btn__label">Close</span>
+            <span class="btn__label">CLOSE</span>
           </button>
         </div>
       </div>

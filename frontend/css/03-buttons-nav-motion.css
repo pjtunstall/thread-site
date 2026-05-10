@@ -5,8 +5,8 @@
   justify-content: center;
   gap: 0.4em;
   font-family: var(--font-body);
-  font-size: 0.9375rem;
-  font-weight: 600;
+  font-size: var(--font-size-btn);
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.04em;
   text-decoration: none;
   border: 1px solid var(--color-transparent);
@@ -39,7 +39,7 @@
   color: var(--color-bg);
   border-color: var(--color-ink);
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
 }
 
 .btn--primary:hover {
@@ -49,6 +49,12 @@
 
 .btn--primary:active {
   transform: translateY(1px);
+}
+
+/* Main flow CTAs: slightly larger and heavier than other primary buttons. */
+:is(.hero-cta, .downloads-back-link) .btn--primary {
+  font-size: var(--font-size-accent);
+  font-weight: var(--font-weight-cta-primary);
 }
 
 .btn--ghost {
@@ -147,7 +153,7 @@ main .view-downloads.downloads-page {
   margin: 0.2rem 0 0;
   max-width: 36rem;
   font-family: var(--font-dialog-body);
-  font-size: 1.2rem;
+  font-size: var(--font-size-dialog-body);
   line-height: 1.55;
   color: var(--color-ink-muted);
   text-align: center;
@@ -163,6 +169,16 @@ main .view-downloads.downloads-page {
   margin-right: auto;
   width: min(32rem, 100%);
   opacity: 1;
+}
+
+/* Downloads: Macondo on faces (#site-menu faces inherit display from .menu-card__face). */
+.downloads-nav .menu-card__face {
+  font-family: var(--font-stack-download);
+}
+
+:is(#site-menu, .downloads-nav) .menu-card__face {
+  font-size: var(--font-size-accent);
+  font-weight: var(--font-weight-menu-card);
 }
 
 .downloads-back-link {
@@ -255,7 +271,7 @@ main .view-downloads.downloads-page {
   background: var(--color-transparent);
   backface-visibility: hidden;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
 }
 
 .menu-card__face--front {
@@ -304,7 +320,15 @@ main .view-downloads.downloads-page {
 
   .btn--primary {
     padding: 1.05rem 2rem;
-    font-size: 1rem;
+    font-size: var(--font-size-btn-primary);
+  }
+
+  :is(.hero-cta, .downloads-back-link) .btn--primary {
+    font-size: var(--font-size-accent-wide);
+  }
+
+  :is(#site-menu, .downloads-nav) .menu-card__face {
+    font-size: var(--font-size-accent-wide);
   }
 }
 

@@ -55,15 +55,16 @@ dialog::backdrop {
 .dialog__title {
   margin: 0 0 0.75rem;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.35rem;
-  letter-spacing: 0.04em;
+  font-weight: var(--font-weight-dialog-title);
+  font-size: var(--font-size-dialog-title);
+  letter-spacing: var(--letter-spacing-dialog-title);
+  line-height: 1.2;
 }
 
 .dialog__body {
   margin: 0;
   font-family: var(--font-dialog-body);
-  font-size: 1.2rem;
+  font-size: var(--font-size-dialog-body);
   line-height: 1.55;
   color: var(--color-ink-muted);
   text-align: left;
@@ -81,11 +82,11 @@ dialog::backdrop {
 }
 
 .dialog__close {
-  padding: 0.45rem 1rem;
+  padding: 0.5rem 1.1rem;
   font-family: var(--font-display);
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  font-size: var(--font-size-accent);
+  font-weight: var(--font-weight-dialog-close);
+  letter-spacing: var(--letter-spacing-dialog-close);
   color: var(--color-ink);
   background: var(--color-transparent);
   border: 1px solid var(--color-ink-faint);
@@ -117,18 +118,33 @@ dialog::backdrop {
   gap: 0.3rem;
 }
 
+.contact-form__label-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.12em;
+}
+
 .contact-form__label {
   font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: var(--font-size-accent);
+  font-weight: var(--font-weight-contact-label);
+  letter-spacing: var(--letter-spacing-ui-caps);
   color: var(--color-ink);
 }
 
+.contact-form__label-required-mark {
+  font-family: var(--font-display);
+  font-size: var(--font-size-accent);
+  font-weight: var(--font-weight-field-required-mark);
+  letter-spacing: var(--letter-spacing-ui-caps);
+  color: var(--color-ink-muted);
+}
+
 .contact-form__control {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  font-weight: 700;
+  font-family: var(--font-dialog-body);
+  font-size: var(--font-size-contact-control);
+  font-weight: var(--font-weight-contact-control);
   color: var(--color-ink);
   padding: 0.55rem 0.7rem;
   background: color-mix(in srgb, var(--color-bg) 92%, var(--color-ink));
@@ -171,9 +187,10 @@ input will trip it. */
 
 .contact-form__status {
   margin: 0;
-  min-height: 1.4em;
-  font-size: 0.95rem;
-  line-height: 1.4;
+  min-height: 1.45em;
+  font-size: var(--font-size-accent);
+  font-weight: var(--font-weight-contact-status);
+  line-height: 1.45;
   color: var(--color-ink-muted);
 }
 
@@ -186,6 +203,7 @@ input will trip it. */
 }
 
 .contact-form__status--error {
+  font-weight: var(--font-weight-contact-status-error);
   color: color-mix(in srgb, var(--color-ink) 55%, #c44);
 }
 
@@ -206,11 +224,11 @@ input will trip it. */
 }
 
 .contact-form__submit {
-  padding: 0.55rem 1.25rem;
+  padding: 0.6rem 1.35rem;
   font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: var(--font-size-accent);
+  font-weight: var(--font-weight-contact-submit);
+  letter-spacing: var(--letter-spacing-ui-caps);
   color: var(--color-bg);
   background: var(--color-ink);
   border: 1px solid var(--color-ink);
@@ -240,4 +258,25 @@ input will trip it. */
 .contact-form__submit:disabled {
   opacity: 0.6;
   cursor: progress;
+}
+
+@media (width >= 768px) {
+  .dialog__title {
+    font-size: var(--font-size-dialog-title-wide);
+  }
+
+  .dialog__close,
+  .contact-form__submit {
+    font-size: var(--font-size-accent-wide);
+  }
+
+  .contact-form__label,
+  .contact-form__label-required-mark,
+  .contact-form__status {
+    font-size: var(--font-size-accent-wide);
+  }
+
+  .contact-form__control {
+    font-size: var(--font-size-contact-control-wide);
+  }
 }

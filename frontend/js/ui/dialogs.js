@@ -7,7 +7,7 @@ const LOG_PREFIX = "[site-init]";
 export const MAIN_MENU_DIALOGS = [
   {
     id: "dlg-story",
-    title: "Story",
+    title: "STORY",
     body: [
       {
         type: "paragraph",
@@ -17,7 +17,7 @@ export const MAIN_MENU_DIALOGS = [
   },
   {
     id: "dlg-about",
-    title: "About",
+    title: "ABOUT",
     body: [
       {
         type: "paragraph",
@@ -37,13 +37,13 @@ export const MAIN_MENU_DIALOGS = [
       },
       {
         type: "paragraph",
-        text: "It's really a multiplayer game. The server is hosted in Germany, so the lag might be unacceptable if you're outside Europe. Maybe one day, I'll add AI opponents. For now, as a single player, just try to escape the maze in time.",
+        text: "It's really a multiplayer game. The server is hosted in Germany, so there miight be too much lag if you're outside Europe. Maybe one day, I'll add AI opponents. For now, as a single player, just try to escape the maze in time.",
       },
     ],
   },
   {
     id: "dlg-instructions",
-    title: "Instructions",
+    title: "INSTRUCTIONS",
     body: [
       {
         type: "paragraph",
@@ -61,17 +61,17 @@ export const MAIN_MENU_DIALOGS = [
   },
   {
     id: "dlg-contact",
-    title: "Contact",
+    title: "CONTACT",
     body: [
       {
         type: "paragraph",
-        text: "Bug reports, questions, offers of marriage? Drop me a line.",
+        text: "Bug reports, questions, offers of marriage/string? Drop me a line.",
       },
       {
         type: "form",
         id: "contact-form",
         endpoint: getContactEndpoint,
-        submitLabel: "Send",
+        submitLabel: "SEND",
         fields: [
           {
             type: "text",

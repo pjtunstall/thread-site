@@ -6,10 +6,23 @@ function renderFormField(form, field) {
   const wrapper = document.createElement("label");
   wrapper.className = "contact-form__field";
 
+  const labelRow = document.createElement("span");
+  labelRow.className = "contact-form__label-row";
+
   const labelText = document.createElement("span");
   labelText.className = "contact-form__label";
-  labelText.textContent = field.required ? `${field.label} *` : field.label;
-  wrapper.append(labelText);
+  labelText.textContent = field.label;
+  labelRow.append(labelText);
+
+  if (field.required) {
+    const requiredMark = document.createElement("span");
+    requiredMark.className = "contact-form__label-required-mark";
+    requiredMark.setAttribute("aria-hidden", "true");
+    requiredMark.textContent = " *";
+    labelRow.append(requiredMark);
+  }
+
+  wrapper.append(labelRow);
 
   let control;
   if (field.type === "textarea") {
@@ -158,7 +171,7 @@ export function renderForm(bodyContainer, formDef) {
     close.setAttribute("data-dialog-close", "");
     const closeLabel = document.createElement("span");
     closeLabel.className = "btn__label";
-    closeLabel.textContent = "Close";
+    closeLabel.textContent = "CLOSE";
     close.append(closeLabel);
     buttons.append(close);
 

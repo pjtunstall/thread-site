@@ -68,16 +68,6 @@ const HASH_DOWNLOADS = "#downloads";
       }
       resetDownloadsNavCards();
       revealDownloadsNavCards();
-
-      const firstPlatform = downloadsView.querySelector(
-        "[data-platform-download]",
-      );
-      if (firstPlatform instanceof HTMLElement) {
-        firstPlatform.focus();
-      } else {
-        const title = downloadsView.querySelector(".hero-title");
-        if (title instanceof HTMLElement) title.focus();
-      }
       return;
     }
 
@@ -93,13 +83,6 @@ const HASH_DOWNLOADS = "#downloads";
 
     if (syncUrl) {
       clearHashFromUrl();
-    }
-
-    if (enterLabyrinth instanceof HTMLElement) {
-      enterLabyrinth.focus();
-    } else {
-      const title = homeView.querySelector(".hero-title");
-      if (title instanceof HTMLElement) title.focus();
     }
   }
 
