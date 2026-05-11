@@ -62,9 +62,7 @@ function buildMacosDownloadBody(zipFileName) {
         { type: "strong", text: "Privacy & Security" },
         " and allow ",
         { type: "strong", text: "ByAThread" },
-        ". (On macOS 12 and earlier, ",
-        { type: "strong", text: "Security & Privacy" },
-        ").",
+        ".",
       ],
     },
   ];
