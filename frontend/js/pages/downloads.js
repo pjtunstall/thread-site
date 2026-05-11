@@ -89,11 +89,17 @@ export const DOWNLOAD_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "On the first launch, SmartScreen may block it. (The default is to treat any download that hasn't been registered with Microsoft as a virus till you confirm otherwise.) Click ",
+          "On the first launch, SmartScreen may block it. Click ",
           { type: "strong", text: "More info" },
           ", then ",
           { type: "strong", text: "Run anyway" },
           ".",
+        ],
+      },
+      {
+        type: "paragraph",
+        parts: [
+          "(The default is to treat any download that hasn't been registered with Microsoft as a virus till you confirm otherwise.)",
         ],
       },
     ],
