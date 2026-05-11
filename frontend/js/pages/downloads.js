@@ -15,6 +15,63 @@ const DOWNLOAD_FILES = {
   "linux-rpm": "ByAThread-linux.rpm",
 };
 
+function buildMacosDownloadBody(zipFileName) {
+  return [
+    {
+      type: "paragraph",
+      parts: [
+        "When ",
+        { type: "code", text: zipFileName },
+        " has finished downloading, double-click the archive to extract it if needed. Drag ",
+        { type: "code", text: "ByAThread.app" },
+        " into ",
+        { type: "strong", text: "Applications" },
+        " if you want it there (optional).",
+      ],
+    },
+    {
+      type: "paragraph",
+      parts: [
+        "Downloads from the browser get a ",
+        { type: "strong", text: "quarantine" },
+        " flag, so ",
+        { type: "strong", text: "Gatekeeper" },
+        " may stop a plain double-click until you confirm you trust the app.",
+      ],
+    },
+    {
+      type: "paragraph",
+      parts: [
+        { type: "strong", text: "First try this:" },
+        " Right-click ",
+        { type: "code", text: "ByAThread.app" },
+        ", choose ",
+        { type: "strong", text: "Open" },
+        ", then click ",
+        { type: "strong", text: "Open" },
+        " in the dialog. After that, a normal double-click should work.",
+      ],
+    },
+    {
+      type: "paragraph",
+      parts: [
+        { type: "strong", text: "If it's still blocked:" },
+        " Open ",
+        { type: "strong", text: "System Settings" },
+        " > ",
+        { type: "strong", text: "Privacy & Security" },
+        " and allow ",
+        { type: "strong", text: "ByAThread" },
+        ". On macOS 12 and earlier, use ",
+        { type: "strong", text: "System Preferences" },
+        " > ",
+        { type: "strong", text: "Security & Privacy" },
+        " instead.",
+      ],
+    },
+  ];
+}
+
 export const DOWNLOAD_DIALOGS = [
   {
     id: "dlg-download-windows",
@@ -26,11 +83,19 @@ export const DOWNLOAD_DIALOGS = [
         parts: [
           "When ",
           { type: "code", text: "ByAThread-windows.zip" },
-          " has finished downloading, extract the archive and launch ",
+          " has finished downloading, extract the archive, open the ",
+          { type: "strong", text: "ByAThread" },
+          " folder, and launch ",
           { type: "code", text: "ByAThread.exe" },
-          ". If SmartScreen warns you, choose ",
+          ".",
+        ],
+      },
+      {
+        type: "paragraph",
+        parts: [
+          "On the first launch, SmartScreen may block it; click ",
           { type: "strong", text: "More info" },
-          " and then ",
+          ", then ",
           { type: "strong", text: "Run anyway" },
           ".",
         ],
@@ -41,73 +106,13 @@ export const DOWNLOAD_DIALOGS = [
     id: "dlg-download-macos-apple-silicon",
     title: "macOS Apple Silicon",
     noBackdropClose: true,
-    body: [
-      {
-        type: "paragraph",
-        parts: [
-          "When ",
-          { type: "code", text: "ByAThread-macos-silicon.zip" },
-          " has finished downloading, double-click it to extract, drag ",
-          { type: "code", text: "ByAThread.app" },
-          " into Applications, then launch it. If macOS blocks it, open ",
-          { type: "strong", text: "System Settings" },
-          ", ",
-          { type: "strong", text: "Privacy & Security" },
-          ", and allow the app.",
-        ],
-      },
-    ],
+    body: buildMacosDownloadBody("ByAThread-macos-silicon.zip"),
   },
   {
     id: "dlg-download-macos-intel",
     title: "macOS Intel",
     noBackdropClose: true,
-    body: [
-      {
-        type: "paragraph",
-        parts: [
-          "When ",
-          { type: "code", text: "ByAThread-macos-intel.zip" },
-          " has finished downloading, double-click it to extract, drag ",
-          { type: "code", text: "ByAThread.app" },
-          " into Applications, then launch it. If Gatekeeper blocks it, allow it from ",
-          { type: "strong", text: "Privacy & Security" },
-          ".",
-        ],
-      },
-    ],
-  },
-  {
-    id: "dlg-download-linux-appimage",
-    title: "Linux AppImage",
-    noBackdropClose: true,
-    body: [
-      {
-        type: "paragraph",
-        parts: [
-          "Install ",
-          {
-            type: "link",
-            href: "https://github.com/TheAssassin/AppImageLauncher/releases",
-            text: "AppImageLauncher",
-          },
-          ". Then double-click ",
-          { type: "code", text: "ByAThread-linux.AppImage" },
-          " and choose ",
-          { type: "strong", text: "Integrate and run" },
-          ". Finally, right-click it and select ",
-          { type: "strong", text: "Properties" },
-          " > ",
-          { type: "strong", text: "Permissions" },
-          " > ",
-          {
-            type: "strong",
-            text: "Allow executing file as program",
-          },
-          ".",
-        ],
-      },
-    ],
+    body: buildMacosDownloadBody("ByAThread-macos-intel.zip"),
   },
   {
     id: "dlg-download-linux-deb",
@@ -139,14 +144,83 @@ export const DOWNLOAD_DIALOGS = [
         parts: [
           "When ",
           { type: "code", text: "ByAThread-linux.rpm" },
-          " has finished downloading, install it with your distro tools, for example ",
+          " has finished downloading, install with your distro tools when you can, for example ",
           {
             type: "code",
             text: "sudo dnf install ./ByAThread-linux.rpm",
           },
-          " on Fedora, or ",
-          { type: "code", text: "sudo rpm -i ./ByAThread-linux.rpm" },
-          " elsewhere, then launch the game from your app menu.",
+          " on Fedora or ",
+          {
+            type: "code",
+            text: "sudo zypper install ./ByAThread-linux.rpm",
+          },
+          " on openSUSE.",
+        ],
+      },
+      {
+        type: "paragraph",
+        parts: [
+          "Otherwise use ",
+          {
+            type: "code",
+            text: "sudo rpm -Uvh ./ByAThread-linux.rpm",
+          },
+          ".",
+        ],
+      },
+      {
+        type: "paragraph",
+        parts: ["Then launch the game from your app menu."],
+      },
+    ],
+  },
+  {
+    id: "dlg-download-linux-appimage",
+    title: "Linux AppImage",
+    noBackdropClose: true,
+    body: [
+      {
+        type: "paragraph",
+        parts: [
+          { type: "strong", text: "With AppImageLauncher (recommended):" },
+          " Install ",
+          {
+            type: "link",
+            href: "https://github.com/TheAssassin/AppImageLauncher/releases",
+            text: "AppImageLauncher",
+          },
+          ", double-click ",
+          { type: "code", text: "ByAThread-linux.AppImage" },
+          ", choose ",
+          { type: "strong", text: "Integrate" },
+          " when prompted, then launch the game from your app menu.",
+        ],
+      },
+      {
+        type: "paragraph",
+        parts: [
+          { type: "strong", text: "Without AppImageLauncher:" },
+          " Mark ",
+          { type: "code", text: "ByAThread-linux.AppImage" },
+          " as executable: right-click the file > ",
+          { type: "strong", text: "Properties" },
+          " > ",
+          { type: "strong", text: "Permissions" },
+          " > ",
+          { type: "strong", text: "Allow executing file as program" },
+          " (or ",
+          { type: "code", text: "chmod +x ByAThread-linux.AppImage" },
+          " in that folder), then double-click it or run ",
+          { type: "code", text: "./ByAThread-linux.AppImage" },
+          " in a terminal from that folder.",
+        ],
+      },
+      {
+        type: "paragraph",
+        parts: [
+          "If double-click does nothing, confirm the executable bit, then run ",
+          { type: "code", text: "./ByAThread-linux.AppImage" },
+          " in a terminal to see any error messages.",
         ],
       },
     ],
