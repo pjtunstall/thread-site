@@ -26,7 +26,7 @@ export const MAIN_MENU_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "I made it as coursework at a coding bootcamp. You can read more on ",
+          "I made it as coursework at a coding bootcamp. (A requirement was to include a frames-per second meter, hence the gauge with the number above the health meter.) You can read more on ",
           {
             type: "link",
             href: "https://github.com/pjtunstall/by-a-thread",
