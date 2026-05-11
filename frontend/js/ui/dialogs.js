@@ -159,6 +159,14 @@ function appendPart(parent, part) {
     parent.append(link);
     return;
   }
+
+  if (part.type === "strong") {
+    const strong = document.createElement("strong");
+    strong.className = "dialog__strong";
+    strong.textContent = part.text;
+    parent.append(strong);
+    return;
+  }
 }
 
 function renderParagraph(bodyContainer, paragraph) {

@@ -52,6 +52,11 @@ dialog::backdrop {
   font-family: ui-monospace, monospace;
 }
 
+.dialog__body .dialog__strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
 .dialog__title {
   margin: 0 0 0.75rem;
   font-family: var(--font-display);
