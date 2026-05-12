@@ -37,7 +37,7 @@ export const MAIN_MENU_DIALOGS = [
       },
       {
         type: "paragraph",
-        text: "It's really a multiplayer game. The server is hosted in Germany, so there miight be too much lag if you're outside Europe. Maybe one day, I'll add AI opponents. For now, as a single player, just try to escape the maze in time.",
+        text: "It's mainly intended as a multiplayer game. The only server is in Germany, so there might be too much lag if you're outside Europe. Maybe one day, I'll add AI opponents, but, for now, if you're a single player, just try to escape the maze in time.",
       },
     ],
   },
