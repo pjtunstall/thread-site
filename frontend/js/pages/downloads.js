@@ -57,7 +57,7 @@ function buildMacosDownloadBody(zipFileName) {
         "(If it's still blocked, open ",
         { type: "strong", text: "System Settings" },
         " > ",
-        { type: "strong", text: "Security & Privacy" },
+        { type: "strong", text: "Privacy & Security" },
         " and allow ",
         { type: "strong", text: "ByAThread" },
         ".)",
