@@ -42,8 +42,7 @@ function buildMacosDownloadBody(zipFileName) {
     {
       type: "paragraph",
       parts: [
-        { type: "strong", text: "First try this:" },
-        " Right-click ",
+        "First launch, right-click ",
         { type: "code", text: "ByAThread.app" },
         ", choose ",
         { type: "strong", text: "Open" },
@@ -55,14 +54,13 @@ function buildMacosDownloadBody(zipFileName) {
     {
       type: "paragraph",
       parts: [
-        { type: "strong", text: "If it's still blocked:" },
-        " Open ",
+        "(If it's still blocked, open ",
         { type: "strong", text: "System Settings" },
         " > ",
-        { type: "strong", text: "Privacy & Security" },
+        { type: "strong", text: "Security & Privacy" },
         " and allow ",
         { type: "strong", text: "ByAThread" },
-        ".",
+        ".)",
       ],
     },
   ];
@@ -94,12 +92,6 @@ export const DOWNLOAD_DIALOGS = [
           ", then ",
           { type: "strong", text: "Run anyway" },
           ".",
-        ],
-      },
-      {
-        type: "paragraph",
-        parts: [
-          "(The default is to treat any download that hasn't been registered with Microsoft as a virus till you confirm otherwise.)",
         ],
       },
     ],
