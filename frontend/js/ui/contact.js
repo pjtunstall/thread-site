@@ -187,20 +187,15 @@ export function renderForm(bodyContainer, formDef) {
   let turnstileToken = null;
   let widget = null;
 
-  // Turnstile refuses to initialise inside display:none ancestors. Forms
-  // rendered inside a closed dialog defer their widget mount until the
-  // dialog first opens (initDialogs calls _mountTurnstileIfNeeded then).
-  // Forms outside a dialog mount immediately.
+  // Turnstile won't initialise inside display:none ancestors. Therefore, we
+  // defer mounting the widget on the form till its dialog first opens; see the
+  // button click handler added by initDialogs.
   form._mountTurnstileIfNeeded = function () {
     if (widget) return;
     widget = mountTurnstile(turnstileMount, function (token) {
       turnstileToken = token;
     });
   };
-
-  if (!form.closest("dialog")) {
-    form._mountTurnstileIfNeeded();
-  }
 
   form.addEventListener("submit", async function (event) {
     event.preventDefault();

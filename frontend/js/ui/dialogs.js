@@ -234,9 +234,8 @@ export function initDialogs(options) {
   const dialogDefs = Array.isArray(config.dialogs)
     ? config.dialogs
     : MAIN_MENU_DIALOGS;
-  // When true, none of the dialogs in this batch are closable via a
-  // backdrop click. Useful for groups of dialogs whose content the user
-  // may want to read carefully (e.g. post-download install instructions).
+  // When true (i.e. for the post-download installation guides), none of the
+  // dialogs in this batch are closable via a backdrop click.
   const blockBackdropCloseAll = config.noBackdropClose === true;
   renderDialogs(dialogDefs);
 
@@ -249,21 +248,19 @@ export function initDialogs(options) {
 
     btn.addEventListener("click", function () {
       dialog.showModal();
-      // Mount any deferred form widgets now that the dialog is visible.
-      dialog.querySelectorAll("form").forEach(function (form) {
-        if (typeof form._mountTurnstileIfNeeded === "function") {
-          form._mountTurnstileIfNeeded();
-        }
-      });
+      const form = dialog.querySelector("form");
+      if (form && typeof form._mountTurnstileIfNeeded === "function") {
+        form._mountTurnstileIfNeeded();
+      }
     });
   });
 
+  // Backdrop-click-to-close is convenient for prose dialogs but undesirable in
+  // some cases: the contact form and the installation guides. We don't want the
+  // user to lose partially-typed input from the form, or have to repeat a
+  // download just to get back to the installation guide. ESC and the explicit
+  // Close button still work in every case.
   dialogs.forEach(function (dialog) {
-    // Backdrop-click-to-close is convenient for prose dialogs but risky
-    // when content matters: forms can lose partially typed input, and
-    // dialogs flagged via noBackdropClose contain content the user may
-    // be mid-reading. ESC and the explicit Close button still work in
-    // every case.
     const allowBackdropClose =
       !blockBackdropCloseAll &&
       !dialog.hasAttribute("data-dialog-no-backdrop-close") &&
