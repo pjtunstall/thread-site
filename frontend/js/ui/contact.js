@@ -373,7 +373,7 @@ export function renderForm(bodyContainer, formDef) {
         switch (code) {
           case "rate_limited":
             message =
-              "You've sent a couple of messages already. Please wait a minute and try again.";
+              "You've sent a couple of messages just a moment ago. Please wait a minute and try again.";
             break;
           case "turnstile_failed":
             message = "Verification failed. Please try the challenge again.";

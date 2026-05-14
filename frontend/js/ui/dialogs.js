@@ -1,8 +1,24 @@
 import { CONTACT_ENDPOINT, CONTACT_FORM_LIMITS } from "../shared/config.js";
-import { DIALOG_TEMPLATE_HTML } from "../shared/templates.js";
 import { renderForm } from "./contact.js";
 
 const LOG_PREFIX = "[site-init]";
+
+/** Markup for each dialog shell; cloned per dialog by `renderDialogs`. */
+const DIALOG_TEMPLATE_HTML = `
+  <dialog data-dialog>
+    <div class="dialog__panel">
+      <div class="dialog__inner">
+        <h2 class="dialog__title" data-dialog-title></h2>
+        <div data-dialog-body></div>
+        <div class="dialog__footer">
+          <button type="button" class="dialog__close" data-dialog-close>
+            <span class="btn__label">CLOSE</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+`;
 
 export const MAIN_MENU_DIALOGS = [
   {
@@ -239,7 +255,9 @@ export function initDialogs(options) {
   const blockBackdropCloseAll = config.noBackdropClose === true;
   renderDialogs(dialogDefs);
 
-  const dialogTriggers = document.querySelectorAll("[data-open-dialog]");
+  const dialogTriggers = document.querySelectorAll(
+    "button[data-open-dialog], a[data-open-dialog]",
+  );
   const dialogs = document.querySelectorAll("dialog[data-dialog]");
 
   dialogTriggers.forEach(function (btn) {

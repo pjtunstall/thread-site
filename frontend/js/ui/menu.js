@@ -1,21 +1,22 @@
-import { menu, menuToggle } from "./dom-utils.js";
+import { getMenuToggle, menuPanel } from "./dom-utils.js";
 
 export function initMenu() {
+  const menuToggle = getMenuToggle();
   let isMenuOpen = false;
 
   function setMenuOpen(nextState) {
     isMenuOpen = nextState;
     if (isMenuOpen) {
-      menu.hidden = false;
-      menu.setAttribute("data-menu-open", "false");
+      menuPanel.hidden = false;
+      menuPanel.setAttribute("data-menu-open", "false");
       window.requestAnimationFrame(function () {
         if (isMenuOpen) {
-          menu.setAttribute("data-menu-open", "true");
+          menuPanel.setAttribute("data-menu-open", "true");
         }
       });
     } else {
-      menu.setAttribute("data-menu-open", "false");
-      menu.hidden = true;
+      menuPanel.setAttribute("data-menu-open", "false");
+      menuPanel.hidden = true;
     }
     menuToggle.setAttribute("aria-expanded", String(isMenuOpen));
     menuToggle.setAttribute(
@@ -43,7 +44,7 @@ export function initMenu() {
     if (!isMenuOpen) return;
     const target = event.target;
     if (!(target instanceof Node)) return;
-    if (menu.contains(target) || menuToggle.contains(target)) return;
+    if (menuPanel.contains(target) || menuToggle.contains(target)) return;
     closeMenu();
   });
 
@@ -53,7 +54,7 @@ export function initMenu() {
     }
   });
 
-  menu.querySelectorAll("button, a").forEach(function (item) {
+  menuPanel.querySelectorAll("button, a").forEach(function (item) {
     item.addEventListener("click", function () {
       if (shouldCloseMenuOnClick(item)) closeMenu();
     });

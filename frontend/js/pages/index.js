@@ -1,7 +1,7 @@
 import { MazeBackground } from "../maze/maze.js";
 import { initCarousel } from "../ui/carousel.js";
 import { initDialogs, MAIN_MENU_DIALOGS } from "../ui/dialogs.js";
-import { defineMenuCard } from "../ui/menu-card.js";
+import { defineSiteControlElements } from "../ui/site-controls.js";
 import { initMenu } from "../ui/menu.js";
 import { initTheme } from "../ui/theme.js";
 import {
@@ -16,9 +16,6 @@ const HASH_DOWNLOADS = "#downloads";
 (function () {
   const homeView = document.querySelector('[data-view="home"]');
   const downloadsView = document.querySelector('[data-view="downloads"]');
-  const backButton = document.querySelector("[data-back-to-home]");
-  const enterLabyrinth = document.querySelector(".view-home .hero-cta a");
-
   if (
     !(homeView instanceof HTMLElement) ||
     !(downloadsView instanceof HTMLElement)
@@ -28,6 +25,11 @@ const HASH_DOWNLOADS = "#downloads";
     );
     return;
   }
+
+  defineSiteControlElements();
+
+  const backButton = document.querySelector("button[data-back-to-home]");
+  const enterLabyrinth = document.querySelector(".view-home .hero-cta a");
 
   function clearHashFromUrl() {
     const withoutHash = window.location.href.split("#")[0];
@@ -154,14 +156,12 @@ const HASH_DOWNLOADS = "#downloads";
 
   const mazeBackground = new MazeBackground();
   mazeBackground.start();
-  const newMazeButton = document.querySelector("[data-new-maze]");
+  const newMazeButton = document.querySelector("button[data-new-maze]");
   if (newMazeButton instanceof HTMLButtonElement) {
     newMazeButton.addEventListener("click", function () {
       mazeBackground.restart();
     });
   }
-
-  defineMenuCard();
 
   initTheme({
     onThemeChange: function () {

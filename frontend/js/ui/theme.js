@@ -1,3 +1,5 @@
+import { getThemeToggle } from "./dom-utils.js";
+
 const LOG_PREFIX = "[site-init]";
 const root = document.documentElement;
 
@@ -47,8 +49,8 @@ export function applyStoredThemePreference(options = {}) {
 
 export function initTheme(options = {}) {
   const { onThemeChange } = options;
-  const themeToggle = document.querySelector("[data-theme-toggle]");
-  if (!(themeToggle instanceof HTMLButtonElement)) {
+  const themeToggle = getThemeToggle();
+  if (!themeToggle) {
     return applyStoredThemePreference();
   }
 

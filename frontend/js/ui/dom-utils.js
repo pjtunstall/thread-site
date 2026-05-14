@@ -9,20 +9,33 @@ export function requireElement(candidate, selector, expectedType) {
   throw new Error(`${LOG_PREFIX} Missing required element: ${selector}`);
 }
 
-export const themeToggle = requireElement(
-  document.querySelector("[data-theme-toggle]"),
-  "[data-theme-toggle]",
-  HTMLButtonElement,
-);
-
-export const menuToggle = requireElement(
-  document.querySelector("[data-menu-toggle]"),
-  "[data-menu-toggle]",
-  HTMLButtonElement,
-);
-
-export const menu = requireElement(
-  document.querySelector("[data-menu]"),
-  "[data-menu]",
+export const menuPanel = requireElement(
+  document.querySelector("[data-menu-panel]"),
+  "[data-menu-panel]",
   HTMLElement,
 );
+
+/**
+ * Resolved when called (after `defineSiteControlElements()` hydrates the menu
+ * toggle inner `<button>`).
+ *
+ * @returns {HTMLButtonElement}
+ */
+export function getMenuToggle() {
+  const el = document.querySelector("[data-menu-toggle]");
+  return requireElement(
+    el,
+    "[data-menu-toggle]",
+    HTMLButtonElement,
+  );
+}
+
+/**
+ * Inner `<button>` from `<theme-toggle-button>` (after `defineSiteControlElements()`).
+ *
+ * @returns {HTMLButtonElement | null}
+ */
+export function getThemeToggle() {
+  const el = document.querySelector("[data-theme-toggle]");
+  return el instanceof HTMLButtonElement ? el : null;
+}

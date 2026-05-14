@@ -1,4 +1,31 @@
-import { MENU_CARD_TEMPLATE_HTML } from "../shared/templates.js";
+import {
+  MENU_CARD_ICON_BY_ID,
+  MENU_CARD_SVG_VIEWBOX,
+} from "../shared/svg-icons.js";
+
+/** Markup for `<menu-card>` face; icons supplied via `data-menu-icon` /
+ * `svg-icons.js`. */
+const MENU_CARD_TEMPLATE_HTML = `
+  <span class="menu-card__face menu-card__face--back" aria-hidden="true"></span>
+  <span class="menu-card__face menu-card__face--front">
+    <span class="btn__label" data-menu-card-label></span>
+  </span>
+`;
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+/**
+ * @param {import("../shared/svg-icons.js").MenuCardIconDef} def
+ * @returns {SVGElement | null}
+ */
+function menuCardSvgFromIconDef(def) {
+  const tpl = document.createElement("template");
+  tpl.innerHTML = `<svg xmlns="${SVG_NS}" viewBox="${MENU_CARD_SVG_VIEWBOX}">${def.innerMarkup}</svg>`;
+  const root = tpl.content.firstElementChild;
+  if (!(root instanceof SVGElement)) return null;
+  if (def.svgClass) root.setAttribute("class", def.svgClass);
+  return root;
+}
 
 export function defineMenuCard() {
   if (customElements.get("menu-card")) {
@@ -23,7 +50,24 @@ export function defineMenuCard() {
       if (this.dataset.hydrated === "true") return;
 
       const label = this.getAttribute("label") || "";
-      const icon = this.querySelector("svg");
+      const iconId = this.getAttribute("data-menu-icon");
+      /** @type {SVGElement | null} */
+      let icon = null;
+      if (iconId) {
+        const def = MENU_CARD_ICON_BY_ID[iconId];
+        if (def) {
+          icon = menuCardSvgFromIconDef(def);
+        } else {
+          console.error(
+            `${LOG_PREFIX} Unknown data-menu-icon "${iconId}".`,
+            this,
+          );
+        }
+      }
+      if (!icon) {
+        const fromChild = this.querySelector("svg");
+        if (fromChild instanceof SVGElement) icon = fromChild;
+      }
 
       this.classList.add("menu-card");
       this.replaceChildren();
@@ -57,7 +101,10 @@ export function defineMenuCard() {
       }
 
       if (!(icon instanceof SVGElement)) {
-        console.error(`${LOG_PREFIX} Card is missing child <svg> icon.`, this);
+        console.error(
+          `${LOG_PREFIX} Card is missing an icon: use data-menu-icon or a child <svg>.`,
+          this,
+        );
       } else {
         const iconClone = icon.cloneNode(true);
         if (iconClone instanceof SVGElement) {
