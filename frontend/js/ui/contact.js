@@ -2,6 +2,82 @@ import { CONTACT_FORM_LIMITS, getTurnstileSitekey } from "../shared/config.js";
 
 const LOG_PREFIX = "[site-init]";
 
+const TURNSTILE_API_URL =
+  "https://challenges.cloudflare.com/turnstile/v0/api.js";
+
+let turnstileScriptPromise = null;
+
+function turnstileApiReady() {
+  return Boolean(
+    window.turnstile && typeof window.turnstile.render === "function",
+  );
+}
+
+function ensureTurnstileScript() {
+  if (turnstileApiReady()) {
+    return Promise.resolve();
+  }
+  if (turnstileScriptPromise) {
+    return turnstileScriptPromise;
+  }
+  const existing = document.querySelector("script[data-thread-turnstile-api]");
+  if (existing) {
+    turnstileScriptPromise = new Promise(function (resolve, reject) {
+      const finishErr = function () {
+        console.error(`${LOG_PREFIX} Turnstile API script failed to load.`);
+        existing.remove();
+        turnstileScriptPromise = null;
+        reject(new Error("Turnstile script failed"));
+      };
+      const tryResolve = function () {
+        if (turnstileApiReady()) {
+          resolve();
+          return true;
+        }
+        return false;
+      };
+      if (tryResolve()) return;
+      existing.addEventListener(
+        "load",
+        function () {
+          resolve();
+        },
+        { once: true },
+      );
+      existing.addEventListener("error", finishErr, { once: true });
+      queueMicrotask(function () {
+        if (tryResolve()) return;
+      });
+    });
+    return turnstileScriptPromise;
+  }
+  turnstileScriptPromise = new Promise(function (resolve, reject) {
+    const script = document.createElement("script");
+    script.src = TURNSTILE_API_URL;
+    script.async = true;
+    script.setAttribute("data-thread-turnstile-api", "");
+    script.addEventListener(
+      "load",
+      function () {
+        resolve();
+      },
+      { once: true },
+    );
+    script.addEventListener(
+      "error",
+      function () {
+        console.error(`${LOG_PREFIX} Turnstile API script failed to load.`);
+        script.remove();
+        turnstileScriptPromise = null;
+        reject(new Error("Turnstile script failed"));
+      },
+      { once: true },
+    );
+    document.head.append(script);
+  });
+  return turnstileScriptPromise;
+}
+
 function renderFormField(form, field) {
   const wrapper = document.createElement("label");
   wrapper.className = "contact-form__field";
@@ -73,29 +149,36 @@ function setStatus(statusEl, kind, message) {
   if (kind) statusEl.classList.add(`contact-form__status--${kind}`);
 }
 
-// Wait for the Turnstile script to expose its render() function. We poll
-// rather than calling turnstile.ready() because the latter is incompatible
-// with the async/defer attributes on our <script> tag (Turnstile throws if
-// you mix them).
+// The Turnstile API script is injected on first contact dialog open
+// (ensureTurnstileScript). After it runs, we poll until render() exists instead
+// of using turnstile.ready(), so we do not depend on Turnstile's ready helper
+// and load-order quirks. Dynamically appended scripts are async by default; we
+// set script.async explicitly for clarity.
 function whenTurnstileLoaded(callback) {
-  if (window.turnstile && typeof window.turnstile.render === "function") {
-    callback();
-    return;
-  }
-  let attempts = 0;
-  const tick = function () {
-    if (window.turnstile && typeof window.turnstile.render === "function") {
-      callback();
-      return;
-    }
-    attempts += 1;
-    if (attempts > 100) {
-      console.error(`${LOG_PREFIX} Turnstile failed to load.`);
-      return;
-    }
-    setTimeout(tick, 100);
-  };
-  tick();
+  ensureTurnstileScript()
+    .then(function () {
+      if (turnstileApiReady()) {
+        callback();
+        return;
+      }
+      let attempts = 0;
+      const tick = function () {
+        if (turnstileApiReady()) {
+          callback();
+          return;
+        }
+        attempts += 1;
+        if (attempts > 100) {
+          console.error(`${LOG_PREFIX} Turnstile failed to load.`);
+          return;
+        }
+        setTimeout(tick, 100);
+      };
+      tick();
+    })
+    .catch(function () {
+      // ensureTurnstileScript already logged a script network/load failure.
+    });
 }
 
 function mountTurnstile(container, onToken) {
@@ -187,9 +270,9 @@ export function renderForm(bodyContainer, formDef) {
   let turnstileToken = null;
   let widget = null;
 
-  // Turnstile won't initialise inside display:none ancestors. Therefore, we
-  // defer mounting the widget on the form till its dialog first opens; see the
-  // button click handler added by initDialogs.
+  // Turnstile won't initialise inside display:none ancestors, so the widget is
+  // mounted when the dialog first opens. The Turnstile API script is also
+  // loaded then (first call here), not on initial page load.
   form._mountTurnstileIfNeeded = function () {
     if (widget) return;
     widget = mountTurnstile(turnstileMount, function (token) {

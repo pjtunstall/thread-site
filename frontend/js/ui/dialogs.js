@@ -249,6 +249,8 @@ export function initDialogs(options) {
     btn.addEventListener("click", function () {
       dialog.showModal();
       const form = dialog.querySelector("form");
+      // Contact form: load Turnstile API (once) and mount the widget on first
+      // open.
       if (form && typeof form._mountTurnstileIfNeeded === "function") {
         form._mountTurnstileIfNeeded();
       }
