@@ -29,20 +29,7 @@
       name="twitter:image"
       content="https://by-a-thread.de/screenshot.jpg"
     />
-    <script>
-      (function () {
-        try {
-          const stored = localStorage.getItem("theme-preference");
-          const resolved =
-            stored === "light" || stored === "dark"
-              ? stored
-              : window.matchMedia("(prefers-color-scheme: dark)").matches
-                ? "dark"
-                : "light";
-          document.documentElement.setAttribute("data-theme", resolved);
-        } catch (_) {}
-      })();
-    </script>
+    <script src="./js/theme-boot.js"></script>
 
     <link rel="icon" href="./favicon.ico" />
     <link

@@ -30,7 +30,7 @@ npx wrangler secret put TURNSTILE_SECRET
 
 ## Deployment
 
-If the inline script in the head of `index.html` has changed, recompute the hash of everything between the script tags, including whitespace such as spaces and newlines, and add that to the Content Security Policy in `frontend/_headers` before deployment. (To compute the hash, run `./scripts/hash.sh`. Be sure to make it executable before running for the first time: `chmod +x scripts/hash.sh`).
+Early theme logic lives in `frontend/js/theme-boot.js` (loaded as a normal script), so it does not need a CSP hash. If the browser console reports a Turnstile-related CSP violation after a Cloudflare update, add the suggested `sha256-…` value to `script-src` in `frontend/_headers`. To list any remaining inline script bodies in `index.html`, run `./scripts/hash.sh` (make it executable first if needed: `chmod +x scripts/hash.sh`).
 
 Deploy changes made to `frontend` with `git push`. Hard refresh in the browser and clear the cache if need be to see the changes.
 
