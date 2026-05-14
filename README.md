@@ -30,7 +30,7 @@ npx wrangler secret put TURNSTILE_SECRET
 
 ## Deployment
 
-Early theme logic lives in `frontend/js/theme-boot.js` (loaded as a normal script), so it does not need a CSP hash. If the browser console reports a Turnstile-related CSP violation after a Cloudflare update, add the suggested `sha256-…` value to `script-src` in `frontend/_headers`. To list any remaining inline script bodies in `index.html`, run `./scripts/hash.sh` (make it executable first if needed: `chmod +x scripts/hash.sh`).
+`script-src` in `frontend/_headers` includes `'unsafe-inline'` so Cloudflare Turnstile’s variable inline scripts keep working on static hosting. That weakens XSS resistance compared to a hash- or nonce-based policy; a stricter setup would need HTML generated with a per-response nonce (for example a Cloudflare Pages Function) plus Turnstile’s nonce guidance.
 
 Deploy changes made to `frontend` with `git push`. Hard refresh in the browser and clear the cache if need be to see the changes.
 
