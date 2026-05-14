@@ -58,7 +58,7 @@ npx wrangler secret put TURNSTILE_SECRET
 
 ## Deployment
 
-`script-src` in `frontend/_headers` includes `'unsafe-inline'` so Cloudflare Turnstile’s variable inline scripts keep working on static hosting. That weakens XSS resistance compared to a hash- or nonce-based policy; a stricter setup would need HTML generated with a per-response nonce (for example a Cloudflare Pages Function) plus Turnstile’s nonce guidance.
+`script-src` in `frontend/_headers` includes `'unsafe-inline'` so Cloudflare Turnstile's variable inline scripts keep working on static hosting. That weakens XSS resistance compared to a hash- or nonce-based policy; a stricter setup would need HTML generated with a per-response nonce (for example a Cloudflare Pages Function) plus Turnstile's nonce guidance.
 
 Deploy changes made to `frontend` with `git push`. Hard refresh in the browser and clear the cache if need be to see the changes.
 
