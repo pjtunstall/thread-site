@@ -48,6 +48,30 @@ const HASH_DOWNLOADS = "#downloads";
   }
 
   /**
+   * @param {HTMLElement} root
+   * @param {Element | null} node
+   */
+  function containsOrIs(root, node) {
+    return node instanceof Node && (root === node || root.contains(node));
+  }
+
+  /**
+   * @param {HTMLElement} scope
+   */
+  function focusFirstInScope(scope) {
+    const candidates = scope.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])',
+    );
+    for (let i = 0; i < candidates.length; i++) {
+      const el = candidates[i];
+      if (!(el instanceof HTMLElement)) continue;
+      if (el.closest("[hidden], [inert]")) continue;
+      el.focus({ preventScroll: true });
+      return;
+    }
+  }
+
+  /**
    * @param {"home" | "downloads"} view
    * @param {{ syncUrl?: boolean }} [options]
    */
@@ -68,6 +92,10 @@ const HASH_DOWNLOADS = "#downloads";
       }
       resetDownloadsNavCards();
       revealDownloadsNavCards();
+
+      if (containsOrIs(homeView, document.activeElement)) {
+        focusFirstInScope(downloadsView);
+      }
       return;
     }
 
@@ -83,6 +111,14 @@ const HASH_DOWNLOADS = "#downloads";
 
     if (syncUrl) {
       clearHashFromUrl();
+    }
+
+    if (containsOrIs(downloadsView, document.activeElement)) {
+      if (enterLabyrinth instanceof HTMLAnchorElement) {
+        enterLabyrinth.focus({ preventScroll: true });
+      } else {
+        focusFirstInScope(homeView);
+      }
     }
   }
 
