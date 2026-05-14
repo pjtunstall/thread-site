@@ -1,4 +1,4 @@
-import { getTurnstileSitekey } from "../shared/config.js";
+import { CONTACT_FORM_LIMITS, getTurnstileSitekey } from "../shared/config.js";
 
 const LOG_PREFIX = "[site-init]";
 
@@ -160,9 +160,9 @@ export function renderForm(bodyContainer, formDef) {
   submit.append(submitLabel);
   buttons.append(submit);
 
-  // If this form lives inside a dialog, take ownership of the dialog's Close
-  // button so it ends up on the same row as Send. The template-supplied
-  // footer is removed to avoid a duplicate.
+  // If this form lives inside a dialog (which it does!), take ownership of the
+  // dialog's Close button so it ends up on the same row as Send. The
+  // template-supplied footer is removed to avoid a duplicate.
   const owningDialog = bodyContainer.closest("dialog");
   if (owningDialog) {
     const close = document.createElement("button");
@@ -188,7 +188,7 @@ export function renderForm(bodyContainer, formDef) {
   let widget = null;
 
   // Turnstile refuses to initialise inside display:none ancestors. Forms
-  // rendered inside a closed <dialog> defer their widget mount until the
+  // rendered inside a closed dialog defer their widget mount until the
   // dialog first opens (initDialogs calls _mountTurnstileIfNeeded then).
   // Forms outside a dialog mount immediately.
   form._mountTurnstileIfNeeded = function () {
@@ -202,7 +202,7 @@ export function renderForm(bodyContainer, formDef) {
     form._mountTurnstileIfNeeded();
   }
 
-  form.addEventListener("submit", function (event) {
+  form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const data = {
@@ -218,11 +218,43 @@ export function renderForm(bodyContainer, formDef) {
       setStatus(statusEl, "error", "Email and message are both required.");
       return;
     }
-    if (data.message.length < 10) {
+    if (data.message.length < CONTACT_FORM_LIMITS.messageMin) {
       setStatus(
         statusEl,
         "error",
-        "Please write at least a sentence (10+ characters).",
+        `Message is too short (min ${CONTACT_FORM_LIMITS.messageMin} characters).`,
+      );
+      return;
+    }
+    if (data.message.length > CONTACT_FORM_LIMITS.messageMax) {
+      setStatus(
+        statusEl,
+        "error",
+        `Message is too long (max ${CONTACT_FORM_LIMITS.messageMax} characters).`,
+      );
+      return;
+    }
+    if (data.name.length > CONTACT_FORM_LIMITS.nameMax) {
+      setStatus(
+        statusEl,
+        "error",
+        `Name is too long (max ${CONTACT_FORM_LIMITS.nameMax} characters).`,
+      );
+      return;
+    }
+    if (data.subject.length > CONTACT_FORM_LIMITS.subjectMax) {
+      setStatus(
+        statusEl,
+        "error",
+        `Subject is too long (max ${CONTACT_FORM_LIMITS.subjectMax} characters).`,
+      );
+      return;
+    }
+    if (data.email.length > CONTACT_FORM_LIMITS.emailMax) {
+      setStatus(
+        statusEl,
+        "error",
+        `Email is too long (max ${CONTACT_FORM_LIMITS.emailMax} characters).`,
       );
       return;
     }
@@ -238,60 +270,61 @@ export function renderForm(bodyContainer, formDef) {
     submit.disabled = true;
     setStatus(statusEl, "pending", "Sending...");
 
-    const endpoint =
-      typeof formDef.endpoint === "function"
-        ? formDef.endpoint()
-        : formDef.endpoint;
+    try {
+      const response = await fetch(formDef.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then(function (response) {
-        return response
-          .json()
-          .catch(function () {
-            return {};
-          })
-          .then(function (json) {
-            return { ok: response.ok, status: response.status, json };
-          });
-      })
-      .then(function (result) {
-        if (result.ok) {
-          form.reset();
-          if (widget) widget.reset();
-          turnstileToken = null;
-          setStatus(statusEl, "success", "Thanks! Your message is on its way.");
-        } else {
-          const code = result.json && result.json.error;
-          let message = "Something went wrong. Please try again.";
-          if (code === "rate_limited") {
-            message =
-              "You've sent a couple of messages already. Please wait a minute and try again.";
-          } else if (code === "turnstile_failed") {
-            message = "Verification failed. Please try the challenge again.";
-          } else if (code === "invalid") {
-            message = "Please check the form and try again.";
-          }
-          setStatus(statusEl, "error", message);
-          if (widget) widget.reset();
-          turnstileToken = null;
-        }
-      })
-      .catch(function (err) {
-        console.error(`${LOG_PREFIX} Contact form network error.`, err);
-        setStatus(
-          statusEl,
-          "error",
-          "Could not reach the server. Please try again.",
-        );
+      let json = {};
+      try {
+        json = await response.json();
+      } catch {
+        // Response body was not JSON; json remains {}.
+      }
+
+      if (response.ok) {
+        form.reset();
         if (widget) widget.reset();
         turnstileToken = null;
-      })
-      .finally(function () {
-        submit.disabled = false;
-      });
+        setStatus(statusEl, "success", "Thanks! Your message is on its way.");
+      } else {
+        const code = json?.error;
+        let message;
+        switch (code) {
+          case "rate_limited":
+            message =
+              "You've sent a couple of messages already. Please wait a minute and try again.";
+            break;
+          case "turnstile_failed":
+            message = "Verification failed. Please try the challenge again.";
+            break;
+          case "invalid":
+            message = "Invalid input. Please check the form and try again.";
+            break;
+          case "payload_too_large":
+            message =
+              "That submission is too large for the server (for example a very long message with many special characters). Please shorten it and try again.";
+            break;
+          default:
+            message = "Something went wrong. Please try again.";
+        }
+        setStatus(statusEl, "error", message);
+        if (widget) widget.reset();
+        turnstileToken = null;
+      }
+    } catch (err) {
+      console.error(`${LOG_PREFIX} Contact form network error.`, err);
+      setStatus(
+        statusEl,
+        "error",
+        "Could not reach the server. Please try again.",
+      );
+      if (widget) widget.reset();
+      turnstileToken = null;
+    } finally {
+      submit.disabled = false;
+    }
   });
 }

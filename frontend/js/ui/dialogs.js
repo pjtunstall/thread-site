@@ -1,4 +1,4 @@
-import { getContactEndpoint } from "../shared/config.js";
+import { CONTACT_ENDPOINT, CONTACT_FORM_LIMITS } from "../shared/config.js";
 import { DIALOG_TEMPLATE_HTML } from "../shared/templates.js";
 import { renderForm } from "./contact.js";
 
@@ -70,7 +70,7 @@ export const MAIN_MENU_DIALOGS = [
       {
         type: "form",
         id: "contact-form",
-        endpoint: getContactEndpoint,
+        endpoint: CONTACT_ENDPOINT,
         submitLabel: "SEND",
         fields: [
           {
@@ -78,7 +78,7 @@ export const MAIN_MENU_DIALOGS = [
             name: "name",
             label: "Name",
             autocomplete: "name",
-            maxlength: 100,
+            maxlength: CONTACT_FORM_LIMITS.nameMax,
           },
           {
             type: "email",
@@ -86,13 +86,13 @@ export const MAIN_MENU_DIALOGS = [
             label: "Email",
             autocomplete: "email",
             required: true,
-            maxlength: 254,
+            maxlength: CONTACT_FORM_LIMITS.emailMax,
           },
           {
             type: "text",
             name: "subject",
             label: "Subject",
-            maxlength: 200,
+            maxlength: CONTACT_FORM_LIMITS.subjectMax,
           },
           {
             type: "textarea",
@@ -100,8 +100,8 @@ export const MAIN_MENU_DIALOGS = [
             label: "Message",
             required: true,
             rows: 6,
-            minlength: 10,
-            maxlength: 4000,
+            minlength: CONTACT_FORM_LIMITS.messageMin,
+            maxlength: CONTACT_FORM_LIMITS.messageMax,
           },
         ],
       },

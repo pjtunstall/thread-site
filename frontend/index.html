@@ -32,8 +32,8 @@
     <script>
       (function () {
         try {
-          var stored = localStorage.getItem("theme-preference");
-          var resolved =
+          const stored = localStorage.getItem("theme-preference");
+          const resolved =
             stored === "light" || stored === "dark"
               ? stored
               : window.matchMedia("(prefers-color-scheme: dark)").matches

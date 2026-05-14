@@ -26,6 +26,16 @@ export function getTurnstileSitekey() {
  * The site posts to the same-origin Worker route mounted at `/api/contact`.
  * This works in production and in local setups that proxy that path.
  */
-export function getContactEndpoint() {
-  return "/api/contact";
-}
+export const CONTACT_ENDPOINT = "/api/contact";
+
+/**
+ * Contact form field bounds enforced by the Worker (`worker/src/index.js`
+ * `validateBody`). Keep these values identical on both sides.
+ */
+export const CONTACT_FORM_LIMITS = {
+  messageMin: 10,
+  messageMax: 4000,
+  nameMax: 100,
+  subjectMax: 200,
+  emailMax: 254,
+};

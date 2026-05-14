@@ -13,31 +13,17 @@
  *   CONTACT_TO         - destination inbox (secret)
  */
 
-const ALLOWED_ORIGINS_EXACT = [
-  "https://by-a-thread.de",
-  "https://www.by-a-thread.de",
-];
-
 const MAX_BODY_BYTES = 16 * 1024;
+/** Keep in sync with `frontend/js/shared/config.js` `CONTACT_FORM_LIMITS`. */
+const CONTACT_LIMITS = {
+  messageMin: 10,
+  messageMax: 4000,
+  nameMax: 100,
+  subjectMax: 200,
+  emailMax: 254,
+};
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONTROL_CHARS_REGEX = /[\u0000-\u001F\u007F]/;
-
-function isAllowedOrigin(origin) {
-  return ALLOWED_ORIGINS_EXACT.includes(origin);
-}
-
-function corsHeaders(origin) {
-  if (!origin) return {};
-  const allowed = isAllowedOrigin(origin);
-  if (!allowed) return {};
-  return {
-    "Access-Control-Allow-Origin": origin,
-    Vary: "Origin",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Max-Age": "86400",
-  };
-}
 
 function jsonResponse(body, status, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
@@ -68,26 +54,41 @@ async function readJsonBody(request) {
 function validateBody(body) {
   if (typeof body !== "object" || body === null) return "invalid";
 
+  // The claim is that treating whitespace as valid excuses legit users whose
+  // browser autofills the form. I don't follow this reasoning. Autofill is more
+  // likely to place a URL in the field. If that's a risk, excusing only
+  // an all whitespace input doesn't help. If it's not a risk, permitting an all
+  // whitespace input needlessly weakens the honeypot.
   const honeypot = typeof body.website === "string" ? body.website.trim() : "";
   if (honeypot) return "invalid";
 
   const email = typeof body.email === "string" ? body.email.trim() : "";
   if (
     !EMAIL_REGEX.test(email) ||
-    email.length > 254 ||
+    email.length > CONTACT_LIMITS.emailMax ||
     CONTROL_CHARS_REGEX.test(email)
   ) {
     return "invalid";
   }
 
   const message = typeof body.message === "string" ? body.message.trim() : "";
-  if (message.length < 10 || message.length > 4000) return "invalid";
+  if (
+    message.length < CONTACT_LIMITS.messageMin ||
+    message.length > CONTACT_LIMITS.messageMax
+  ) {
+    return "invalid";
+  }
 
   const name = typeof body.name === "string" ? body.name.trim() : "";
-  if (name.length > 100 || CONTROL_CHARS_REGEX.test(name)) return "invalid";
+  if (name.length > CONTACT_LIMITS.nameMax || CONTROL_CHARS_REGEX.test(name)) {
+    return "invalid";
+  }
 
   const subject = typeof body.subject === "string" ? body.subject.trim() : "";
-  if (subject.length > 200 || CONTROL_CHARS_REGEX.test(subject)) {
+  if (
+    subject.length > CONTACT_LIMITS.subjectMax ||
+    CONTROL_CHARS_REGEX.test(subject)
+  ) {
     return "invalid";
   }
 
@@ -156,98 +157,91 @@ async function sendViaResend(env, payload) {
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const detail = await res.text().catch(() => "");
+    let detail = "";
+    try {
+      detail = await res.text();
+    } catch (e) {
+      console.error("resend response body read failed", e);
+    }
     console.error("resend send failed", res.status, detail);
     throw new Error(`resend_${res.status}`);
   }
 }
 
+/**
+ * The default export is an object with a fetch method: { async fetch(request,
+ * env) {} }. The workerd runtime calls this method for every HTTP request that
+ * is routed to this worker. This fetch is not the global fetch, as used in
+ * sendViaResend.
+ *
+ * Routed from by-a-thread.de or www.by-a-thread.de under "/api/*". The site
+ * calls POST /api/contact. The origin is the same, hence no need for CORS.
+ */
 export default {
   async fetch(request, env) {
-    const origin = request.headers.get("Origin");
-    const cors = corsHeaders(origin);
-    const isContactRoute = new URL(request.url).pathname === "/api/contact";
-
-    if (isContactRoute && (!origin || !isAllowedOrigin(origin))) {
-      return jsonResponse({ ok: false, error: "origin_not_allowed" }, 403);
-    }
-
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: cors });
-    }
-
     const url = new URL(request.url);
     if (url.pathname !== "/api/contact") {
-      return jsonResponse({ ok: false, error: "not_found" }, 404, cors);
+      return jsonResponse({ ok: false, error: "not_found" }, 404);
     }
+
     if (request.method !== "POST") {
       return jsonResponse({ ok: false, error: "method_not_allowed" }, 405, {
-        ...cors,
-        Allow: "POST, OPTIONS",
+        Allow: "POST",
       });
     }
 
+    if (!env.RATE_LIMITER) {
+      console.error("missing RATE_LIMITER binding");
+      return jsonResponse({ ok: false, error: "server_misconfigured" }, 500);
+    }
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-
-    if (env.RATE_LIMITER) {
-      try {
-        const { success } = await env.RATE_LIMITER.limit({ key: ip });
-        if (!success) {
-          return jsonResponse({ ok: false, error: "rate_limited" }, 429, cors);
-        }
-      } catch (err) {
-        console.error("rate limit check threw", err);
-        return jsonResponse(
-          { ok: false, error: "rate_limit_unavailable" },
-          503,
-          cors,
-        );
+    try {
+      const { success } = await env.RATE_LIMITER.limit({ key: ip });
+      if (!success) {
+        return jsonResponse({ ok: false, error: "rate_limited" }, 429);
       }
+    } catch (err) {
+      console.error("rate limit check threw", err);
+      return jsonResponse({ ok: false, error: "rate_limit_unavailable" }, 503);
     }
 
     const { json: body, error: parseErr } = await readJsonBody(request);
     if (parseErr) {
-      return jsonResponse({ ok: false, error: parseErr }, 400, cors);
+      return jsonResponse({ ok: false, error: parseErr }, 400);
     }
 
     const validationErr = validateBody(body);
     if (validationErr) {
-      return jsonResponse({ ok: false, error: validationErr }, 400, cors);
+      return jsonResponse({ ok: false, error: validationErr }, 400);
     }
 
     if (!env.TURNSTILE_SECRET) {
       console.error("missing TURNSTILE_SECRET binding");
-      return jsonResponse(
-        { ok: false, error: "server_misconfigured" },
-        500,
-        cors,
-      );
+      return jsonResponse({ ok: false, error: "server_misconfigured" }, 500);
     }
-
     const turnstileOk = await verifyTurnstile(
       env.TURNSTILE_SECRET,
       body["cf-turnstile-response"],
       ip,
     );
     if (!turnstileOk) {
-      return jsonResponse({ ok: false, error: "turnstile_failed" }, 403, cors);
+      return jsonResponse({ ok: false, error: "turnstile_failed" }, 403);
     }
 
-    if (!env.RESEND_API_KEY || !env.CONTACT_TO) {
-      console.error("missing RESEND_API_KEY or CONTACT_TO binding");
-      return jsonResponse(
-        { ok: false, error: "server_misconfigured" },
-        500,
-        cors,
-      );
+    if (!env.RESEND_API_KEY) {
+      console.error("missing RESEND_API_KEY");
+      return jsonResponse({ ok: false, error: "server_misconfigured" }, 500);
     }
-
+    if (!env.CONTACT_TO) {
+      console.error("missing CONTACT_TO binding");
+      return jsonResponse({ ok: false, error: "server_misconfigured" }, 500);
+    }
     try {
       await sendViaResend(env, buildEmailPayload(env, body));
     } catch {
-      return jsonResponse({ ok: false, error: "send_failed" }, 502, cors);
+      return jsonResponse({ ok: false, error: "send_failed" }, 502);
     }
 
-    return jsonResponse({ ok: true }, 200, cors);
+    return jsonResponse({ ok: true }, 200);
   },
 };

@@ -30,7 +30,11 @@ npx wrangler secret put TURNSTILE_SECRET
 
 ## Deployment
 
-Push to see changes to frontend in production, and hard refresh in a private window. To see changes to the worker,
+If the inline script in the head of `index.html` has changed, recompute the hash of everything between the script tags, including whitespace such as spaces and newlines, and add that to the Content Security Policy in `frontend/_headers` before deployment. (To compute the hash, run `./scripts/hash.sh`. Be sure to make it executable before running for the first time: `chmod +x scripts/hash.sh`).
+
+Deploy changes made to `frontend` with `git push`. Hard refresh in the browser and clear the cache if need be to see the changes.
+
+To deploy changes made to `worker`,
 
 ```sh
 cd worker
