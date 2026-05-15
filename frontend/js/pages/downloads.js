@@ -218,8 +218,8 @@ function triggerDownload(platform) {
 
   // Add a temporary, hidden anchor and programmatically click on it to fetch
   // the resource without navigating away from the page. We use hidden rather
-  // than CSS to hide it so that the Content Security Policy can include the
-  // directive `style-src 'self'`; see frontend/_headers.
+  // than CSS to hide it so that the Content Security Policy directive
+  // `style-src 'self'` in `_middleware.js` does not need to allow inline styles.
   const anchor = document.createElement("a");
   anchor.href = `${RELEASE_BASE}/${fileName}`;
   anchor.hidden = true;

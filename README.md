@@ -3,6 +3,7 @@
 - [Overview](#overview)
 - [Custom elements](#custom-elements)
 - [Secrets](#secrets)
+- [Content Security Policy](#content-security-policy)
 - [Deployment](#deployment)
 
 ## Overview
@@ -56,9 +57,42 @@ npx wrangler secret put CONTACT_TO
 npx wrangler secret put TURNSTILE_SECRET
 ```
 
-## Deployment
+## Content Security Policy
 
-`script-src` in `frontend/_headers` includes `'unsafe-inline'` so Cloudflare Turnstile's variable inline scripts keep working on static hosting. That weakens XSS resistance compared to a hash- or nonce-based policy; a stricter setup would need HTML generated with a per-response nonce (for example a Cloudflare Pages Function) plus Turnstile's nonce guidance.
+`frontend/functions/_middleware.js` (a Cloudflare Pages Function) applies security headers to every response, with an additional Content Security Policy on HTML responses only.
+
+All responses receive:
+
+```
+Referrer-Policy: strict-origin-when-cross-origin
+X-Content-Type-Options: nosniff
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+Notes on these headers:
+
+- **`Referrer-Policy: strict-origin-when-cross-origin`**: sends the full URL as `Referer` for same-origin requests (useful for analytics and server logs) but strips the path and query string for cross-origin requests, sending only the origin. This prevents leaking URL parameters (which may contain tokens or identifiers) to third parties.
+- **`X-Content-Type-Options: nosniff`**: instructs the browser not to guess a resource's content type from its bytes if the declared `Content-Type` disagrees. Without this, some browsers would execute a JavaScript file served as `text/plain`, for example.
+- **`Permissions-Policy: camera=(), microphone=(), geolocation=()`**: explicitly disables access to the camera, microphone, and geolocation APIs for this origin and any embedded iframes. The site does not use them; declaring this prevents a script injection from silently requesting them.
+
+Non-HTML responses (JS, CSS, images, fonts) receive only the above. HTML responses additionally receive a Content Security Policy. `NONCE` here is a fresh random value per request:
+
+```
+default-src 'self'; script-src 'nonce-NONCE' 'strict-dynamic'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests; form-action 'self'
+```
+
+To evaluate with [CSP Evaluator](https://csp-evaluator.withgoogle.com/), replace `NONCE` with any non-empty string (e.g. `abc123`); the evaluator treats any nonce value as valid.
+
+Notes on specific directives:
+
+- **`script-src 'nonce-NONCE' 'strict-dynamic'`**: `'strict-dynamic'` propagates trust from nonce-bearing scripts to scripts they create dynamically, so Turnstile's API `<script>` (injected by `contact.js`) is allowed without an explicit host allowlist or `'unsafe-inline'`.
+- **`style-src 'self'`**: no inline styles exist in the HTML; the codebase uses the `hidden` attribute rather than `style=""` so this directive needs no `'unsafe-inline'`. Turnstile's widget renders entirely inside its `challenges.cloudflare.com` iframe, not on the host page.
+- **`connect-src 'self'`**: Turnstile's network I/O happens inside its sandboxed iframe; the contact form submits via `fetch()` to the same-origin Worker.
+- **`frame-src https://challenges.cloudflare.com`**: permits only the Turnstile iframe.
+- **`img-src 'self' data:`**: `data:` URIs are needed for canvas-rendered images (maze). CSP Evaluator flags this at low severity; the risk is accepted.
+- **`base-uri 'none'`**: stricter than `'self'`; prevents `<base>` tag injection entirely.
+
+## Deployment
 
 Deploy changes made to `frontend` with `git push`. Hard refresh in the browser and clear the cache if need be to see the changes.
 
