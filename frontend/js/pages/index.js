@@ -1,8 +1,8 @@
 import { MazeBackground } from "../maze/maze.js";
 import { initCarousel } from "../ui/carousel.js";
 import { initDialogs, MAIN_MENU_DIALOGS } from "../ui/dialogs.js";
-import { defineSiteControlElements } from "../ui/site-controls.js";
 import { initMenu } from "../ui/menu.js";
+import { defineSiteControlElements } from "../ui/site-controls.js";
 import { initTheme } from "../ui/theme.js";
 import {
   DOWNLOAD_DIALOGS,
@@ -62,7 +62,7 @@ const HASH_DOWNLOADS = "#downloads";
    */
   function focusFirstInScope(scope) {
     const candidates = scope.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])',
+      "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])",
     );
     for (let i = 0; i < candidates.length; i++) {
       const el = candidates[i];
@@ -168,8 +168,14 @@ const HASH_DOWNLOADS = "#downloads";
       mazeBackground.repaintCurrentState();
     },
   });
+
+  try {
+    initMenu();
+  } catch (e) {
+    console.error(e);
+  }
+
   initCarousel();
-  initMenu();
 
   initDialogs({
     dialogs: MAIN_MENU_DIALOGS.concat(DOWNLOAD_DIALOGS),

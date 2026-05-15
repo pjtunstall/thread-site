@@ -1,5 +1,18 @@
-// Wilson's algorithm: add loop-erased random walks from unvisited cells.
-export function buildCarveCellsWilson({ cellCols, cellRows, helpers }) {
+import {
+  cellKey,
+  cellToGrid,
+  getCellNeighbors,
+  pickRandomFrom,
+  wallBetweenCells,
+} from "../grid.js";
+
+/**
+ * Wilson's algorithm: add loop-erased random walks from unvisited cells.
+ *
+ * @param {{ cellCols: number, cellRows: number }} options
+ * @returns {{ cells: Array<{x: number, y: number}>, iterativeStartIndex: number }}
+ */
+export function buildCarveCellsWilson({ cellCols, cellRows }) {
   const allCells = [];
   for (let y = 0; y < cellRows; y += 1) {
     for (let x = 0; x < cellCols; x += 1) {
@@ -9,32 +22,30 @@ export function buildCarveCellsWilson({ cellCols, cellRows, helpers }) {
 
   const finalized = new Set();
   const carveOrder = [];
-  const initialCell = helpers.pickRandomFrom(allCells);
+  const initialCell = pickRandomFrom(allCells);
 
-  finalized.add(helpers.cellKey(initialCell));
-  carveOrder.push(helpers.cellToGrid(initialCell));
+  finalized.add(cellKey(initialCell));
+  carveOrder.push(cellToGrid(initialCell));
 
   while (finalized.size < allCells.length) {
-    const candidates = allCells.filter(
-      (cell) => !finalized.has(helpers.cellKey(cell)),
-    );
-    const startOfWalk = helpers.pickRandomFrom(candidates);
+    const candidates = allCells.filter((cell) => !finalized.has(cellKey(cell)));
+    const startOfWalk = pickRandomFrom(candidates);
     const walk = [startOfWalk];
-    const walkPositions = new Map([[helpers.cellKey(startOfWalk), 0]]);
+    const walkPositions = new Map([[cellKey(startOfWalk), 0]]);
     let current = startOfWalk;
 
-    while (!finalized.has(helpers.cellKey(current))) {
-      const next = helpers.pickRandomFrom(
-        helpers.getCellNeighbors(current, cellCols, cellRows),
+    while (!finalized.has(cellKey(current))) {
+      const next = pickRandomFrom(
+        getCellNeighbors(current, cellCols, cellRows),
       );
-      const nextKey = helpers.cellKey(next);
+      const nextKey = cellKey(next);
 
       if (walkPositions.has(nextKey)) {
         const loopStart = walkPositions.get(nextKey);
         walk.splice(loopStart + 1);
         walkPositions.clear();
         for (let i = 0; i < walk.length; i += 1) {
-          walkPositions.set(helpers.cellKey(walk[i]), i);
+          walkPositions.set(cellKey(walk[i]), i);
         }
       } else {
         walk.push(next);
@@ -47,13 +58,13 @@ export function buildCarveCellsWilson({ cellCols, cellRows, helpers }) {
     for (let i = 0; i < walk.length - 1; i += 1) {
       const from = walk[i];
       const to = walk[i + 1];
-      const fromKey = helpers.cellKey(from);
+      const fromKey = cellKey(from);
 
       if (!finalized.has(fromKey)) {
         finalized.add(fromKey);
-        carveOrder.push(helpers.cellToGrid(from));
+        carveOrder.push(cellToGrid(from));
       }
-      carveOrder.push(helpers.wallBetweenCells(from, to));
+      carveOrder.push(wallBetweenCells(from, to));
     }
   }
 

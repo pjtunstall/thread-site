@@ -4,6 +4,10 @@ export function initMenu() {
   const menuToggle = getMenuToggle();
   let isMenuOpen = false;
 
+  /**
+   *
+   * @param {boolean} nextState
+   */
   function setMenuOpen(nextState) {
     isMenuOpen = nextState;
     if (isMenuOpen) {

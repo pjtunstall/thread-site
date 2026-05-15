@@ -19,6 +19,12 @@ function readThemePreference() {
   }
 }
 
+/**
+ *
+ * @param {string} theme
+ * @param {HTMLButtonElement} themeToggle
+ * @returns
+ */
 function applyThemePreference(theme, themeToggle) {
   root.setAttribute("data-theme", theme);
   if (!(themeToggle instanceof HTMLButtonElement)) return;
@@ -29,6 +35,10 @@ function applyThemePreference(theme, themeToggle) {
   themeToggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
 }
 
+/**
+ *
+ * @param {string} theme
+ */
 function saveThemePreference(theme) {
   try {
     localStorage.setItem("theme-preference", theme);
@@ -40,6 +50,10 @@ function saveThemePreference(theme) {
   }
 }
 
+/**
+ * @param {{ themeToggle?: HTMLButtonElement | null }} [options]
+ * @returns {string}
+ */
 export function applyStoredThemePreference(options = {}) {
   const { themeToggle } = options;
   const currentTheme = readThemePreference();
@@ -47,6 +61,10 @@ export function applyStoredThemePreference(options = {}) {
   return currentTheme;
 }
 
+/**
+ * @param {{ onThemeChange?: (theme: string) => void }} [options]
+ * @returns {string | undefined} Theme string when no toggle exists; otherwise undefined.
+ */
 export function initTheme(options = {}) {
   const { onThemeChange } = options;
   const themeToggle = getThemeToggle();
