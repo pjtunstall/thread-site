@@ -19,7 +19,8 @@
  * code (`btn btn--ghost`, etc.).
  */
 
-export const CONTROL_HOST_SVG_NS = "http://www.w3.org/2000/svg";
+import { trustedHtml } from "../trusted-types-boot.js";
+import { SVG_NAMESPACE } from "../trusted-types.js";
 
 /**
  * Create the inner interactive element for this host: `<a>` if `href` is set on
@@ -67,7 +68,9 @@ export function mirrorHostAttributesExcept(host, control, options) {
  */
 export function svgElementFromInnerMarkup(innerMarkup, viewBox = "0 0 24 24") {
   const tpl = document.createElement("template");
-  tpl.innerHTML = `<svg xmlns="${CONTROL_HOST_SVG_NS}" viewBox="${viewBox}">${innerMarkup}</svg>`;
+  tpl.innerHTML = trustedHtml(
+    `<svg xmlns="${SVG_NAMESPACE}" viewBox="${viewBox}">${innerMarkup}</svg>`,
+  );
   const el = tpl.content.firstElementChild;
   return el instanceof SVGElement ? el : null;
 }

@@ -28,7 +28,7 @@ export async function onRequest(context) {
     "Content-Security-Policy",
     [
       `default-src 'self'`,
-      `script-src 'nonce-${nonce}' 'strict-dynamic' https: 'unsafe-inline`,
+      `script-src 'nonce-${nonce}' 'strict-dynamic' https: 'unsafe-inline'`,
       `style-src 'self'`,
       `img-src 'self' data:`,
       `font-src 'self'`,
@@ -39,6 +39,7 @@ export async function onRequest(context) {
       `object-src 'none'`,
       `upgrade-insecure-requests`,
       `form-action 'self'`,
+      `require-trusted-types-for 'script'; trusted-types policy`,
     ].join("; "),
   );
 

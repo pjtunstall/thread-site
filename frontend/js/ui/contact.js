@@ -1,4 +1,5 @@
 import { CONTACT_FORM_LIMITS, getTurnstileSitekey } from "../shared/config.js";
+import { trustedScriptURL } from "../trusted-types-boot.js";
 
 const LOG_PREFIX = "[site-init]";
 
@@ -53,7 +54,7 @@ function ensureTurnstileScript() {
   }
   turnstileScriptPromise = new Promise(function (resolve, reject) {
     const script = document.createElement("script");
-    script.src = TURNSTILE_API_URL;
+    script.src = trustedScriptURL(TURNSTILE_API_URL);
     script.async = true;
     script.setAttribute("data-thread-turnstile-api", "");
     script.addEventListener(
@@ -270,7 +271,7 @@ export function renderForm(bodyContainer, formDef) {
   let turnstileToken = null;
   let widget = null;
 
-  // Turnstile won't initialise inside display:none ancestors, so the widget is
+  // Turnstile won't initialize inside display:none ancestors, so the widget is
   // mounted when the dialog first opens. The Turnstile API script is also
   // loaded then (first call here), not on initial page load.
   form._mountTurnstileIfNeeded = function () {

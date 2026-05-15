@@ -2,26 +2,21 @@ import {
   MENU_CARD_ICON_BY_ID,
   MENU_CARD_SVG_VIEWBOX,
 } from "../shared/svg-icons.js";
+import { trustedHtml } from "../trusted-types-boot.js";
+import { MENU_CARD_TEMPLATE_HTML } from "../trusted-types.js";
 
-/** Markup for `<menu-card>` face; icons supplied via `data-menu-icon` /
- * `svg-icons.js`. */
-const MENU_CARD_TEMPLATE_HTML = `
-  <span class="menu-card__face menu-card__face--back" aria-hidden="true"></span>
-  <span class="menu-card__face menu-card__face--front">
-    <span class="btn__label" data-menu-card-label></span>
-  </span>
-`;
-
-const SVG_NS = "http://www.w3.org/2000/svg";
+const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
 /**
  * @param {import("../shared/svg-icons.js").MenuCardIconDef} def
  * @returns {SVGElement | null}
  */
 function menuCardSvgFromIconDef(def) {
-  const tpl = document.createElement("template");
-  tpl.innerHTML = `<svg xmlns="${SVG_NS}" viewBox="${MENU_CARD_SVG_VIEWBOX}">${def.innerMarkup}</svg>`;
-  const root = tpl.content.firstElementChild;
+  const template = document.createElement("template");
+  template.innerHTML = trustedHtml(
+    `<svg xmlns="${SVG_NAMESPACE}" viewBox="${MENU_CARD_SVG_VIEWBOX}">${def.innerMarkup}</svg>`,
+  );
+  const root = template.content.firstElementChild;
   if (!(root instanceof SVGElement)) return null;
   if (def.svgClass) root.setAttribute("class", def.svgClass);
   return root;
@@ -38,7 +33,7 @@ export function defineMenuCard() {
   if (!(templateCandidate instanceof HTMLTemplateElement)) {
     const template = document.createElement("template");
     template.id = templateId;
-    template.innerHTML = MENU_CARD_TEMPLATE_HTML;
+    template.innerHTML = trustedHtml(MENU_CARD_TEMPLATE_HTML);
     document.body.append(template);
     templateCandidate = template;
   }

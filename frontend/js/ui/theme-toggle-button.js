@@ -4,6 +4,7 @@ import {
   mirrorHostAttributesExcept,
 } from "../shared/control-host.js";
 import { THEME_TOGGLE_INNER_HTML } from "../shared/svg-icons.js";
+import { trustedHtml } from "../trusted-types-boot.js";
 
 const LOG_PREFIX = "[theme-toggle-button]";
 const HOST_ATTR_SKIP = new Set(["data-theme-toggle"]);
@@ -21,7 +22,10 @@ export function defineThemeToggleButton() {
       control.className = "btn btn--ghost";
       mirrorHostAttributesExcept(this, control, { skip: HOST_ATTR_SKIP });
       control.setAttribute("data-theme-toggle", "");
-      control.insertAdjacentHTML("beforeend", THEME_TOGGLE_INNER_HTML);
+      control.insertAdjacentHTML(
+        "beforeend",
+        trustedHtml(THEME_TOGGLE_INNER_HTML),
+      );
 
       finalizeControlHost(this, control);
     }

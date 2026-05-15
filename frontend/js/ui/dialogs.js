@@ -1,24 +1,9 @@
 import { CONTACT_ENDPOINT, CONTACT_FORM_LIMITS } from "../shared/config.js";
+import { trustedHtml } from "../trusted-types-boot.js";
+import { DIALOG_TEMPLATE_HTML } from "../trusted-types.js";
 import { renderForm } from "./contact.js";
 
 const LOG_PREFIX = "[site-init]";
-
-/** Markup for each dialog shell; cloned per dialog by `renderDialogs`. */
-const DIALOG_TEMPLATE_HTML = `
-  <dialog data-dialog>
-    <div class="dialog__panel">
-      <div class="dialog__inner">
-        <h2 class="dialog__title" data-dialog-title></h2>
-        <div data-dialog-body></div>
-        <div class="dialog__footer">
-          <button type="button" class="dialog__close" data-dialog-close>
-            <span class="btn__label">CLOSE</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </dialog>
-`;
 
 export const MAIN_MENU_DIALOGS = [
   {
@@ -147,7 +132,7 @@ function getDialogTemplate() {
   if (!(template instanceof HTMLTemplateElement)) {
     const created = document.createElement("template");
     created.id = "dialog-template";
-    created.innerHTML = DIALOG_TEMPLATE_HTML;
+    created.innerHTML = trustedHtml(DIALOG_TEMPLATE_HTML);
     document.body.append(created);
     template = created;
   }
