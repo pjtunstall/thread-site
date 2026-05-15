@@ -8,7 +8,10 @@ export async function onRequest(context) {
   const newHeaders = new Headers(response.headers);
   newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
   newHeaders.set("X-Content-Type-Options", "nosniff");
-  newHeaders.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  newHeaders.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=()",
+  );
 
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("text/html")) {
@@ -25,7 +28,7 @@ export async function onRequest(context) {
     "Content-Security-Policy",
     [
       `default-src 'self'`,
-      `script-src 'nonce-${nonce}' 'strict-dynamic'`,
+      `script-src 'nonce-${nonce}' 'strict-dynamic' https: 'unsafe-inline`,
       `style-src 'self'`,
       `img-src 'self' data:`,
       `font-src 'self'`,

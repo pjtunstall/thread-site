@@ -78,14 +78,14 @@ Notes on these headers:
 Non-HTML responses (JS, CSS, images, fonts) receive only the above. HTML responses additionally receive a Content Security Policy. `NONCE` here is a fresh random value per request:
 
 ```
-default-src 'self'; script-src 'nonce-NONCE' 'strict-dynamic'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests; form-action 'self'
+default-src 'self'; script-src 'nonce-NONCE' 'strict-dynamic' https: 'unsafe-inline'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests; form-action 'self'
 ```
 
 To evaluate with [CSP Evaluator](https://csp-evaluator.withgoogle.com/), replace `NONCE` with any non-empty string (e.g. `abc123`); the evaluator treats any nonce value as valid.
 
 Notes on specific directives:
 
-- **`script-src 'nonce-NONCE' 'strict-dynamic'`**: `'strict-dynamic'` propagates trust from nonce-bearing scripts to scripts they create dynamically, so Turnstile's API `<script>` (injected by `contact.js`) is allowed without an explicit host allowlist or `'unsafe-inline'`.
+- **`script-src 'nonce-NONCE' 'strict-dynamic' https: 'unsafe-inline'`**: `'strict-dynamic'` propagates trust from nonce-bearing scripts to scripts they create dynamically, so Turnstile's API `<script>` (injected by `contact.js`) is allowed without an explicit host allowlist or `'unsafe-inline'`. The last two items, `https:` and `'unsafe-inline'` are recommended as a fallback for very old browsers; all browsers that support `'strict-dynamic'` (i.e. all modern browsers) will ignore them.
 - **`style-src 'self'`**: no inline styles exist in the HTML; the codebase uses the `hidden` attribute rather than `style=""` so this directive needs no `'unsafe-inline'`. Turnstile's widget renders entirely inside its `challenges.cloudflare.com` iframe, not on the host page.
 - **`connect-src 'self'`**: Turnstile's network I/O happens inside its sandboxed iframe; the contact form submits via `fetch()` to the same-origin Worker.
 - **`frame-src https://challenges.cloudflare.com`**: permits only the Turnstile iframe.
