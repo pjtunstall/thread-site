@@ -27,9 +27,11 @@ export function pickRandomFrom(items) {
 }
 
 /**
+ * Convert cell coordinates to grid coordinates. A `Cell` means a rooms; a
+ * `GridPoint` could be a room, wall, or pillar.
  *
  * @param {Cell} cell
- * @returns {Cell}
+ * @returns {GridPoint}
  */
 export function cellToGrid(cell) {
   return { x: cell.x * 2 + 1, y: cell.y * 2 + 1 };

@@ -3,6 +3,7 @@ import { cellToGrid, wallBetweenCells } from "../grid.js";
 /**
  * @typedef {{ x: number, y: number }} Cell
  * @typedef {{ from: Cell, to: Cell }} Wall
+ * @typedef {{ x: number, y: number }} GridPoint
  */
 
 /**
@@ -12,10 +13,18 @@ import { cellToGrid, wallBetweenCells } from "../grid.js";
  * @returns {{ cells: Array<{x: number, y: number}>, iterativeStartIndex: number }}
  */
 export function buildCarveCellsKruskal({ cellCols, cellRows }) {
+  /** @type {Array<GridPoint>} */
   const carveOrder = [];
+
   const roomCount = cellCols * cellRows;
+
+  /** @type {Array<number>} */
   const parent = Array.from({ length: roomCount }, (_, i) => i);
+
+  /** @type {Array<number>} */
   const rank = Array.from({ length: roomCount }, () => 0);
+
+  /** @type {Array<Wall>} */
   const walls = [];
 
   for (let y = 0; y < cellRows; y += 1) {
