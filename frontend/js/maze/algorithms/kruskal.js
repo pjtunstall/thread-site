@@ -1,6 +1,11 @@
 import { cellToGrid, wallBetweenCells } from "../grid.js";
 
 /**
+ * @typedef {{ x: number, y: number }} Cell
+ * @typedef {{ from: Cell, to: Cell }} Wall
+ */
+
+/**
  * Kruskal's algorithm: treat rooms as disjoint sets and carve walls that join sets.
  *
  * @param {{ cellCols: number, cellRows: number }} options
@@ -54,6 +59,13 @@ export function buildCarveCellsKruskal({ cellCols, cellRows }) {
   };
 }
 
+/**
+ * Fisher–Yates shuffle: randomize array order in place.
+ *
+ * @template T
+ * @param {Array<T>} items
+ * @returns {void}
+ */
 function shuffleInPlace(items) {
   for (let i = items.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -61,10 +73,26 @@ function shuffleInPlace(items) {
   }
 }
 
+/**
+ * Flat room index for union–find (row-major: `y * cellCols + x`).
+ *
+ * @param {Cell} cell
+ * @param {number} cellCols
+ * @returns {number}
+ */
 function cellToIndex(cell, cellCols) {
   return cell.y * cellCols + cell.x;
 }
 
+/**
+ * Union–find: return the root of the set containing `index`. Follows parent
+ * pointers until `parent[r] === r`; path-compresses on the way back.
+ *
+ * @param {Array<number>} parent Parent pointers; `parent[i]` is i's parent (i
+ * if i is a root).
+ * @param {number} index Room index whose set root is needed.
+ * @returns {number} Root index of that set.
+ */
 function findSetRoot(parent, index) {
   if (parent[index] !== index) {
     parent[index] = findSetRoot(parent, parent[index]);
@@ -72,6 +100,16 @@ function findSetRoot(parent, index) {
   return parent[index];
 }
 
+/**
+ * Union–find: merge the two sets whose roots are `a` and `b` (union by rank).
+ * Attaches one root under the other via `parent`; no-op if `a === b`.
+ *
+ * @param {Array<number>} parent Parent-pointer forest (mutated).
+ * @param {Array<number>} rank Approximate tree depths per root (mutated).
+ * @param {number} a Root index of one set.
+ * @param {number} b Root index of the other set.
+ * @returns {void}
+ */
 function unionSets(parent, rank, a, b) {
   if (a === b) {
     return;

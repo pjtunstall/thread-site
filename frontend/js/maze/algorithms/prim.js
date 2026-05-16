@@ -7,27 +7,11 @@ import {
   wallBetweenCells,
 } from "../grid.js";
 
-function normalizeWall(a, b) {
-  if (a.y < b.y || (a.y === b.y && a.x <= b.x)) {
-    return { from: a, to: b };
-  }
-  return { from: b, to: a };
-}
-
-function wallKey(wall) {
-  return `${cellKey(wall.from)}|${cellKey(wall.to)}`;
-}
-
-function addFrontierWalls(cell, cellCols, cellRows, frontier, visited) {
-  const neighbors = getCellNeighbors(cell, cellCols, cellRows);
-  for (const neighbor of neighbors) {
-    if (visited.has(cellKey(neighbor))) {
-      continue;
-    }
-    const wall = normalizeWall(cell, neighbor);
-    frontier.set(wallKey(wall), wall);
-  }
-}
+/**
+ * @typedef {{ x: number, y: number }} Cell
+ * @typedef {{ from: Cell, to: Cell }} Wall
+ * @typedef {{ x: number, y: number }} GridPoint
+ */
 
 /**
  * Prim's algorithm: grow a tree by carving random frontier walls outward.
@@ -36,9 +20,15 @@ function addFrontierWalls(cell, cellCols, cellRows, frontier, visited) {
  * @returns {{ cells: Array<{x: number, y: number}>, iterativeStartIndex: number }}
  */
 export function buildCarveCellsPrim({ cellCols, cellRows }) {
+  /** @type {Array<GridPoint>} */
   const carveOrder = [];
+
+  /** @type {Set<Cell>} */
   const visited = new Set();
+
+  /** @type {Map<string, Wall>} */
   const frontier = new Map();
+
   const initialCell = pickRandomCell(cellCols, cellRows);
 
   visited.add(cellKey(initialCell));
@@ -65,4 +55,45 @@ export function buildCarveCellsPrim({ cellCols, cellRows }) {
   }
 
   return { cells: carveOrder, iterativeStartIndex: 0 };
+}
+
+/**
+ *
+ * @param {Cell} a
+ * @param {Cell} b
+ * @returns {Wall}
+ */
+function normalizeWall(a, b) {
+  if (a.y < b.y || (a.y === b.y && a.x <= b.x)) {
+    return { from: a, to: b };
+  }
+  return { from: b, to: a };
+}
+
+/**
+ *
+ * @param {Wall} wall
+ * @returns {string}
+ */
+function wallKey(wall) {
+  return `${cellKey(wall.from)},${cellKey(wall.to)}`;
+}
+
+/**
+ *
+ * @param {Cell} cell
+ * @param {number} cellCols
+ * @param {number} cellRows
+ * @param {Map<string, Wall} frontier
+ * @param {Set<string>} visited
+ */
+function addFrontierWalls(cell, cellCols, cellRows, frontier, visited) {
+  const neighbors = getCellNeighbors(cell, cellCols, cellRows);
+  for (const neighbor of neighbors) {
+    if (visited.has(cellKey(neighbor))) {
+      continue;
+    }
+    const wall = normalizeWall(cell, neighbor);
+    frontier.set(wallKey(wall), wall);
+  }
 }

@@ -8,7 +8,12 @@
 
 ## Overview
 
-This is a website for users to download my game By a Thread. It includes a contact form and animations of some maze-generating algorithms (backtracker, Kruskal, Prim, and Wilson).
+This is a website for people to download my game [By a Thread](https://github.com/pjtunstall/by-a-thread). It includes a contact form and animations of some maze-generating algorithms:
+
+- Backtracker: draws the maze in one long, winding path
+- Kruskal: starts with a grid of pillars and fills in the gaps
+- Prim: expands in all directions
+- Wilson: like Backtracker, but draws many paths simultaneously
 
 The [Custom elements](#custom-elements) section that follows describes how custom elements are used to encapsulate detail and avoid repetition in the HTML. The other sections note some details on how I set up the website on Cloudflare and how I deploy changes. The static files are hosted on Cloudflare. They link to the downloads on GitHub Releases. For the contact form backend, I used a Cloudflare Worker, and, as spam protection, Cloudflare Turnstile (among other measures). I used Resend SMTP (Simple Mail Transfer Protocol) to relay messages from the contact form to my email address.
 
@@ -78,7 +83,7 @@ Notes on these headers:
 Non-HTML responses (JS, CSS, images, fonts) receive only the above. HTML responses additionally receive a Content Security Policy. `NONCE` here is a fresh random value per request:
 
 ```
-default-src 'self'; script-src 'nonce-NONCE' 'strict-dynamic' https: 'unsafe-inline'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests; form-action 'self'
+default-src 'self'; script-src 'nonce-NONCE' 'strict-dynamic' https: 'unsafe-inline'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests; form-action 'self'; require-trusted-types-for 'script'; trusted-types policy
 ```
 
 To evaluate with [CSP Evaluator](https://csp-evaluator.withgoogle.com/), replace `NONCE` with any non-empty string (e.g. `abc123`); the evaluator treats any nonce value as valid.
@@ -91,6 +96,7 @@ Notes on specific directives:
 - **`frame-src https://challenges.cloudflare.com`**: permits only the Turnstile iframe.
 - **`img-src 'self' data:`**: `data:` URIs are needed for canvas-rendered images (maze). CSP Evaluator flags this at low severity; the risk is accepted.
 - **`base-uri 'none'`**: stricter than `'self'`; prevents `<base>` tag injection entirely.
+- **`require-trusted-types-for 'script'; trusted-types policy`**: Allows `frontend/js/trusted-types-boot.js` to define a Trusted Types policy, called `policy`. Now, for any browser that supports Trusted Types (all modern browsers), only strings on my allowlist can be turned into HTML and added to the DOM, and likewise only permitted strings can be inserted as script URLs. (In this case, that's only the Cloudflare Turnstile script that guards the contact form.) Moreover, an attacker can't create another policy of a different name or redefine `policy`. This is overkill for the current project since user input isn't shown to other users, but I implemented it anyway as a learning exercise. If user input was displayed for other users, the Trusted Types system could be used to prevent any code from bypassing the sanitization step.
 
 ## Deployment
 

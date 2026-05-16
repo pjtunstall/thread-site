@@ -56,7 +56,7 @@ if (window.trustedTypes?.createPolicy) {
 /**
  *
  * @param {string} html
- * @returns string
+ * @returns {string}
  */
 export function trustedHtml(html) {
   return htmlPolicy.createHTML(html);
@@ -65,7 +65,7 @@ export function trustedHtml(html) {
 /**
  *
  * @param {string} url
- * @returns string
+ * @returns {string}
  */
 export function trustedScriptURL(url) {
   return htmlPolicy.createScriptURL(url);
@@ -74,7 +74,7 @@ export function trustedScriptURL(url) {
 /**
  *
  * @param {string} input
- * @returns string
+ * @returns {string}
  */
 function createHTML(input) {
   if (trustedHtmlArray.includes(input) || allowedSvgHtml.has(input))
@@ -85,7 +85,7 @@ function createHTML(input) {
 /**
  *
  * @param {string} input
- * @returns string
+ * @returns {string}
  */
 function createScriptURL(input) {
   if (trustedScriptUrlsArray.includes(input)) return input;
