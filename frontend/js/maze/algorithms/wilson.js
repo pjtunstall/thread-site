@@ -10,13 +10,16 @@ import {
  * @typedef {{ x: number, y: number }} Cell
  * @typedef {{ from: Cell, to: Cell }} Wall
  * @typedef {{ x: number, y: number }} GridPoint
+ *
+ * @typedef {{ gridPoints: Array<GridPoint>, iterativeStartIndex: number }} CarvePlan
  */
 
 /**
  * Wilson's algorithm: add loop-erased random walks from unvisited cells.
+ * Appearance: like Backtracker, but draws many paths simultaneously.
  *
  * @param {{ cellCols: number, cellRows: number }} options
- * @returns {{ cells: Array<GridPoint>, iterativeStartIndex: number }}
+ * @returns {CarvePlan}
  */
 export function buildCarveCellsWilson({ cellCols, cellRows }) {
   /** @type {Array<Cell>} */
@@ -62,7 +65,9 @@ export function buildCarveCellsWilson({ cellCols, cellRows }) {
       const nextKey = cellKey(next);
 
       if (walkPositions.has(nextKey)) {
+        /** @type {number} */
         const loopStart = walkPositions.get(nextKey);
+
         walk.splice(loopStart + 1);
         walkPositions.clear();
         for (let i = 0; i < walk.length; i += 1) {
@@ -89,5 +94,5 @@ export function buildCarveCellsWilson({ cellCols, cellRows }) {
     }
   }
 
-  return { cells: carveOrder, iterativeStartIndex: 0 };
+  return { gridPoints: carveOrder, iterativeStartIndex: 0 };
 }

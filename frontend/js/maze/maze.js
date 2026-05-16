@@ -1,4 +1,4 @@
-import { buildCarveCellsDepthFirst } from "./algorithms/depth-first.js";
+import { buildCarveCellsBacktracker } from "./algorithms/backtracker.js";
 import { buildCarveCellsKruskal } from "./algorithms/kruskal.js";
 import { buildCarveCellsPrim } from "./algorithms/prim.js";
 import { buildCarveCellsWilson } from "./algorithms/wilson.js";
@@ -57,7 +57,7 @@ export class MazeBackground {
 
     this.#resizeCanvas();
     const carvePlan = this.#buildCarveCells();
-    this.#carveCells = carvePlan.cells;
+    this.#carveCells = carvePlan.gridPoints;
     this.#iterativeStartIndex = carvePlan.iterativeStartIndex;
     this.#nextCarveIndex = this.#iterativeStartIndex;
     this.#lastStepAt = 0;
@@ -139,7 +139,7 @@ export class MazeBackground {
 
   #pickMazeGenerator() {
     const algorithms = [
-      buildCarveCellsDepthFirst,
+      buildCarveCellsBacktracker,
       buildCarveCellsWilson,
       buildCarveCellsKruskal,
       buildCarveCellsPrim,

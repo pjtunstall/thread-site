@@ -11,19 +11,22 @@ import {
  * @typedef {{ x: number, y: number }} Cell
  * @typedef {{ from: Cell, to: Cell }} Wall
  * @typedef {{ x: number, y: number }} GridPoint
+ *
+ * @typedef {{ gridPoints: Array<GridPoint>, iterativeStartIndex: number }} CarvePlan
  */
 
 /**
  * Prim's algorithm: grow a tree by carving random frontier walls outward.
+ * Appearance: expands in all directions.
  *
  * @param {{ cellCols: number, cellRows: number }} options
- * @returns {{ cells: Array<{x: number, y: number}>, iterativeStartIndex: number }}
+ * @returns {CarvePlan}
  */
 export function buildCarveCellsPrim({ cellCols, cellRows }) {
   /** @type {Array<GridPoint>} */
   const carveOrder = [];
 
-  /** @type {Set<Cell>} */
+  /** @type {Set<string>} */
   const visited = new Set();
 
   /** @type {Map<string, Wall>} */
@@ -36,10 +39,13 @@ export function buildCarveCellsPrim({ cellCols, cellRows }) {
   addFrontierWalls(initialCell, cellCols, cellRows, frontier, visited);
 
   while (frontier.size > 0) {
+    /** @type {string} */
     const wallKeyValue = pickRandomFrom(Array.from(frontier.keys()));
     const wall = frontier.get(wallKeyValue);
+
     frontier.delete(wallKeyValue);
 
+    /** @type {boolean} */
     const fromVisited = visited.has(cellKey(wall.from));
     const toVisited = visited.has(cellKey(wall.to));
 
@@ -54,7 +60,7 @@ export function buildCarveCellsPrim({ cellCols, cellRows }) {
     addFrontierWalls(newCell, cellCols, cellRows, frontier, visited);
   }
 
-  return { cells: carveOrder, iterativeStartIndex: 0 };
+  return { gridPoints: carveOrder, iterativeStartIndex: 0 };
 }
 
 /**
@@ -84,7 +90,7 @@ function wallKey(wall) {
  * @param {Cell} cell
  * @param {number} cellCols
  * @param {number} cellRows
- * @param {Map<string, Wall} frontier
+ * @param {Map<string, Wall>} frontier
  * @param {Set<string>} visited
  */
 function addFrontierWalls(cell, cellCols, cellRows, frontier, visited) {

@@ -8,7 +8,7 @@
  *
  * @param {number} cellCols
  * @param {number} cellRows
- * @returns {void}
+ * @returns {Cell}
  */
 export function pickRandomCell(cellCols, cellRows) {
   return {
@@ -46,6 +46,12 @@ export function cellKey(cell) {
   return `${cell.x},${cell.y}`;
 }
 
+/**
+ *
+ * @param {Cell} from
+ * @param {Cell} to
+ * @returns {GridPoint}
+ */
 export function wallBetweenCells(from, to) {
   const fromGrid = cellToGrid(from);
   return {
@@ -54,6 +60,13 @@ export function wallBetweenCells(from, to) {
   };
 }
 
+/**
+ *
+ * @param {Cell} cell
+ * @param {number} cellCols
+ * @param {number} cellRows
+ * @returns {Array<Cell>}
+ */
 export function getCellNeighbors(cell, cellCols, cellRows) {
   const directions = [
     { dx: 1, dy: 0 },

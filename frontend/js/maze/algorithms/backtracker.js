@@ -7,17 +7,33 @@ import {
 } from "../grid.js";
 
 /**
+ * @typedef {{ x: number, y: number }} Cell
+ * @typedef {{ from: Cell, to: Cell }} Wall
+ * @typedef {{ x: number, y: number }} GridPoint
+ *
+ * @typedef {{ gridPoints: Array<GridPoint>, iterativeStartIndex: number }} CarvePlan
+ */
+
+/**
  * Depth-first backtracking: walk forward randomly until stuck, then backtrack.
+ * Appearance: draws the maze in one long, winding path.
  *
  * @param {{ cellCols: number, cellRows: number }} options
- * @returns {{ cells: Array<{x: number, y: number}>, iterativeStartIndex: number }}
+ * @returns {CarvePlan}
  */
-export function buildCarveCellsDepthFirst({ cellCols, cellRows }) {
+export function buildCarveCellsBacktracker({ cellCols, cellRows }) {
+  /** @type {Array<Array<Cell>>} */
   const visited = Array.from({ length: cellRows }, () =>
     Array.from({ length: cellCols }, () => false),
   );
+
+  /** @type {Array<Cell>} */
   const stack = [];
+
+  /** @type {Array<GridPoint>} */
   const carveOrder = [];
+
+  /** @type {Cell} */
   const startCell = pickRandomCell(cellCols, cellRows);
 
   stack.push(startCell);
@@ -25,7 +41,10 @@ export function buildCarveCellsDepthFirst({ cellCols, cellRows }) {
   carveOrder.push(cellToGrid(startCell));
 
   while (stack.length > 0) {
+    /** @type {Cell} */
     const current = stack[stack.length - 1];
+
+    /** @type {Array<Cell>} */
     const unvisitedNeighbors = getCellNeighbors(
       current,
       cellCols,
@@ -37,7 +56,9 @@ export function buildCarveCellsDepthFirst({ cellCols, cellRows }) {
       continue;
     }
 
+    /** @type {Cell} */
     const nextNeighbor = pickRandomFrom(unvisitedNeighbors);
+
     visited[nextNeighbor.y][nextNeighbor.x] = true;
 
     carveOrder.push(cellToGrid(nextNeighbor));
@@ -46,5 +67,5 @@ export function buildCarveCellsDepthFirst({ cellCols, cellRows }) {
     stack.push({ x: nextNeighbor.x, y: nextNeighbor.y });
   }
 
-  return { cells: carveOrder, iterativeStartIndex: 0 };
+  return { gridPoints: carveOrder, iterativeStartIndex: 0 };
 }

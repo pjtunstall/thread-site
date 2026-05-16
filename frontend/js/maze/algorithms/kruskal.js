@@ -4,13 +4,17 @@ import { cellToGrid, wallBetweenCells } from "../grid.js";
  * @typedef {{ x: number, y: number }} Cell
  * @typedef {{ from: Cell, to: Cell }} Wall
  * @typedef {{ x: number, y: number }} GridPoint
+ *
+ * @typedef {{ gridPoints: Array<GridPoint>, iterativeStartIndex: number }} CarvePlan
  */
 
 /**
- * Kruskal's algorithm: treat rooms as disjoint sets and carve walls that join sets.
+ * Kruskal's algorithm: treat rooms as disjoint sets and carve walls that join
+ * sets.
+ * Appearance: starts with a grid of pillars and fills in the gaps.
  *
  * @param {{ cellCols: number, cellRows: number }} options
- * @returns {{ cells: Array<{x: number, y: number}>, iterativeStartIndex: number }}
+ * @returns {CarvePlan}
  */
 export function buildCarveCellsKruskal({ cellCols, cellRows }) {
   /** @type {Array<GridPoint>} */
@@ -51,6 +55,8 @@ export function buildCarveCellsKruskal({ cellCols, cellRows }) {
   for (const wall of walls) {
     const fromIndex = cellToIndex(wall.from, cellCols);
     const toIndex = cellToIndex(wall.to, cellCols);
+
+    /** @type {number} */
     const fromRoot = findSetRoot(parent, fromIndex);
     const toRoot = findSetRoot(parent, toIndex);
 
@@ -63,7 +69,7 @@ export function buildCarveCellsKruskal({ cellCols, cellRows }) {
   }
 
   return {
-    cells: carveOrder,
+    gridPoints: carveOrder,
     iterativeStartIndex: roomCount,
   };
 }
