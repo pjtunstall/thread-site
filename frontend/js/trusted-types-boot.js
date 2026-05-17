@@ -10,6 +10,7 @@ import {
   DIALOG_TEMPLATE_HTML,
   MENU_CARD_TEMPLATE_HTML,
   SVG_NAMESPACE,
+  TURNSTILE_API_URL,
 } from "./trusted-types.js";
 
 /**
@@ -94,9 +95,7 @@ function createScriptURL(input) {
   );
 }
 
-const trustedScriptUrlsArray = [
-  "https://challenges.cloudflare.com/turnstile/v0/api.js",
-];
+const trustedScriptUrlsArray = [TURNSTILE_API_URL];
 
 const trustedHtmlArray = [
   DIALOG_TEMPLATE_HTML,

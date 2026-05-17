@@ -1,5 +1,8 @@
 export const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
+export const TURNSTILE_API_URL =
+  "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
 export const DIALOG_TEMPLATE_HTML = `
   <dialog data-dialog>
     <div class="dialog__panel">

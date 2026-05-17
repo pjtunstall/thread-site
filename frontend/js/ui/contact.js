@@ -1,10 +1,8 @@
 import { CONTACT_FORM_LIMITS, getTurnstileSitekey } from "../shared/config.js";
 import { trustedScriptURL } from "../trusted-types-boot.js";
+import { TURNSTILE_API_URL } from "../trusted-types.js";
 
 const LOG_PREFIX = "[site-init]";
-
-const TURNSTILE_API_URL =
-  "https://challenges.cloudflare.com/turnstile/v0/api.js";
 
 let turnstileScriptPromise = null;
 
