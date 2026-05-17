@@ -56,14 +56,14 @@ export class Maze {
 
   constructor() {
     this.#canvas = document.createElement("canvas");
-    this.#canvas.className = "maze-bg";
+    this.#canvas.className = "maze";
     this.#canvas.setAttribute("aria-hidden", "true");
     const context = this.#canvas.getContext("2d");
     if (context instanceof CanvasRenderingContext2D) {
       this.#context = context;
       this.#enabled = true;
     } else {
-      const e = new Error("[maze-bg] Could not create 2D rendering context.");
+      const e = new Error("[maze] Could not create 2D rendering context.");
       console.error(e);
     }
   }
@@ -157,11 +157,32 @@ export class Maze {
     this.restart();
   };
 
+  /**
+   * This internal method returns the width of the maze in pixels. The addition
+   * of twice the tile size is so that we can hide the boundary walls offscreen.
+   * The top edge of the canvas is positioned one tile above the top edge of the
+   * window, and the left edge of the canvas one tile to the left of the window
+   * edge. See the ruleset for `.maze` in `01-foundation.css`.
+   *
+   * @returns {number}
+   */
+  #width() {
+    return window.innerWidth + 2 * this.#tileSize;
+  }
+
+  /**
+   * This internal method returns the height of the maze in pixels. See the
+   * comment on `this.#width` regarding `+ 2 * this.#tileSize`.
+   *
+   * @returns {number}
+   */
+  #height() {
+    return window.innerHeight + 2 * this.#tileSize;
+  }
+
   #resizeCanvas() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    this.#canvas.width = width;
-    this.#canvas.height = height;
+    this.#canvas.width = this.#width();
+    this.#canvas.height = this.#height();
   }
 
   /**
@@ -200,8 +221,8 @@ export class Maze {
    * @returns {CarvePlan}
    */
   #buildCarvePlan() {
-    const cols = Math.max(7, Math.ceil(window.innerWidth / this.#tileSize));
-    const rows = Math.max(7, Math.ceil(window.innerHeight / this.#tileSize));
+    const cols = Math.max(7, Math.ceil(this.#width() / this.#tileSize));
+    const rows = Math.max(7, Math.ceil(this.#height() / this.#tileSize));
     const tileCols = cols % 2 === 0 ? cols + 1 : cols;
     const tileRows = rows % 2 === 0 ? rows + 1 : rows;
     const roomCols = Math.floor((tileCols - 1) / 2);
