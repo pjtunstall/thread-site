@@ -11,7 +11,7 @@
 This is a website for people to download my game [By a Thread](https://github.com/pjtunstall/by-a-thread). It includes a contact form and animations of some maze-generating algorithms:
 
 - Backtracker: draws the maze in one long, winding path
-- Kruskal: starts with a grid of pillars and fills in the gaps
+- Kruskal: starts with a grid of detached rooms, then carves out passages between them
 - Prim: expands in all directions
 - Wilson: like Backtracker, but draws many paths simultaneously
 

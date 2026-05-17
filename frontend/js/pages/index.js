@@ -52,6 +52,7 @@ const HASH_DOWNLOADS = "#downloads";
   /**
    * @param {HTMLElement} root
    * @param {Element | null} node
+   * @returns {boolean}
    */
   function containsOrIs(root, node) {
     return node instanceof Node && (root === node || root.contains(node));
@@ -59,6 +60,7 @@ const HASH_DOWNLOADS = "#downloads";
 
   /**
    * @param {HTMLElement} scope
+   * @returns {void}
    */
   function focusFirstInScope(scope) {
     const candidates = scope.querySelectorAll(
@@ -76,6 +78,7 @@ const HASH_DOWNLOADS = "#downloads";
   /**
    * @param {"home" | "downloads"} view
    * @param {{ syncUrl?: boolean }} [options]
+   * @returns {void}
    */
   function setView(view, options) {
     const syncUrl = options?.syncUrl !== false;

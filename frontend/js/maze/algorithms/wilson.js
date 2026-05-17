@@ -1,68 +1,62 @@
 import {
-  cellKey,
-  cellToGrid,
-  getCellNeighbors,
+  getRoomNeighbors,
+  passageBetweenRooms,
   pickRandomFrom,
-  wallBetweenCells,
+  roomKey,
+  roomToTile,
 } from "../grid.js";
 
-/**
- * @typedef {{ x: number, y: number }} Cell
- * @typedef {{ from: Cell, to: Cell }} Wall
- * @typedef {{ x: number, y: number }} GridPoint
- *
- * @typedef {{ gridPoints: Array<GridPoint>, iterativeStartIndex: number }} CarvePlan
- */
+/** @import { CarvePlan, Room, Tile } from "../grid.js" */
 
 /**
- * Wilson's algorithm: add loop-erased random walks from unvisited cells.
+ * Wilson's algorithm: add loop-erased random walks from unvisited rooms.
  * Appearance: like Backtracker, but draws many paths simultaneously.
  *
- * @param {{ cellCols: number, cellRows: number }} options
+ * @param {{ roomCols: number, roomRows: number }} options
  * @returns {CarvePlan}
  */
-export function buildCarveCellsWilson({ cellCols, cellRows }) {
-  /** @type {Array<Cell>} */
-  const allCells = [];
+export function buildCarvePlanWilson({ roomCols, roomRows }) {
+  /** @type {Array<Room>} */
+  const allRooms = [];
 
-  for (let y = 0; y < cellRows; y += 1) {
-    for (let x = 0; x < cellCols; x += 1) {
-      allCells.push({ x, y });
+  for (let y = 0; y < roomRows; y += 1) {
+    for (let x = 0; x < roomCols; x += 1) {
+      allRooms.push({ x, y });
     }
   }
 
   /** @type {Set<string>} */
   const finalized = new Set();
 
-  /** @type {Array<GridPoint>} */
+  /** @type {Array<Tile>} */
   const carveOrder = [];
 
-  const initialCell = pickRandomFrom(allCells);
+  const initialRoom = pickRandomFrom(allRooms);
 
-  finalized.add(cellKey(initialCell));
-  carveOrder.push(cellToGrid(initialCell));
+  finalized.add(roomKey(initialRoom));
+  carveOrder.push(roomToTile(initialRoom));
 
-  while (finalized.size < allCells.length) {
-    /** @type {Array<Cell>} */
-    const candidates = allCells.filter((cell) => !finalized.has(cellKey(cell)));
+  while (finalized.size < allRooms.length) {
+    /** @type {Array<Room>} */
+    const candidates = allRooms.filter((room) => !finalized.has(roomKey(room)));
 
-    /** @type {Cell} */
+    /** @type {Room} */
     const startOfWalk = pickRandomFrom(candidates);
 
-    /** @type {Array<Cell>} */
+    /** @type {Array<Room>} */
     const walk = [startOfWalk];
 
     /** @type {Map<string, number>} */
-    const walkPositions = new Map([[cellKey(startOfWalk), 0]]);
+    const walkPositions = new Map([[roomKey(startOfWalk), 0]]);
 
-    /** @type {Cell} */
+    /** @type {Room} */
     let current = startOfWalk;
 
-    while (!finalized.has(cellKey(current))) {
+    while (!finalized.has(roomKey(current))) {
       const next = pickRandomFrom(
-        getCellNeighbors(current, cellCols, cellRows),
+        getRoomNeighbors(current, roomCols, roomRows),
       );
-      const nextKey = cellKey(next);
+      const nextKey = roomKey(next);
 
       if (walkPositions.has(nextKey)) {
         /** @type {number} */
@@ -71,7 +65,7 @@ export function buildCarveCellsWilson({ cellCols, cellRows }) {
         walk.splice(loopStart + 1);
         walkPositions.clear();
         for (let i = 0; i < walk.length; i += 1) {
-          walkPositions.set(cellKey(walk[i]), i);
+          walkPositions.set(roomKey(walk[i]), i);
         }
       } else {
         walk.push(next);
@@ -84,15 +78,15 @@ export function buildCarveCellsWilson({ cellCols, cellRows }) {
     for (let i = 0; i < walk.length - 1; i += 1) {
       const from = walk[i];
       const to = walk[i + 1];
-      const fromKey = cellKey(from);
+      const fromKey = roomKey(from);
 
       if (!finalized.has(fromKey)) {
         finalized.add(fromKey);
-        carveOrder.push(cellToGrid(from));
+        carveOrder.push(roomToTile(from));
       }
-      carveOrder.push(wallBetweenCells(from, to));
+      carveOrder.push(passageBetweenRooms(from, to));
     }
   }
 
-  return { gridPoints: carveOrder, iterativeStartIndex: 0 };
+  return { tiles: carveOrder, iterativeStartIndex: 0 };
 }

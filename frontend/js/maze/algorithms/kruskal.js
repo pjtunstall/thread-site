@@ -1,26 +1,22 @@
-import { cellToGrid, wallBetweenCells } from "../grid.js";
+import { passageBetweenRooms, roomToTile } from "../grid.js";
 
-/**
- * @typedef {{ x: number, y: number }} Cell
- * @typedef {{ from: Cell, to: Cell }} Wall
- * @typedef {{ x: number, y: number }} GridPoint
- *
- * @typedef {{ gridPoints: Array<GridPoint>, iterativeStartIndex: number }} CarvePlan
- */
+/** @import { CarvePlan, Room, Tile, Wall } from "../grid.js" */
 
 /**
  * Kruskal's algorithm: treat rooms as disjoint sets and carve walls that join
  * sets.
- * Appearance: starts with a grid of pillars and fills in the gaps.
  *
- * @param {{ cellCols: number, cellRows: number }} options
+ * Appearance: starts with a grid of detached rooms, then carves out passages
+ * between them.
+ *
+ * @param {{ roomCols: number, roomRows: number }} options
  * @returns {CarvePlan}
  */
-export function buildCarveCellsKruskal({ cellCols, cellRows }) {
-  /** @type {Array<GridPoint>} */
+export function buildCarvePlanKruskal({ roomCols, roomRows }) {
+  /** @type {Array<Tile>} */
   const carveOrder = [];
 
-  const roomCount = cellCols * cellRows;
+  const roomCount = roomCols * roomRows;
 
   /** @type {Array<number>} */
   const parent = Array.from({ length: roomCount }, (_, i) => i);
@@ -31,17 +27,17 @@ export function buildCarveCellsKruskal({ cellCols, cellRows }) {
   /** @type {Array<Wall>} */
   const walls = [];
 
-  for (let y = 0; y < cellRows; y += 1) {
-    for (let x = 0; x < cellCols; x += 1) {
-      carveOrder.push(cellToGrid({ x, y }));
+  for (let y = 0; y < roomRows; y += 1) {
+    for (let x = 0; x < roomCols; x += 1) {
+      carveOrder.push(roomToTile({ x, y }));
 
-      if (x + 1 < cellCols) {
+      if (x + 1 < roomCols) {
         walls.push({
           from: { x, y },
           to: { x: x + 1, y },
         });
       }
-      if (y + 1 < cellRows) {
+      if (y + 1 < roomRows) {
         walls.push({
           from: { x, y },
           to: { x, y: y + 1 },
@@ -53,8 +49,8 @@ export function buildCarveCellsKruskal({ cellCols, cellRows }) {
   shuffleInPlace(walls);
 
   for (const wall of walls) {
-    const fromIndex = cellToIndex(wall.from, cellCols);
-    const toIndex = cellToIndex(wall.to, cellCols);
+    const fromIndex = roomToIndex(wall.from, roomCols);
+    const toIndex = roomToIndex(wall.to, roomCols);
 
     /** @type {number} */
     const fromRoot = findSetRoot(parent, fromIndex);
@@ -65,11 +61,11 @@ export function buildCarveCellsKruskal({ cellCols, cellRows }) {
     }
 
     unionSets(parent, rank, fromRoot, toRoot);
-    carveOrder.push(wallBetweenCells(wall.from, wall.to));
+    carveOrder.push(passageBetweenRooms(wall.from, wall.to));
   }
 
   return {
-    gridPoints: carveOrder,
+    tiles: carveOrder,
     iterativeStartIndex: roomCount,
   };
 }
@@ -89,14 +85,14 @@ function shuffleInPlace(items) {
 }
 
 /**
- * Flat room index for union–find (row-major: `y * cellCols + x`).
+ * Flat room index for union–find (row-major: `y * roomCols + x`).
  *
- * @param {Cell} cell
- * @param {number} cellCols
+ * @param {Room} room
+ * @param {number} roomCols
  * @returns {number}
  */
-function cellToIndex(cell, cellCols) {
-  return cell.y * cellCols + cell.x;
+function roomToIndex(room, roomCols) {
+  return room.y * roomCols + room.x;
 }
 
 /**

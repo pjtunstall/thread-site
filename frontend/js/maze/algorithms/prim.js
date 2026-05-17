@@ -1,29 +1,23 @@
 import {
-  cellKey,
-  cellToGrid,
-  getCellNeighbors,
-  pickRandomCell,
+  getRoomNeighbors,
+  passageBetweenRooms,
   pickRandomFrom,
-  wallBetweenCells,
+  pickRandomRoom,
+  roomKey,
+  roomToTile,
 } from "../grid.js";
 
-/**
- * @typedef {{ x: number, y: number }} Cell
- * @typedef {{ from: Cell, to: Cell }} Wall
- * @typedef {{ x: number, y: number }} GridPoint
- *
- * @typedef {{ gridPoints: Array<GridPoint>, iterativeStartIndex: number }} CarvePlan
- */
+/** @import { CarvePlan, Room, Tile, Wall } from "../grid.js" */
 
 /**
  * Prim's algorithm: grow a tree by carving random frontier walls outward.
  * Appearance: expands in all directions.
  *
- * @param {{ cellCols: number, cellRows: number }} options
+ * @param {{ roomCols: number, roomRows: number }} options
  * @returns {CarvePlan}
  */
-export function buildCarveCellsPrim({ cellCols, cellRows }) {
-  /** @type {Array<GridPoint>} */
+export function buildCarvePlanPrim({ roomCols, roomRows }) {
+  /** @type {Array<Tile>} */
   const carveOrder = [];
 
   /** @type {Set<string>} */
@@ -32,11 +26,11 @@ export function buildCarveCellsPrim({ cellCols, cellRows }) {
   /** @type {Map<string, Wall>} */
   const frontier = new Map();
 
-  const initialCell = pickRandomCell(cellCols, cellRows);
+  const initialRoom = pickRandomRoom(roomCols, roomRows);
 
-  visited.add(cellKey(initialCell));
-  carveOrder.push(cellToGrid(initialCell));
-  addFrontierWalls(initialCell, cellCols, cellRows, frontier, visited);
+  visited.add(roomKey(initialRoom));
+  carveOrder.push(roomToTile(initialRoom));
+  addFrontierWalls(initialRoom, roomCols, roomRows, frontier, visited);
 
   while (frontier.size > 0) {
     /** @type {string} */
@@ -46,27 +40,27 @@ export function buildCarveCellsPrim({ cellCols, cellRows }) {
     frontier.delete(wallKeyValue);
 
     /** @type {boolean} */
-    const fromVisited = visited.has(cellKey(wall.from));
-    const toVisited = visited.has(cellKey(wall.to));
+    const fromVisited = visited.has(roomKey(wall.from));
+    const toVisited = visited.has(roomKey(wall.to));
 
     if (fromVisited === toVisited) {
       continue;
     }
 
-    const newCell = fromVisited ? wall.to : wall.from;
-    visited.add(cellKey(newCell));
-    carveOrder.push(wallBetweenCells(wall.from, wall.to));
-    carveOrder.push(cellToGrid(newCell));
-    addFrontierWalls(newCell, cellCols, cellRows, frontier, visited);
+    const newRoom = fromVisited ? wall.to : wall.from;
+    visited.add(roomKey(newRoom));
+    carveOrder.push(passageBetweenRooms(wall.from, wall.to));
+    carveOrder.push(roomToTile(newRoom));
+    addFrontierWalls(newRoom, roomCols, roomRows, frontier, visited);
   }
 
-  return { gridPoints: carveOrder, iterativeStartIndex: 0 };
+  return { tiles: carveOrder, iterativeStartIndex: 0 };
 }
 
 /**
  *
- * @param {Cell} a
- * @param {Cell} b
+ * @param {Room} a
+ * @param {Room} b
  * @returns {Wall}
  */
 function normalizeWall(a, b) {
@@ -82,24 +76,24 @@ function normalizeWall(a, b) {
  * @returns {string}
  */
 function wallKey(wall) {
-  return `${cellKey(wall.from)},${cellKey(wall.to)}`;
+  return `${roomKey(wall.from)},${roomKey(wall.to)}`;
 }
 
 /**
  *
- * @param {Cell} cell
- * @param {number} cellCols
- * @param {number} cellRows
+ * @param {Room} room
+ * @param {number} roomCols
+ * @param {number} roomRows
  * @param {Map<string, Wall>} frontier
  * @param {Set<string>} visited
  */
-function addFrontierWalls(cell, cellCols, cellRows, frontier, visited) {
-  const neighbors = getCellNeighbors(cell, cellCols, cellRows);
+function addFrontierWalls(room, roomCols, roomRows, frontier, visited) {
+  const neighbors = getRoomNeighbors(room, roomCols, roomRows);
   for (const neighbor of neighbors) {
-    if (visited.has(cellKey(neighbor))) {
+    if (visited.has(roomKey(neighbor))) {
       continue;
     }
-    const wall = normalizeWall(cell, neighbor);
+    const wall = normalizeWall(room, neighbor);
     frontier.set(wallKey(wall), wall);
   }
 }

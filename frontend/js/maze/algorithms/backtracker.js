@@ -1,54 +1,48 @@
 import {
-  cellToGrid,
-  getCellNeighbors,
-  pickRandomCell,
+  getRoomNeighbors,
+  passageBetweenRooms,
   pickRandomFrom,
-  wallBetweenCells,
+  pickRandomRoom,
+  roomToTile,
 } from "../grid.js";
 
-/**
- * @typedef {{ x: number, y: number }} Cell
- * @typedef {{ from: Cell, to: Cell }} Wall
- * @typedef {{ x: number, y: number }} GridPoint
- *
- * @typedef {{ gridPoints: Array<GridPoint>, iterativeStartIndex: number }} CarvePlan
- */
+/** @import { CarvePlan, Room, Tile } from "../grid.js" */
 
 /**
  * Depth-first backtracking: walk forward randomly until stuck, then backtrack.
  * Appearance: draws the maze in one long, winding path.
  *
- * @param {{ cellCols: number, cellRows: number }} options
+ * @param {{ roomCols: number, roomRows: number }} options
  * @returns {CarvePlan}
  */
-export function buildCarveCellsBacktracker({ cellCols, cellRows }) {
-  /** @type {Array<Array<Cell>>} */
-  const visited = Array.from({ length: cellRows }, () =>
-    Array.from({ length: cellCols }, () => false),
+export function buildCarvePlanBacktracker({ roomCols, roomRows }) {
+  /** @type {Array<Array<boolean>>} */
+  const visited = Array.from({ length: roomRows }, () =>
+    Array.from({ length: roomCols }, () => false),
   );
 
-  /** @type {Array<Cell>} */
+  /** @type {Array<Room>} */
   const stack = [];
 
-  /** @type {Array<GridPoint>} */
+  /** @type {Array<Tile>} */
   const carveOrder = [];
 
-  /** @type {Cell} */
-  const startCell = pickRandomCell(cellCols, cellRows);
+  /** @type {Room} */
+  const startRoom = pickRandomRoom(roomCols, roomRows);
 
-  stack.push(startCell);
-  visited[startCell.y][startCell.x] = true;
-  carveOrder.push(cellToGrid(startCell));
+  stack.push(startRoom);
+  visited[startRoom.y][startRoom.x] = true;
+  carveOrder.push(roomToTile(startRoom));
 
   while (stack.length > 0) {
-    /** @type {Cell} */
+    /** @type {Room} */
     const current = stack[stack.length - 1];
 
-    /** @type {Array<Cell>} */
-    const unvisitedNeighbors = getCellNeighbors(
+    /** @type {Array<Room>} */
+    const unvisitedNeighbors = getRoomNeighbors(
       current,
-      cellCols,
-      cellRows,
+      roomCols,
+      roomRows,
     ).filter((neighbor) => !visited[neighbor.y][neighbor.x]);
 
     if (unvisitedNeighbors.length === 0) {
@@ -56,16 +50,16 @@ export function buildCarveCellsBacktracker({ cellCols, cellRows }) {
       continue;
     }
 
-    /** @type {Cell} */
+    /** @type {Room} */
     const nextNeighbor = pickRandomFrom(unvisitedNeighbors);
 
     visited[nextNeighbor.y][nextNeighbor.x] = true;
 
-    carveOrder.push(cellToGrid(nextNeighbor));
-    carveOrder.push(wallBetweenCells(current, nextNeighbor));
+    carveOrder.push(roomToTile(nextNeighbor));
+    carveOrder.push(passageBetweenRooms(current, nextNeighbor));
 
     stack.push({ x: nextNeighbor.x, y: nextNeighbor.y });
   }
 
-  return { gridPoints: carveOrder, iterativeStartIndex: 0 };
+  return { tiles: carveOrder, iterativeStartIndex: 0 };
 }
