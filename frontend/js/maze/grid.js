@@ -89,7 +89,6 @@ export function passageBetweenRooms(from, to) {
 }
 
 /**
- *
  * @param {Room} room
  * @param {number} roomCols
  * @param {number} roomRows
