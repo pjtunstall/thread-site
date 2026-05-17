@@ -2,8 +2,9 @@
  * Animated maze background. Uses a coarse grid of {@link Room}s for generation
  * and a fine grid of {@link Tile}s for drawing; see `grid.js`. The whole canvas
  * starts out wall-colored (CSS `--color-ink-wall`). Maze-generating algorithm
- * functions, `buildCarvePlanBacktracker` etc. return an array of `Tile`s to be
- * switched to the background color (CSS `--color-bg`) during the animation.
+ * functions, `buildCarvePlanBacktracker` etc. return a {@link CarvePlan}, which
+ * includes an array of `Tile`s to be switched to the
+ * background color (CSS `--color-bg`) during the animation.
  *
  * If the browser is set to the reduced motion preference, the whole maze is
  * drawn at once rather than appearing incrementally.
@@ -13,27 +14,28 @@ import { buildCarvePlanKruskal } from "./algorithms/kruskal.js";
 import { buildCarvePlanPrim } from "./algorithms/prim.js";
 import { buildCarvePlanWilson } from "./algorithms/wilson.js";
 
-/** @import { Tile } from "./grid.js" */
+/** @import { Tile, CarvePlan } from "./grid.js" */
 
-export class MazeBackground {
+export class Maze {
   #tileSize = 12; // pixels
   #resizeDebounceMs = 220;
 
-  #tilesPerMs = 32 / (1000 / 60); // animation speed
+  #tilesPerMs = 32 / (1000 / 60); // Animation speed: 32 per 16.67ms frame.
 
   /** @type {Array<Tile>} */
   #tilesToCarve = []; // Supplied by the maze-generating algorithm.
 
   // Depending on the algorithm, some tiles may be carved instantly at the
-  // start. `#iterativeStartIndex` is the index from which incremental drawing
-  // begins. See, in particular, `kruskal.js`.
+  // start. `this.#iterativeStartIndex` is the index from which incremental
+  // drawing begins. See, in particular, `kruskal.js`.
   #iterativeStartIndex = 0;
 
   // On theme change, we want the animation to continue seamlessly from where
   // it's got up to. But, since the wall and background colors have changed, we
   // need to redraw everything that's been drawn so far in one go. The
-  // `nextCarveIndex` tracks the index of the next `Tile` of `tilesToCarve` that
-  // remains to be carved. It's the index at which we resume iteratvely drawing.
+  // `nextCarveIndex` tracks the index of the next `Tile` of
+  // `this.#tilesToCarve` that remains to be carved. It's the index at which we
+  // resume iteratively drawing.
   #nextCarveIndex = 0;
   #lastStepAt = 0;
 
@@ -49,7 +51,7 @@ export class MazeBackground {
   /** @type {CanvasRenderingContext2D | null} */
   #context = null;
 
-  /**@type {HTMLCanvasElement} */
+  /** @type {HTMLCanvasElement} */
   #canvas;
 
   constructor() {
@@ -57,15 +59,20 @@ export class MazeBackground {
     this.#canvas.className = "maze-bg";
     this.#canvas.setAttribute("aria-hidden", "true");
     const context = this.#canvas.getContext("2d");
-    if (!(context instanceof CanvasRenderingContext2D)) {
-      const e = new Error("[maze-bg] Could not create 2D rendering context.");
-      console.error(e);
-    } else {
+    if (context instanceof CanvasRenderingContext2D) {
       this.#context = context;
       this.#enabled = true;
+    } else {
+      const e = new Error("[maze-bg] Could not create 2D rendering context.");
+      console.error(e);
     }
   }
 
+  /**
+   * Called when the page is initialized.
+   *
+   * @returns {void}
+   */
   start() {
     if (!this.#enabled) {
       return;
@@ -79,8 +86,18 @@ export class MazeBackground {
     this.restart();
   }
 
+  /**
+   * Called:
+   *   - on initialization by `this.start`,
+   *   - when the user clicks to request a new maze,
+   *   - when the window is resized,
+   *   - and when when there's a change in motion preference.
+   *
+   * @returns {void}
+   */
   restart() {
     if (!this.#enabled) {
+      // No canvas context of the correct type exists.
       return;
     }
     if (this.#frameRequest !== null) {
@@ -94,20 +111,25 @@ export class MazeBackground {
     this.#iterativeStartIndex = carvePlan.iterativeStartIndex;
     this.#nextCarveIndex = this.#iterativeStartIndex;
     this.#lastStepAt = 0;
-    this.#paintFullWallLayer();
-    this.#drawInstantCarves(0, this.#iterativeStartIndex);
+    this.#paintWholeCanvasWallColor();
 
     if (this.#reduceMotionQuery.matches) {
-      this.#drawAllCarves();
+      this.#drawInstantCarves(0, this.#tilesToCarve.length);
       return;
     }
 
+    this.#drawInstantCarves(0, this.#iterativeStartIndex);
     this.#frameRequest = window.requestAnimationFrame(this.#onTick);
   }
 
-  // This function is called on theme toggle. It re-reads --color-* from the
-  // document and redraw what is already carved.
-  repaintCurrentState() {
+  /**
+   * This method is called on theme toggle. It re-reads --color-* from the
+   * document and redraws what's already carved. `this.#enabled` implies
+   * `this.#context` is correctly defined.
+   *
+   * @returns {void}
+   */
+  repaintCurrentPartialState() {
     if (!this.#enabled || this.#tilesToCarve.length === 0) {
       return;
     }
@@ -117,7 +139,7 @@ export class MazeBackground {
     this.#context.fillStyle = this.#getBackgroundFillColor();
     this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
 
-    this.#paintFullWallLayer();
+    this.#paintWholeCanvasWallColor();
     this.#drawInstantCarves(0, this.#nextCarveIndex);
   }
 
@@ -142,23 +164,41 @@ export class MazeBackground {
     this.#canvas.height = height;
   }
 
+  /**
+   * This internal method gets the wall color directly from the DOM. It does
+   * this so that the CSS can be our single source of truth for the color, and
+   * to ensure that we use the correct color for the current theme. Compare
+   * `this.#getBackgroundFillColor`.
+   *
+   * @returns {string}
+   */
   #getWallFillColor() {
     return getComputedStyle(document.documentElement)
       .getPropertyValue("--color-ink-wall")
       .trim();
   }
 
+  /**
+   * This internal method gets the background color directly from the DOM. It
+   * does this so that the CSS can be our single source of truth for the color,
+   * and to ensure that we use the correct color for the current theme. Compare `this.##getWallFillColor`.
+   *
+   * @returns {string}
+   */
   #getBackgroundFillColor() {
     return getComputedStyle(document.documentElement)
       .getPropertyValue("--color-bg")
       .trim();
   }
 
-  #paintFullWallLayer() {
+  #paintWholeCanvasWallColor() {
     this.#context.fillStyle = this.#getWallFillColor();
     this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
   }
 
+  /**
+   * @returns {CarvePlan}
+   */
   #buildCarvePlan() {
     const cols = Math.max(7, Math.ceil(window.innerWidth / this.#tileSize));
     const rows = Math.max(7, Math.ceil(window.innerHeight / this.#tileSize));
@@ -170,6 +210,9 @@ export class MazeBackground {
     return generator({ roomCols, roomRows });
   }
 
+  /**
+   * @returns {(options: { roomCols: number, roomRows: number }) => CarvePlan}
+   */
   #pickMazeGenerator() {
     const algorithms = [
       buildCarvePlanBacktracker,
@@ -180,6 +223,13 @@ export class MazeBackground {
     return algorithms[Math.floor(Math.random() * algorithms.length)];
   }
 
+  /**
+   * This internal method draws an individual tile. It's used both by
+   * `this.#drawInstantCarves` (to draw the maze instantly) and in
+   * `this.#onTick` to draw it incrementally.
+   *
+   * @param {Tile} tile
+   */
   #drawCarveTile(tile) {
     this.#context.fillRect(
       tile.x * this.#tileSize,
@@ -190,8 +240,12 @@ export class MazeBackground {
   }
 
   /**
-   * This internal method is called on theme change to instantly draw the
-   * partial maze that's appeared so far in the new colors.
+   * This internal method is called on theme change to instantly carve out the
+   * partial maze that's appeared so far, using the new background color. It's
+   * also used to instantly draw a set of initially-carved tiles if the
+   * algorithm requires it (Kruskal). Alternatively, it's used to draw the whole
+   * maze instantly if browser settings indicate that the user prefers reduced
+   * motion, bypassing the animation.
    *
    * @param {number} startIndex
    * @param {number} endIndex
@@ -207,14 +261,14 @@ export class MazeBackground {
     }
   }
 
-  #drawAllCarves() {
-    this.#context.fillStyle = this.#getBackgroundFillColor();
-    const total = this.#tilesToCarve.length;
-    for (let i = 0; i < total; i += 1) {
-      this.#drawCarveTile(this.#tilesToCarve[i]);
-    }
-    this.#nextCarveIndex = this.#tilesToCarve.length;
-  }
+  /**
+   * This internal method is passed as a callback to
+   * `window.requestAnimationFrame`, initially in `this.restart`. It draws tiles
+   * at the rate `this.#tilesPerMs`.
+   *
+   * @param {number} timestamp milliseconds
+   * @returns {void}
+   * */
 
   #onTick = (timestamp) => {
     this.#frameRequest = window.requestAnimationFrame(this.#onTick);
@@ -224,21 +278,21 @@ export class MazeBackground {
     }
 
     const elapsed = timestamp - this.#lastStepAt;
-    const tilesToDraw = Math.floor(elapsed * this.#tilesPerMs);
-    if (tilesToDraw > 0) {
-      this.#lastStepAt += tilesToDraw / this.#tilesPerMs;
-    }
+    const howManyTilesToCarveThisFrame = Math.floor(elapsed * this.#tilesPerMs);
+    if (howManyTilesToCarveThisFrame > 0) {
+      this.#lastStepAt += howManyTilesToCarveThisFrame / this.#tilesPerMs;
 
-    const targetIndex = Math.min(
-      this.#nextCarveIndex + tilesToDraw,
-      this.#tilesToCarve.length,
-    );
+      const targetIndex = Math.min(
+        this.#nextCarveIndex + howManyTilesToCarveThisFrame,
+        this.#tilesToCarve.length,
+      );
 
-    this.#context.fillStyle = this.#getBackgroundFillColor();
+      this.#context.fillStyle = this.#getBackgroundFillColor();
 
-    while (this.#nextCarveIndex < targetIndex) {
-      this.#drawCarveTile(this.#tilesToCarve[this.#nextCarveIndex]);
-      this.#nextCarveIndex += 1;
+      while (this.#nextCarveIndex < targetIndex) {
+        this.#drawCarveTile(this.#tilesToCarve[this.#nextCarveIndex]);
+        this.#nextCarveIndex += 1;
+      }
     }
 
     if (this.#nextCarveIndex >= this.#tilesToCarve.length) {

@@ -1,4 +1,4 @@
-import { MazeBackground } from "../maze/maze.js";
+import { Maze } from "../maze/maze.js";
 import { initCarousel } from "../ui/carousel.js";
 import { initDialogs, MAIN_MENU_DIALOGS } from "../ui/dialogs.js";
 import { initMenu } from "../ui/menu.js";
@@ -135,12 +135,12 @@ const HASH_DOWNLOADS = "#downloads";
     }
   }
 
-  window.addEventListener("hashchange", function () {
+  window.addEventListener("hashchange", () => {
     applyHashToView();
   });
 
   if (backButton instanceof HTMLButtonElement) {
-    backButton.addEventListener("click", function () {
+    backButton.addEventListener("click", () => {
       setView("home");
     });
   }
@@ -149,7 +149,7 @@ const HASH_DOWNLOADS = "#downloads";
   // already #downloads (e.g. hash not cleared). Drive the view explicitly
   // for unmodified primary clicks; keep default for modifiers / middle-click.
   if (enterLabyrinth instanceof HTMLAnchorElement) {
-    enterLabyrinth.addEventListener("click", function (e) {
+    enterLabyrinth.addEventListener("click", (e) => {
       if (e.button !== 0) return;
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
       e.preventDefault();
@@ -157,18 +157,23 @@ const HASH_DOWNLOADS = "#downloads";
     });
   }
 
-  const mazeBackground = new MazeBackground();
-  mazeBackground.start();
+  const maze = new Maze();
+  maze.start();
   const newMazeButton = document.querySelector("button[data-new-maze]");
   if (newMazeButton instanceof HTMLButtonElement) {
-    newMazeButton.addEventListener("click", function () {
-      mazeBackground.restart();
+    newMazeButton.addEventListener("click", () => {
+      maze.restart();
     });
   }
 
   initTheme({
-    onThemeChange: function () {
-      mazeBackground.repaintCurrentState();
+    onThemeChange: () => {
+      // If the theme changes while the maze is still being drawn, repaint where
+      // we got up to in the new colors. The method returns immediately if no
+      // canvas context of the correct type exists or if a complete maze is
+      // already displayed. The latter condition will always be true when
+      // browser settings indicate that the user prefers reduced motion.
+      maze.repaintCurrentPartialState();
     },
   });
 
