@@ -10,7 +10,7 @@ export async function onRequest(context) {
   newHeaders.set("X-Content-Type-Options", "nosniff");
   newHeaders.set(
     "Permissions-Policy",
-    'camera=(), microphone=(), geolocation=(), xr-spatial-tracking=(self "https://challenges.cloudflare.com")',
+    "camera=(), microphone=(), geolocation=()",
   );
 
   const contentType = response.headers.get("content-type") ?? "";

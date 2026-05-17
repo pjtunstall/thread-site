@@ -78,7 +78,9 @@ Notes on these headers:
 
 - **`Referrer-Policy: strict-origin-when-cross-origin`**: sends the full URL as `Referer` for same-origin requests (useful for analytics and server logs) but strips the path and query string for cross-origin requests, sending only the origin. This prevents leaking URL parameters (which may contain tokens or identifiers) to third parties.
 - **`X-Content-Type-Options: nosniff`**: instructs the browser not to guess a resource's content type from its bytes if the declared `Content-Type` disagrees. Without this, some browsers would execute a JavaScript file served as `text/plain`, for example.
-- **`Permissions-Policy: camera=(), microphone=(), geolocation=()`**: explicitly disables access to the camera, microphone, and geolocation APIs for this origin and any embedded iframes. The site does not use them; declaring this prevents a script injection from silently requesting them.
+- **`Permissions-Policy: camera=(), microphone=(), geolocation=()`**: explicitly disables access to the camera, microphone, geolocation APIs for this origin and any embedded iframes. The site does not use them; declaring this prevents a script injection from silently requesting them.
+
+Note: I've not included `xr-spatial-tracking=("https://challenges.cloudflare.com")` in the `Permissions-Policy`; the console errors that refer to spatial tracking come from the Cloudflare Turnstile widget failing to comply with its own policy.
 
 Non-HTML responses (JS, CSS, images, fonts) receive only the above. HTML responses additionally receive a Content Security Policy. `NONCE` here is a fresh random value per request:
 
@@ -97,6 +99,8 @@ Notes on specific directives:
 - **`img-src 'self' data:`**: `data:` URIs are needed for canvas-rendered images (maze). CSP Evaluator flags this at low severity; the risk is accepted.
 - **`base-uri 'none'`**: stricter than `'self'`; prevents `<base>` tag injection entirely.
 - **`require-trusted-types-for 'script'; trusted-types policy`**: Allows `frontend/js/trusted-types-boot.js` to define a Trusted Types policy, called `policy`. Now, for any browser that supports Trusted Types (all modern browsers), only strings on my allowlist can be turned into HTML and added to the DOM, and likewise only permitted strings can be inserted as script URLs. (In this case, that's only the Cloudflare Turnstile script that guards the contact form.) Moreover, an attacker can't create another policy of a different name or redefine `policy`. This is overkill for the current project since user input isn't shown to other users, but I implemented it anyway as a learning exercise. If user input was displayed for other users, the Trusted Types system could be used to prevent any code from bypassing the sanitization step.
+
+Note: There's some console noise, including `TrustedTypes` violation errors. Both the policy and the violations referred to there are Cloudflare's. Their Turnstile works anyway.
 
 ## Deployment
 
