@@ -20,7 +20,6 @@ export class MazeBackground {
   #resizeDebounceMs = 220;
 
   #tilesPerMs = 32 / (1000 / 60); // animation speed
-  #accumulatedMs = 0; // how many ms have passed since the last tiles were drawn
 
   /** @type {Array<Tile>} */
   #tilesToCarve = []; // Supplied by the maze-generating algorithm.
