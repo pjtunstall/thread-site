@@ -70,7 +70,7 @@ export class Maze {
   }
 
   /**
-   * Called when the page is initialized.
+   * This method is called when the page is initialized.
    *
    * @returns {void}
    */
@@ -89,9 +89,9 @@ export class Maze {
 
   /**
    * Called:
-   *   - on initialization by `this.start`,
-   *   - when the user clicks to request a new maze,
-   *   - when the window is resized,
+   *   - on initialization by `this.start`;
+   *   - when the user clicks to request a new maze;
+   *   - when the window is resized;
    *   - and when when there's a change in motion preference.
    *
    * @returns {void}

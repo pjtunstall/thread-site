@@ -45,27 +45,27 @@ export function initCarousel() {
     currentIndex = 0;
   }
 
-  const render = function () {
+  const render = () => {
     const item = CAROUSEL_ITEMS[currentIndex];
     image.src = item.src;
     image.alt = item.alt;
   };
 
-  const warmImageCache = function () {
-    CAROUSEL_ITEMS.forEach(function (item) {
+  const warmImageCache = () => {
+    CAROUSEL_ITEMS.forEach((item) => {
       const preloadImage = new Image();
       preloadImage.decoding = "async";
       preloadImage.src = item.src;
     });
   };
 
-  const moveBy = function (delta) {
+  const moveBy = (delta) => {
     currentIndex =
       (currentIndex + delta + CAROUSEL_ITEMS.length) % CAROUSEL_ITEMS.length;
     render();
   };
 
-  const isTypingTarget = function (target) {
+  const isTypingTarget = (target) => {
     if (!(target instanceof HTMLElement)) {
       return false;
     }
@@ -80,7 +80,7 @@ export function initCarousel() {
     );
   };
 
-  const onKeydown = function (event) {
+  const onKeydown = (event) => {
     if (event.defaultPrevented) {
       return;
     }
@@ -121,11 +121,11 @@ export function initCarousel() {
     }
   };
 
-  prevButton.addEventListener("click", function () {
+  prevButton.addEventListener("click", () => {
     moveBy(-1);
   });
 
-  nextButton.addEventListener("click", function () {
+  nextButton.addEventListener("click", () => {
     moveBy(1);
   });
 

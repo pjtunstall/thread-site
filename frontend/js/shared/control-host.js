@@ -23,8 +23,8 @@ import { trustedHtml } from "../trusted-types-boot.js";
 import { SVG_NAMESPACE } from "../trusted-types.js";
 
 /**
- * Create the inner interactive element for this host: `<a>` if `href` is set on
- * the host, otherwise `<button type="button">`.
+ * This function creates the inner interactive element for this host: `<a>` if
+ * `href` is set on the host, otherwise `<button type="button">`.
  *
  * @param {HTMLElement} host - Wrapper custom element (`<menu-button>`, etc.)
  * @returns {HTMLButtonElement | HTMLAnchorElement}
@@ -40,12 +40,13 @@ export function createInnerButtonOrAnchor(host) {
 }
 
 /**
- * Copy attributes from the host (wrapper in the document) onto the control (the
- * real `<button>` or `<a>` inside it).
+ * This function copies attributes from the host (wrapper in the document) onto
+ * the control (the real `<button>` or `<a>` inside it).
  *
- * Skips: names in `options.skip` (consumed by the component, e.g. `label`/`icon`),
- * and the host’s `class` attribute, because the control’s `className` is set in
- * code (`btn btn--ghost`, etc.).
+ * It skips:
+ *   - names in `options.skip` (consumed by the component, e.g. `label`/`icon`);
+ *   - the host’s `class` attribute, because the control's `className` is set in
+ *     code (`btn btn--ghost`, etc.).
  *
  * @param {HTMLElement} host - Wrapper custom element
  * @param {HTMLElement} control - Inner `<button>` or `<a>`
