@@ -32,16 +32,14 @@ const HASH_DOWNLOADS = "#downloads";
   const enterLabyrinth = document.querySelector(".view-home .hero-cta a");
 
   function clearHashFromUrl() {
-    const withoutHash = window.location.href.split("#")[0];
-    window.history.replaceState(null, "", withoutHash);
-    if (window.location.hash === HASH_DOWNLOADS) {
-      window.location.hash = "";
-    }
+    if (window.location.hash !== HASH_DOWNLOADS) return;
+    const withoutHash = `${window.location.pathname}${window.location.search}`;
+    window.history.pushState(null, "", withoutHash);
   }
 
   function setHashDownloads() {
     if (window.location.hash !== HASH_DOWNLOADS) {
-      window.history.replaceState(
+      window.history.pushState(
         null,
         "",
         `${window.location.pathname}${window.location.search}${HASH_DOWNLOADS}`,
@@ -135,12 +133,17 @@ const HASH_DOWNLOADS = "#downloads";
     }
   }
 
+  window.addEventListener("popstate", () => {
+    applyHashToView();
+  });
+
   window.addEventListener("hashchange", () => {
     applyHashToView();
   });
 
   if (backButton instanceof HTMLButtonElement) {
     backButton.addEventListener("click", () => {
+      // In-app back: pushState home on top of #downloads — never history.back().
       setView("home");
     });
   }

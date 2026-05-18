@@ -1,6 +1,11 @@
 /**
+ * @typedef {import('./room.js').Room} Room
+ * @typedef {{ from: Room, to: Room }} Wall
+ * @typedef {{ x: number, y: number }} Tile
+ *
  * We define a coarse grid of {@link Room}s (`roomCols` × `roomRows`) and a fine
- * grid of {@link Tile}s (`tileCols` × `tileRows`, always odd).
+ * grid of {@link Tile}s (`tileCols` × `tileRows`, always odd). See the
+ * `#buildCarvePlan` method of `Maze` in `maze.js`.
  *
  * Algorithms visit rooms and carve out passages between them. We define a
  * {@link Wall} as a link between `Room`s.
@@ -9,6 +14,8 @@
  * between them. A tile may be a room `Tile` (always carved), a wall `Tile`
  * (which either stays as a wall or is eventually carved to become a passage),
  * or a pillar `Tile` (never carved).
+ *
+ * @typedef {{ tiles: Array<Tile>, iterativeStartIndex: number }} CarvePlan
  *
  * There are several maze-generating algorithms. They each return a
  * {@link CarvePlan}, consisting of the `Tile`s to be carved.
@@ -20,13 +27,9 @@
  * `Room` is implemented as a class in `room.js`. It has `x` and `y`
  * coordinates, representing its position in the coarse grid.
  *
- * @typedef {{ from: Room, to: Room }} Wall
- * @typedef {{ x: number, y: number }} Tile
- *
  * `tiles` contains the `Tile`s to be carved, `iterativeStartIndex` is the index
  * of `tiles` from which the animation will be drawn iteratively in case we want
  * some of the `Tile`s to be carved instantly at the start, e.g. for Kruskal.
- * @typedef {{ tiles: Array<Tile>, iterativeStartIndex: number }} CarvePlan
  */
 
 /**

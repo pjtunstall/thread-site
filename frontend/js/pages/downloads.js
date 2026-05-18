@@ -15,6 +15,17 @@ const DOWNLOAD_FILES = {
   "linux-rpm": "ByAThread-linux.rpm",
 };
 
+/**
+ * @param {string} zipFileName
+ * @returns {Array<{
+ *   type: 'paragraph',
+ *   parts: Array<
+ *     string
+ *     | { type: 'code', text: string }
+ *     | { type: 'strong', text: string }
+ *   >
+ * }>}
+ */
 function buildMacosDownloadBody(zipFileName) {
   return [
     {
@@ -25,7 +36,7 @@ function buildMacosDownloadBody(zipFileName) {
         " has finished downloading, double-click the archive to extract it. Drag ",
         { type: "code", text: "ByAThread.app" },
         " into ",
-        { type: "strong", text: "Applications" },
+        { type: "strong", text: "A*pplications" },
         " if you want it there (optional).",
       ],
     },
@@ -209,6 +220,10 @@ export const DOWNLOAD_DIALOGS = [
   },
 ];
 
+/**
+ * @param {string} platform
+ * @returns {void}
+ */
 function triggerDownload(platform) {
   const fileName = DOWNLOAD_FILES[platform];
   if (!fileName) {
