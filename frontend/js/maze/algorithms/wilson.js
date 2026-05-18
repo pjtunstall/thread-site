@@ -1,12 +1,7 @@
-import {
-  getRoomNeighbors,
-  passageBetweenRooms,
-  pickRandomFrom,
-  roomKey,
-  roomToTile,
-} from "../grid.js";
+import { pickRandomFrom } from "../grid.js";
+import { Room } from "../room.js";
 
-/** @import { CarvePlan, Room, Tile } from "../grid.js" */
+/** @import { CarvePlan, Tile } from "../grid.js" */
 
 /**
  * Wilson's algorithm: add loop-erased random walks from unvisited rooms.
@@ -21,7 +16,7 @@ export function buildCarvePlanWilson({ roomCols, roomRows }) {
 
   for (let y = 0; y < roomRows; y += 1) {
     for (let x = 0; x < roomCols; x += 1) {
-      allRooms.push({ x, y });
+      allRooms.push(new Room(x, y));
     }
   }
 
@@ -31,14 +26,16 @@ export function buildCarvePlanWilson({ roomCols, roomRows }) {
   /** @type {Array<Tile>} */
   const carveOrder = [];
 
-  const initialRoom = pickRandomFrom(allRooms);
+  const initialRoom = Room.random(roomCols, roomRows);
 
-  finalized.add(roomKey(initialRoom));
-  carveOrder.push(roomToTile(initialRoom));
+  finalized.add(initialRoom.toString());
+  carveOrder.push(initialRoom.toTile());
 
   while (finalized.size < allRooms.length) {
     /** @type {Array<Room>} */
-    const candidates = allRooms.filter((room) => !finalized.has(roomKey(room)));
+    const candidates = allRooms.filter(
+      (room) => !finalized.has(room.toString()),
+    );
 
     /** @type {Room} */
     const startOfWalk = pickRandomFrom(candidates);
@@ -47,16 +44,14 @@ export function buildCarvePlanWilson({ roomCols, roomRows }) {
     const walk = [startOfWalk];
 
     /** @type {Map<string, number>} */
-    const walkPositions = new Map([[roomKey(startOfWalk), 0]]);
+    const walkPositions = new Map([[startOfWalk.toString(), 0]]);
 
     /** @type {Room} */
     let current = startOfWalk;
 
-    while (!finalized.has(roomKey(current))) {
-      const next = pickRandomFrom(
-        getRoomNeighbors(current, roomCols, roomRows),
-      );
-      const nextKey = roomKey(next);
+    while (!finalized.has(current.toString())) {
+      const next = pickRandomFrom(current.neighboringRooms(roomCols, roomRows));
+      const nextKey = next.toString();
 
       if (walkPositions.has(nextKey)) {
         /** @type {number} */
@@ -65,7 +60,7 @@ export function buildCarvePlanWilson({ roomCols, roomRows }) {
         walk.splice(loopStart + 1);
         walkPositions.clear();
         for (let i = 0; i < walk.length; i += 1) {
-          walkPositions.set(roomKey(walk[i]), i);
+          walkPositions.set(walk[i].toString(), i);
         }
       } else {
         walk.push(next);
@@ -78,13 +73,13 @@ export function buildCarvePlanWilson({ roomCols, roomRows }) {
     for (let i = 0; i < walk.length - 1; i += 1) {
       const from = walk[i];
       const to = walk[i + 1];
-      const fromKey = roomKey(from);
+      const fromKey = from.toString();
 
       if (!finalized.has(fromKey)) {
         finalized.add(fromKey);
-        carveOrder.push(roomToTile(from));
+        carveOrder.push(from.toTile());
       }
-      carveOrder.push(passageBetweenRooms(from, to));
+      carveOrder.push(from.passageTo(to));
     }
   }
 

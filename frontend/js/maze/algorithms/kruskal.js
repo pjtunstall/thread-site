@@ -1,6 +1,6 @@
-import { passageBetweenRooms, roomToTile } from "../grid.js";
+import { Room } from "../room.js";
 
-/** @import { CarvePlan, Room, Tile, Wall } from "../grid.js" */
+/** @import { CarvePlan, Tile, Wall } from "../grid.js" */
 
 /**
  * Kruskal's algorithm: treat rooms as disjoint sets and carve walls that join
@@ -29,18 +29,19 @@ export function buildCarvePlanKruskal({ roomCols, roomRows }) {
 
   for (let y = 0; y < roomRows; y += 1) {
     for (let x = 0; x < roomCols; x += 1) {
-      carveOrder.push(roomToTile({ x, y }));
+      const room = new Room(x, y);
+      carveOrder.push(room.toTile());
 
       if (x + 1 < roomCols) {
         walls.push({
-          from: { x, y },
-          to: { x: x + 1, y },
+          from: new Room(x, y),
+          to: new Room(x + 1, y),
         });
       }
       if (y + 1 < roomRows) {
         walls.push({
-          from: { x, y },
-          to: { x, y: y + 1 },
+          from: new Room(x, y),
+          to: new Room(x, y + 1),
         });
       }
     }
@@ -49,8 +50,8 @@ export function buildCarvePlanKruskal({ roomCols, roomRows }) {
   shuffleInPlace(walls);
 
   for (const wall of walls) {
-    const fromIndex = roomToIndex(wall.from, roomCols);
-    const toIndex = roomToIndex(wall.to, roomCols);
+    const fromIndex = wall.from.index(roomCols);
+    const toIndex = wall.to.index(roomCols);
 
     /** @type {number} */
     const fromRoot = findSetRoot(parent, fromIndex);
@@ -61,7 +62,7 @@ export function buildCarvePlanKruskal({ roomCols, roomRows }) {
     }
 
     unionSets(parent, rank, fromRoot, toRoot);
-    carveOrder.push(passageBetweenRooms(wall.from, wall.to));
+    carveOrder.push(wall.from.passageTo(wall.to));
   }
 
   return {
@@ -82,17 +83,6 @@ function shuffleInPlace(items) {
     const j = Math.floor(Math.random() * (i + 1));
     [items[i], items[j]] = [items[j], items[i]];
   }
-}
-
-/**
- * Flat room index for union–find (row-major: `y * roomCols + x`).
- *
- * @param {Room} room
- * @param {number} roomCols
- * @returns {number}
- */
-function roomToIndex(room, roomCols) {
-  return room.y * roomCols + room.x;
 }
 
 /**

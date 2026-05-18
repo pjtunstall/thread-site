@@ -1,13 +1,7 @@
-import {
-  getRoomNeighbors,
-  passageBetweenRooms,
-  pickRandomFrom,
-  pickRandomRoom,
-  roomKey,
-  roomToTile,
-} from "../grid.js";
+import { pickRandomFrom } from "../grid.js";
+import { Room } from "../room.js";
 
-/** @import { CarvePlan, Room, Tile, Wall } from "../grid.js" */
+/** @import { CarvePlan, Tile, Wall } from "../grid.js" */
 
 /**
  * Prim's algorithm: grow a tree by carving random frontier walls outward.
@@ -26,10 +20,10 @@ export function buildCarvePlanPrim({ roomCols, roomRows }) {
   /** @type {Map<string, Wall>} */
   const frontier = new Map();
 
-  const initialRoom = pickRandomRoom(roomCols, roomRows);
+  const initialRoom = Room.random(roomCols, roomRows);
 
-  visited.add(roomKey(initialRoom));
-  carveOrder.push(roomToTile(initialRoom));
+  visited.add(initialRoom.toString());
+  carveOrder.push(initialRoom.toTile());
   addFrontierWalls(initialRoom, roomCols, roomRows, frontier, visited);
 
   while (frontier.size > 0) {
@@ -40,17 +34,17 @@ export function buildCarvePlanPrim({ roomCols, roomRows }) {
     frontier.delete(wallKeyValue);
 
     /** @type {boolean} */
-    const fromVisited = visited.has(roomKey(wall.from));
-    const toVisited = visited.has(roomKey(wall.to));
+    const fromVisited = visited.has(wall.from.toString());
+    const toVisited = visited.has(wall.to.toString());
 
     if (fromVisited === toVisited) {
       continue;
     }
 
     const newRoom = fromVisited ? wall.to : wall.from;
-    visited.add(roomKey(newRoom));
-    carveOrder.push(passageBetweenRooms(wall.from, wall.to));
-    carveOrder.push(roomToTile(newRoom));
+    visited.add(newRoom.toString());
+    carveOrder.push(wall.from.passageTo(wall.to));
+    carveOrder.push(newRoom.toTile());
     addFrontierWalls(newRoom, roomCols, roomRows, frontier, visited);
   }
 
@@ -76,7 +70,7 @@ function normalizeWall(a, b) {
  * @returns {string}
  */
 function wallKey(wall) {
-  return `${roomKey(wall.from)},${roomKey(wall.to)}`;
+  return `${wall.from.toString()},${wall.to.toString()}`;
 }
 
 /**
@@ -88,9 +82,9 @@ function wallKey(wall) {
  * @param {Set<string>} visited
  */
 function addFrontierWalls(room, roomCols, roomRows, frontier, visited) {
-  const neighbors = getRoomNeighbors(room, roomCols, roomRows);
+  const neighbors = room.neighboringRooms(roomCols, roomRows);
   for (const neighbor of neighbors) {
-    if (visited.has(roomKey(neighbor))) {
+    if (visited.has(neighbor.toString())) {
       continue;
     }
     const wall = normalizeWall(room, neighbor);

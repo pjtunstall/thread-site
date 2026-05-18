@@ -1,9 +1,9 @@
 /**
  * Animated maze background. Uses a coarse grid of {@link Room}s for generation
- * and a fine grid of {@link Tile}s for drawing; see `grid.js`. The whole canvas
- * starts out wall-colored (CSS `--color-ink-wall`). Maze-generating algorithm
- * functions, `buildCarvePlanBacktracker` etc. return a {@link CarvePlan}, which
- * includes an array of `Tile`s to be switched to the
+ * and a fine grid of {@link Tile}s for drawing; see `grid.js` and `room.js`.
+ * The whole canvas starts out wall-colored (CSS `--color-ink-wall`).
+ * Maze-generating algorithm functions, `buildCarvePlanBacktracker` etc. return
+ * a {@link CarvePlan}, which includes an array of `Tile`s to be switched to the
  * background color (CSS `--color-bg`) during the animation.
  *
  * If the browser is set to the reduced motion preference, the whole maze is
@@ -13,6 +13,7 @@ import { buildCarvePlanBacktracker } from "./algorithms/backtracker.js";
 import { buildCarvePlanKruskal } from "./algorithms/kruskal.js";
 import { buildCarvePlanPrim } from "./algorithms/prim.js";
 import { buildCarvePlanWilson } from "./algorithms/wilson.js";
+import { pickRandomFrom } from "./grid.js";
 
 /** @import { Tile, CarvePlan } from "./grid.js" */
 
@@ -228,6 +229,7 @@ export class Maze {
     const roomCols = Math.floor((tileCols - 1) / 2);
     const roomRows = Math.floor((tileRows - 1) / 2);
     const generator = this.#pickMazeGenerator();
+    console.log(generator);
     return generator({ roomCols, roomRows });
   }
 
@@ -241,7 +243,7 @@ export class Maze {
       buildCarvePlanKruskal,
       buildCarvePlanPrim,
     ];
-    return algorithms[Math.floor(Math.random() * algorithms.length)];
+    return pickRandomFrom(algorithms);
   }
 
   /**

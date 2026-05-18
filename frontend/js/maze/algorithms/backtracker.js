@@ -1,12 +1,7 @@
-import {
-  getRoomNeighbors,
-  passageBetweenRooms,
-  pickRandomFrom,
-  pickRandomRoom,
-  roomToTile,
-} from "../grid.js";
+import { pickRandomFrom } from "../grid.js";
+import { Room } from "../room.js";
 
-/** @import { CarvePlan, Room, Tile } from "../grid.js" */
+/** @import { CarvePlan, Tile } from "../grid.js" */
 
 /**
  * Depth-first backtracking: walk forward randomly until stuck, then backtrack.
@@ -28,22 +23,20 @@ export function buildCarvePlanBacktracker({ roomCols, roomRows }) {
   const carveOrder = [];
 
   /** @type {Room} */
-  const startRoom = pickRandomRoom(roomCols, roomRows);
+  const startRoom = Room.random(roomCols, roomRows);
 
   stack.push(startRoom);
   visited[startRoom.y][startRoom.x] = true;
-  carveOrder.push(roomToTile(startRoom));
+  carveOrder.push(startRoom.toTile());
 
   while (stack.length > 0) {
     /** @type {Room} */
     const current = stack[stack.length - 1];
 
     /** @type {Array<Room>} */
-    const unvisitedNeighbors = getRoomNeighbors(
-      current,
-      roomCols,
-      roomRows,
-    ).filter((neighbor) => !visited[neighbor.y][neighbor.x]);
+    const unvisitedNeighbors = current
+      .neighboringRooms(roomCols, roomRows)
+      .filter((neighbor) => !visited[neighbor.y][neighbor.x]);
 
     if (unvisitedNeighbors.length === 0) {
       stack.pop();
@@ -55,10 +48,10 @@ export function buildCarvePlanBacktracker({ roomCols, roomRows }) {
 
     visited[nextNeighbor.y][nextNeighbor.x] = true;
 
-    carveOrder.push(roomToTile(nextNeighbor));
-    carveOrder.push(passageBetweenRooms(current, nextNeighbor));
+    carveOrder.push(nextNeighbor.toTile());
+    carveOrder.push(current.passageTo(nextNeighbor));
 
-    stack.push({ x: nextNeighbor.x, y: nextNeighbor.y });
+    stack.push(new Room(nextNeighbor.x, nextNeighbor.y)); // What if we just push nextNeighbor? Would that prevent freeing of the `unvisitedNeighbors` array?
   }
 
   return { tiles: carveOrder, iterativeStartIndex: 0 };
