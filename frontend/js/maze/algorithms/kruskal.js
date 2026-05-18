@@ -39,6 +39,9 @@ export function buildCarvePlanKruskal({ roomCols, roomRows }) {
   for (let y = 0; y < roomRows; y += 1) {
     for (let x = 0; x < roomCols; x += 1) {
       const room = new Room(x, y);
+
+      // Along the way, we assign this order to carve the `Room`s. The order
+      // doesn't matter; they'll all appear intially already carved.
       carveOrder.push(room.toTile());
 
       if (x + 1 < roomCols) {
@@ -104,8 +107,8 @@ function shuffleInPlace(items) {
 
 /**
  * This function returns the root of the set containing `index`. It recursively
- * follows parent pointers until `parent[r] === r`, and path-compresses on the way
- * back to speed up the search next time.
+ * follows parent pointers until `parent[r] === r`, and path-compresses on the
+ * way back to speed up the search next time.
  *
  * @param {Array<number>} parents Parent pointers.
  * @param {number} index `Room` index whose set root is needed.
