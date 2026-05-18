@@ -229,7 +229,6 @@ export class Maze {
     const roomCols = Math.floor((tileCols - 1) / 2);
     const roomRows = Math.floor((tileRows - 1) / 2);
     const generator = this.#pickMazeGenerator();
-    console.log(generator);
     return generator({ roomCols, roomRows });
   }
 
