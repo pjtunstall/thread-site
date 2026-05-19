@@ -123,5 +123,6 @@ To deploy changes made to `worker`,
 
 ```sh
 cd worker
-npx wrangler deploy
+npm ci # if necessary, to clean install dependencies
+npm deploy
 ```

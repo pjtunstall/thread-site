@@ -4,5 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "node serve.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.90.1"
   }
 }
