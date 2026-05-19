@@ -6,8 +6,8 @@ export class Wall {
   to;
 
   /**
-   * Returns a `Wall` between the given pair of `Room`s, normalized so that its
-   * `from` < `to` in "dictionary order".
+   * Returns a `Wall` between the given pair of `Room`s, normalized so that
+   * `from` < `to` in "dictionary order" of `Room` coordinates.
    *
    * @param {Room} a
    * @param {Room} b
