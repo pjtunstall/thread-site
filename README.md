@@ -2,8 +2,8 @@
 
 - [Overview](#overview)
 - [Custom elements](#custom-elements)
-- [Secrets](#secrets)
 - [Content Security Policy](#content-security-policy)
+- [Secrets](#secrets)
 - [Deployment](#deployment)
 
 ## Overview
@@ -11,11 +11,13 @@
 This is a website for people to download my game [By a Thread](https://github.com/pjtunstall/by-a-thread). It includes a contact form and animations of some maze-generating algorithms:
 
 - Backtracker: draws the maze in one long, winding path
-- Kruskal: starts with a grid of detached rooms, then carves out passages between them
+- Kruskal: starts with a grid of disconnected rooms, then carves out passages between them
 - Prim: expands in all directions
 - Wilson: like Backtracker, but draws many paths simultaneously
 
-The [Custom elements](#custom-elements) section that follows describes how custom elements are used to encapsulate detail and avoid repetition in the HTML. The other sections note some details on how I set up the website on Cloudflare and how I deploy changes. The static files are hosted on Cloudflare. They link to the downloads on GitHub Releases. For the contact form backend, I used a Cloudflare Worker, and, as spam protection, Cloudflare Turnstile (among other measures). I used Resend SMTP (Simple Mail Transfer Protocol) to relay messages from the contact form to my email address.
+The static files are hosted on Cloudflare. They link to the downloads on GitHub Releases. For the contact form backend, I used a Cloudflare Worker, and, as spam protection, Cloudflare Turnstile (among other measures). I used Resend SMTP (Simple Mail Transfer Protocol) to relay messages from the contact form to my email address.
+
+The [Custom elements](#custom-elements) section that follows describes how I used custom elements are to encapsulate detail and avoid repetition in the HTML. [Content Security Policy](#content-security-policy) details my CSP; I used the project to explore good security practices, although some of the guards I put in place were more for the sake of learning than having any practical benefit for the current site. The [Secrets](#secrets) and [Deployment](#deployment) sections contain some notes on how I set up the website on Cloudflare: what secrets it needed and how changes are deployed.
 
 ## Custom elements
 
@@ -25,7 +27,7 @@ Several items in `frontend/index.html` are implemented as custom elements.
 
 In the source and in `control-host.js`, I make use of the following terms:
 
-- Host: The custom element as it appears in the markup, for example `<menu-button label="STORY" data-open-dialog="dlg-story">`. When the component connects, that node ends up with exactly one child: the native interactive element I build. I declare attributes on the host in `index.html`; during upgrade, most of those same attributes are applied to the child as well, so existing modules can keep using `document.querySelector("[data-open-dialog]")` and receive a real `<button>` or `<a>` without depending on the custom element's tag name.
+- Host: The custom element as it appearI deploy s in the markup, for example `<menu-button label="STORY" data-open-dialog="dlg-story">`. When the component connects, that node ends up with exactly one child: the native interactive element I build. I declare attributes on the host in `index.html`; during upgrade, most of those same attributes are applied to the child as well, so existing modules can keep using `document.querySelector("[data-open-dialog]")` and receive a real `<button>` or `<a>` without depending on the custom element's tag name.
 
 - Control: That inner native element, either `<button type="button">` or, when the host carries an `href`, an `<a>`. I call it a _control_ because "button" would be inaccurate when the interactive element is an anchor.
 
