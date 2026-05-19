@@ -32,13 +32,12 @@ export class Room {
   }
 
   /**
-   * This function stringifies a `Room`. It's used make a key for a `Map` or
-   * `Set`. We don't use the `Room` itself as a key because JavaScript objects
-   * are really references to the underlying data. Any other object, even a
-   * `Room` with the same shape and the same `x` and `y` values, would
-   * constitute a different reference, making it inconvenient to look up a value
-   * in the `Map` or `Set`. Strings, on the other hand, give value-based
-   * identity.
+   * This function stringifies a `Room`. It can be used make a key for a `Map`
+   * or `Set`. We can't use the `Room` itself as a key because JavaScript
+   * objects are really references to the underlying data. Any other object,
+   * even a `Room` with the same `x` and `y` values, would constitute a
+   * different reference, making comparison and look-up inconvenient. Strings
+   * are fine because they give value-based identity.
    *
    * @param {Room} room
    * @returns {string}

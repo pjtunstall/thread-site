@@ -1,10 +1,12 @@
 import { pickRandomFrom } from "../grid.js";
 import { Room } from "../room.js";
+import { Wall } from "../wall.js";
 
-/** @import { CarvePlan, Tile, Wall } from "../grid.js" */
+/** @import { CarvePlan, Tile } from "../grid.js" */
 
 /**
  * Prim's algorithm: grow a tree by carving random frontier walls outward.
+ *
  * Appearance: expands in all directions.
  *
  * @param {{ roomCols: number, roomRows: number }} options
@@ -52,28 +54,6 @@ export function buildCarvePlanPrim({ roomCols, roomRows }) {
 }
 
 /**
- * Return `{ from, to }` with stable ordering for use as map keys.
- *
- * @param {Room} a
- * @param {Room} b
- * @returns {Wall}
- */
-function normalizeWall(a, b) {
-  if (a.y < b.y || (a.y === b.y && a.x <= b.x)) {
-    return { from: a, to: b };
-  }
-  return { from: b, to: a };
-}
-
-/**
- * @param {Wall} wall
- * @returns {string}
- */
-function wallKey(wall) {
-  return `${wall.from.toString()},${wall.to.toString()}`;
-}
-
-/**
  * @param {Room} room
  * @param {number} roomCols
  * @param {number} roomRows
@@ -86,7 +66,7 @@ function addFrontierWalls(room, roomCols, roomRows, frontier, visited) {
     if (visited.has(neighbor.toString())) {
       continue;
     }
-    const wall = normalizeWall(room, neighbor);
-    frontier.set(wallKey(wall), wall);
+    const wall = new Wall(room, neighbor);
+    frontier.set(wall.toString(), wall);
   }
 }

@@ -1,6 +1,6 @@
 /**
- * @typedef {import('./room.js').Room} Room
- * @typedef {{ from: Room, to: Room }} Wall
+ * @typedef {import('./room.js').Room} Room { x: number, y: number }
+ * @typedef {import('./wall.js').Wall} Wall { from: Room, t: Room }
  * @typedef {{ x: number, y: number }} Tile
  *
  * We define a coarse grid of {@link Room}s (`roomCols` × `roomRows`) and a fine
@@ -26,6 +26,9 @@
  *
  * `Room` is implemented as a class in `room.js`. It has `x` and `y`
  * coordinates, representing its position in the coarse grid.
+ *
+ * `Wall`, in `wall.js` is implemented as a class with `from` and `to` fields,
+ * each being a `Room`.
  *
  * `tiles` contains the `Tile`s to be carved, `iterativeStartIndex` is the index
  * of `tiles` from which the animation will be drawn iteratively in case we want
