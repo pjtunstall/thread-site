@@ -4,6 +4,7 @@
 - [Custom elements](#custom-elements)
 - [Content Security Policy](#content-security-policy)
 - [Secrets](#secrets)
+- [To run locally](#to-run-locally)
 - [Deployment](#deployment)
 
 ## Overview
@@ -103,6 +104,16 @@ Notes on specific directives:
 - **`require-trusted-types-for 'script'; trusted-types policy`**: Allows `frontend/js/trusted-types-boot.js` to define a Trusted Types policy, called `policy`. Now, for any browser that supports Trusted Types (all modern browsers), only strings on my allowlist can be turned into HTML and added to the DOM, and likewise only permitted strings can be inserted as script URLs. (In this case, that's only the Cloudflare Turnstile script that guards the contact form.) Moreover, an attacker can't create another policy of a different name or redefine `policy`. This is overkill for the current project since user input isn't shown to other users, but I implemented it anyway as a learning exercise. If user input was displayed for other users, the Trusted Types system could be used to prevent any code from bypassing the sanitization step.
 
 Note: There's some console noise, including `TrustedTypes` violation errors. Both the policy and the violations referred to there are Cloudflare's. Their Turnstile works anyway.
+
+## To run locally
+
+For local development, run this from the project root:
+
+```sh
+npm run dev
+```
+
+(`node serve.mjs` works too.) Plain static servers such as `python3 -m http.server` do not rewrite `/downloads` to `index.html`, so direct visits to that path will result in a 404 "page not found" error.
 
 ## Deployment
 

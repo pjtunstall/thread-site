@@ -11,7 +11,8 @@ import {
   revealDownloadsNavCards,
 } from "./downloads.js";
 
-const HASH_DOWNLOADS = "#downloads";
+const HOME_URL = new URL("./", location.href);
+const DOWNLOADS_URL = new URL("./downloads", location.href);
 
 const homeView = document.querySelector('[data-view="home"]');
 const downloadsView = document.querySelector('[data-view="downloads"]');
@@ -26,26 +27,22 @@ if (
 
 defineSiteControlElements();
 
-const backButton = document.querySelector("button[data-back-to-home]");
 const enterLabyrinth = document.querySelector(".view-home .hero-cta a");
 
-function clearHashFromUrl() {
-  if (window.location.hash !== HASH_DOWNLOADS) return;
-  window.history.pushState(
-    null,
-    "",
-    `${window.location.pathname}${window.location.search}`,
-  );
+/**
+ * @param {string} pathname
+ * @returns {"home" | "downloads"}
+ */
+function viewForPathname(pathname) {
+  return pathname === DOWNLOADS_URL.pathname ? "downloads" : "home";
 }
 
-function setHashDownloads() {
-  if (window.location.hash !== HASH_DOWNLOADS) {
-    window.history.pushState(
-      null,
-      "",
-      `${window.location.pathname}${window.location.search}${HASH_DOWNLOADS}`,
-    );
-  }
+/**
+ * @param {string} pathname
+ * @returns {boolean}
+ */
+function isAppPathname(pathname) {
+  return pathname === HOME_URL.pathname || pathname === DOWNLOADS_URL.pathname;
 }
 
 /**
@@ -74,12 +71,14 @@ function focusFirstInScope(scope) {
 }
 
 /**
+ * This function switches the visible SPA view. It only changes the DOM, not the
+ * URL as this has already been handled for all navigation types. Callers match
+ * the view to the address bar: `applyPathToView()` on page load, or the
+ * intercepted `navigate` handler for `<a href>` links and browser back/forward.
+ *
  * @param {"home" | "downloads"} view
- * @param {{ syncUrl?: boolean }} [options]
  */
-function setView(view, options) {
-  const syncUrl = options?.syncUrl !== false;
-
+function setView(view) {
   if (view === "downloads") {
     homeView.hidden = true;
     homeView.setAttribute("inert", "");
@@ -89,9 +88,6 @@ function setView(view, options) {
     downloadsView.removeAttribute("inert");
     downloadsView.setAttribute("aria-hidden", "false");
 
-    if (syncUrl) {
-      setHashDownloads();
-    }
     resetDownloadsNavCards();
     revealDownloadsNavCards();
 
@@ -111,10 +107,6 @@ function setView(view, options) {
 
   resetDownloadsNavCards();
 
-  if (syncUrl) {
-    clearHashFromUrl();
-  }
-
   if (containsOrIs(downloadsView, document.activeElement)) {
     if (enterLabyrinth instanceof HTMLAnchorElement) {
       enterLabyrinth.focus({ preventScroll: true });
@@ -122,41 +114,6 @@ function setView(view, options) {
       focusFirstInScope(homeView);
     }
   }
-}
-
-function applyHashToView() {
-  if (window.location.hash === HASH_DOWNLOADS) {
-    setView("downloads", { syncUrl: false });
-  } else {
-    setView("home", { syncUrl: false });
-  }
-}
-
-window.addEventListener("popstate", () => {
-  applyHashToView();
-});
-
-window.addEventListener("hashchange", () => {
-  applyHashToView();
-});
-
-if (backButton instanceof HTMLButtonElement) {
-  backButton.addEventListener("click", () => {
-    // In-app back: pushState home on top of #downloads, never `history.back()`.
-    setView("home");
-  });
-}
-
-// Same-document fragment clicks do not fire hashchange when the URL is
-// already #downloads (e.g. hash not cleared). Drive the view explicitly
-// for unmodified primary clicks; keep default for modifiers / middle-click.
-if (enterLabyrinth instanceof HTMLAnchorElement) {
-  enterLabyrinth.addEventListener("click", (e) => {
-    if (e.button !== 0) return;
-    if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-    e.preventDefault();
-    setView("downloads", { syncUrl: true });
-  });
 }
 
 const maze = new Maze();
@@ -192,4 +149,33 @@ initDialogs({
 });
 initPlatformDownloads();
 
-applyHashToView();
+// Set view on navigation events: browser forward or back buttons, or clicking
+// on in-app buttons "Enter the labyrinth" to move from "home" to "downloads", or "Back to main
+// page" to move from "downloads" to "home" (both of which rely on `href` to get
+// the destination URL).
+navigation.addEventListener("navigate", (event) => {
+  if (!event.canIntercept || event.hashChange || event.downloadRequest) {
+    return;
+  }
+
+  const dest = new URL(event.destination.url);
+
+  // Return before intercepting if the destination is off site. (Actually if the
+  // desitination has a different origin, but in practice this means off site; There's no reason for the scheme or port to change.)
+  if (dest.origin !== location.origin) return;
+
+  // Likewise if the destination is not recognized.
+  if (!isAppPathname(dest.pathname)) return;
+
+  event.intercept({
+    handler() {
+      setView(viewForPathname(dest.pathname));
+    },
+  });
+});
+
+// Set view on initial page load, based on URL: `/` or `/downloads`.
+function applyPathToView() {
+  setView(viewForPathname(location.pathname));
+}
+applyPathToView();
