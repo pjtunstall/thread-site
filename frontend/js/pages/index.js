@@ -31,8 +31,11 @@ const enterLabyrinth = document.querySelector(".view-home .hero-cta a");
 
 function clearHashFromUrl() {
   if (window.location.hash !== HASH_DOWNLOADS) return;
-  const withoutHash = `${window.location.pathname}${window.location.search}`;
-  window.history.pushState(null, "", withoutHash);
+  window.history.pushState(
+    null,
+    "",
+    `${window.location.pathname}${window.location.search}`,
+  );
 }
 
 function setHashDownloads() {
