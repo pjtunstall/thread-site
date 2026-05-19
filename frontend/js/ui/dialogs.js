@@ -177,7 +177,7 @@ function renderParagraph(bodyContainer, paragraph) {
   if (paragraph.text) {
     p.textContent = paragraph.text;
   } else if (paragraph.parts) {
-    paragraph.parts.forEach(function (part) {
+    paragraph.parts.forEach((part) => {
       appendPart(p, part);
     });
   }
@@ -189,7 +189,7 @@ function renderDialogs(dialogDefs) {
   const template = getDialogTemplate();
   if (!template) return;
 
-  dialogDefs.forEach(function (dialogDef) {
+  dialogDefs.forEach((dialogDef) => {
     const existing = document.getElementById(dialogDef.id);
     if (existing) existing.remove();
 
@@ -217,7 +217,7 @@ function renderDialogs(dialogDefs) {
       dialog.setAttribute("data-dialog-no-backdrop-close", "");
     }
 
-    dialogDef.body.forEach(function (entry, idx) {
+    dialogDef.body.forEach((entry, idx) => {
       if (idx > 0) body.append(document.createElement("br"));
       if (entry.type === "form") {
         renderForm(body, entry);
@@ -245,11 +245,11 @@ export function initDialogs(options) {
   );
   const dialogs = document.querySelectorAll("dialog[data-dialog]");
 
-  dialogTriggers.forEach(function (btn) {
+  dialogTriggers.forEach((btn) => {
     const dialog = getDialogTargetForTrigger(btn);
     if (!dialog) return;
 
-    btn.addEventListener("click", function () {
+    btn.addEventListener("click", () => {
       dialog.showModal();
       const form = dialog.querySelector("form");
       // Contact form: load Turnstile API (once) and mount the widget on first
@@ -265,20 +265,20 @@ export function initDialogs(options) {
   // user to lose partially-typed input from the form, or have to repeat a
   // download just to get back to the installation guide. ESC and the explicit
   // Close button still work in every case.
-  dialogs.forEach(function (dialog) {
+  dialogs.forEach((dialog) => {
     const allowBackdropClose =
       !blockBackdropCloseAll &&
       !dialog.hasAttribute("data-dialog-no-backdrop-close") &&
       !dialog.querySelector("form");
 
     if (allowBackdropClose) {
-      dialog.addEventListener("click", function (event) {
+      dialog.addEventListener("click", (event) => {
         if (event.target === dialog) dialog.close();
       });
     }
 
-    dialog.querySelectorAll("[data-dialog-close]").forEach(function (el) {
-      el.addEventListener("click", function () {
+    dialog.querySelectorAll("[data-dialog-close]").forEach((el) => {
+      el.addEventListener("click", () => {
         dialog.close();
       });
     });

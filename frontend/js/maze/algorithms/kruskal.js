@@ -6,7 +6,7 @@ import { Room } from "../room.js";
  * Kruskal's algorithm: Start with the `Rooms` already carved out, all
  * separated. Then iterate through their adjoining walls in a random order, and,
  * at each step, remove the wall if and only if the two `Rooms` that the wall
- * separates still belong to separate components.
+ * separates still belong to unconnected sets of `Rooms`.
  *
  * Appearance: starts with a grid of detached rooms, then carves out passages
  * between them.
@@ -20,7 +20,12 @@ export function buildCarvePlanKruskal({ roomCols, roomRows }) {
 
   const roomCount = roomCols * roomRows;
 
-  // Each `Room` starts out as its own parent. As the connected components get
+  // We use the union-find data structure to represent collection of
+  // disconnected sets. It has two operatons: union and find. See the functions
+  // `setUnion` and `findSetRoot` below.
+
+  // Each `Room` starts out as its own parent. As the connected
+  // components get
   // bigger, we'll use follow the chain from parent to parent of parent and so
   // on till we come to the set "root".
   /** @type {Array<number>} */

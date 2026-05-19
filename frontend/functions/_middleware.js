@@ -45,12 +45,12 @@ export async function onRequest(context) {
 
   return new HTMLRewriter()
     .on("script", {
-      element(el) {
+      element: (el) => {
         el.setAttribute("nonce", nonce);
       },
     })
     .on("head", {
-      element(el) {
+      element: (el) => {
         el.append(`<meta name="csp-nonce" content="${nonce}">`, { html: true });
       },
     })

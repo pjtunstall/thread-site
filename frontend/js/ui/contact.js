@@ -21,14 +21,14 @@ function ensureTurnstileScript() {
   }
   const existing = document.querySelector("script[data-thread-turnstile-api]");
   if (existing) {
-    turnstileScriptPromise = new Promise(function (resolve, reject) {
-      const finishErr = function () {
+    turnstileScriptPromise = new Promise((resolve, reject) => {
+      const finishErr = () => {
         console.error(`${LOG_PREFIX} Turnstile API script failed to load.`);
         existing.remove();
         turnstileScriptPromise = null;
         reject(new Error("Turnstile script failed"));
       };
-      const tryResolve = function () {
+      const tryResolve = () => {
         if (turnstileApiReady()) {
           resolve();
           return true;
@@ -38,33 +38,33 @@ function ensureTurnstileScript() {
       if (tryResolve()) return;
       existing.addEventListener(
         "load",
-        function () {
+        () => {
           resolve();
         },
         { once: true },
       );
       existing.addEventListener("error", finishErr, { once: true });
-      queueMicrotask(function () {
+      queueMicrotask(() => {
         if (tryResolve()) return;
       });
     });
     return turnstileScriptPromise;
   }
-  turnstileScriptPromise = new Promise(function (resolve, reject) {
+  turnstileScriptPromise = new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = trustedScriptURL(TURNSTILE_API_URL);
     script.async = true;
     script.setAttribute("data-thread-turnstile-api", "");
     script.addEventListener(
       "load",
-      function () {
+      () => {
         resolve();
       },
       { once: true },
     );
     script.addEventListener(
       "error",
-      function () {
+      () => {
         console.error(`${LOG_PREFIX} Turnstile API script failed to load.`);
         script.remove();
         turnstileScriptPromise = null;
@@ -155,13 +155,13 @@ function setStatus(statusEl, kind, message) {
 // set script.async explicitly for clarity.
 function whenTurnstileLoaded(callback) {
   ensureTurnstileScript()
-    .then(function () {
+    .then(() => {
       if (turnstileApiReady()) {
         callback();
         return;
       }
       let attempts = 0;
-      const tick = function () {
+      const tick = () => {
         if (turnstileApiReady()) {
           callback();
           return;
@@ -175,28 +175,28 @@ function whenTurnstileLoaded(callback) {
       };
       tick();
     })
-    .catch(function () {
+    .catch(() => {
       // ensureTurnstileScript already logged a script network/load failure.
     });
 }
 
 function mountTurnstile(container, onToken) {
   const handle = { widgetId: null };
-  whenTurnstileLoaded(function () {
+  whenTurnstileLoaded(() => {
     handle.widgetId = window.turnstile.render(container, {
       sitekey: getTurnstileSitekey(),
       callback: onToken,
-      "error-callback": function () {
+      "error-callback": () => {
         onToken(null);
       },
-      "expired-callback": function () {
+      "expired-callback": () => {
         onToken(null);
       },
     });
   });
 
   return {
-    reset: function () {
+    reset: () => {
       if (handle.widgetId !== null && window.turnstile) {
         window.turnstile.reset(handle.widgetId);
       }
@@ -210,7 +210,7 @@ export function renderForm(bodyContainer, formDef) {
   form.id = formDef.id || "contact-form";
   form.noValidate = true;
 
-  formDef.fields.forEach(function (field) {
+  formDef.fields.forEach((field) => {
     renderFormField(form, field);
   });
 
@@ -272,14 +272,14 @@ export function renderForm(bodyContainer, formDef) {
   // Turnstile won't initialize inside display:none ancestors, so the widget is
   // mounted when the dialog first opens. The Turnstile API script is also
   // loaded then (first call here), not on initial page load.
-  form._mountTurnstileIfNeeded = function () {
+  form._mountTurnstileIfNeeded = () => {
     if (widget) return;
-    widget = mountTurnstile(turnstileMount, function (token) {
+    widget = mountTurnstile(turnstileMount, (token) => {
       turnstileToken = token;
     });
   };
 
-  form.addEventListener("submit", async function (event) {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const data = {

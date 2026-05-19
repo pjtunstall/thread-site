@@ -88,7 +88,7 @@ export class Maze {
   }
 
   /**
-   * Called:
+   * This method is called:
    *   - on initialization by `this.start`;
    *   - when the user clicks to request a new maze;
    *   - when the window is resized;

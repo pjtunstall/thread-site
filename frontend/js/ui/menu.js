@@ -8,12 +8,12 @@ export function initMenu() {
    *
    * @param {boolean} nextState
    */
-  function setMenuOpen(nextState) {
+  const setMenuOpen = (nextState) => {
     isMenuOpen = nextState;
     if (isMenuOpen) {
       menuPanel.hidden = false;
       menuPanel.setAttribute("data-menu-open", "false");
-      window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(() => {
         if (isMenuOpen) {
           menuPanel.setAttribute("data-menu-open", "true");
         }
@@ -27,24 +27,24 @@ export function initMenu() {
       "aria-label",
       isMenuOpen ? "Close site menu" : "Open site menu",
     );
-  }
+  };
 
-  function closeMenu() {
+  const closeMenu = () => {
     setMenuOpen(false);
-  }
+  };
 
-  function shouldCloseMenuOnClick(item) {
+  const shouldCloseMenuOnClick = (item) => {
     const closePreference = item.getAttribute("data-menu-close");
     if (closePreference === null) return true;
     return closePreference !== "false";
-  }
+  };
 
-  menuToggle.addEventListener("click", function (event) {
+  menuToggle.addEventListener("click", (event) => {
     event.stopPropagation();
     setMenuOpen(!isMenuOpen);
   });
 
-  document.addEventListener("click", function (event) {
+  document.addEventListener("click", (event) => {
     if (!isMenuOpen) return;
     const target = event.target;
     if (!(target instanceof Node)) return;
@@ -52,14 +52,14 @@ export function initMenu() {
     closeMenu();
   });
 
-  document.addEventListener("keydown", function (event) {
+  document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && isMenuOpen) {
       closeMenu();
     }
   });
 
-  menuPanel.querySelectorAll("button, a").forEach(function (item) {
-    item.addEventListener("click", function () {
+  menuPanel.querySelectorAll("button, a").forEach((item) => {
+    item.addEventListener("click", () => {
       if (shouldCloseMenuOnClick(item)) closeMenu();
     });
   });

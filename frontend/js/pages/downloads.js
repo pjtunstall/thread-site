@@ -36,7 +36,7 @@ function buildMacosDownloadBody(zipFileName) {
         " has finished downloading, double-click the archive to extract it. Drag ",
         { type: "code", text: "ByAThread.app" },
         " into ",
-        { type: "strong", text: "A*pplications" },
+        { type: "strong", text: "Applications" },
         " if you want it there (optional).",
       ],
     },
@@ -248,7 +248,7 @@ export function initPlatformDownloads() {
     document.querySelectorAll("[data-platform-download]"),
   );
 
-  platformButtons.forEach(function (button) {
+  platformButtons.forEach((button) => {
     if (!(button instanceof HTMLButtonElement)) return;
 
     const platform = button.dataset.platformDownload;
@@ -257,7 +257,7 @@ export function initPlatformDownloads() {
     const dialog =
       dialogCandidate instanceof HTMLDialogElement ? dialogCandidate : null;
 
-    button.addEventListener("click", function () {
+    button.addEventListener("click", () => {
       if (!platform) return;
       triggerDownload(platform);
       if (dialog) dialog.showModal();
@@ -269,7 +269,7 @@ export function revealDownloadsNavCards() {
   const downloadsNav = document.querySelector(".downloads-nav");
   if (!(downloadsNav instanceof HTMLElement)) return;
 
-  window.requestAnimationFrame(function () {
+  window.requestAnimationFrame(() => {
     downloadsNav.setAttribute("data-menu-open", "true");
   });
 }

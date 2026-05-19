@@ -5,7 +5,7 @@ const CAROUSEL_ITEMS = [
   },
   {
     src: "./assets/images/antikythera.jpg",
-    alt: "By a Thread game screenshot featuring the player avatar as a bronze sphere in the style of the Antikythera Mechanism",
+    alt: "By a Thread game screenshot featuring the player avatar as a bronze sphere with mechanical surface features in the style of the Antikythera Mechanism",
   },
   {
     src: "./assets/images/griffin.webp",

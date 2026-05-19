@@ -74,7 +74,7 @@ export function initTheme(options = {}) {
 
   let currentTheme = applyStoredThemePreference({ themeToggle });
 
-  themeToggle.addEventListener("click", function () {
+  themeToggle.addEventListener("click", () => {
     currentTheme = currentTheme === "dark" ? "light" : "dark";
     saveThemePreference(currentTheme);
     applyThemePreference(currentTheme, themeToggle);
