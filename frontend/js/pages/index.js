@@ -139,7 +139,7 @@ window.addEventListener("hashchange", () => {
 
 if (backButton instanceof HTMLButtonElement) {
   backButton.addEventListener("click", () => {
-    // In-app back: pushState home on top of #downloads — never history.back().
+    // In-app back: pushState home on top of #downloads, never `history.back()`.
     setView("home");
   });
 }
