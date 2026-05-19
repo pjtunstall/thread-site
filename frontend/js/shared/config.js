@@ -12,7 +12,7 @@ const TURNSTILE_SITEKEY_TEST = "1x00000000000000000000AA";
 const TURNSTILE_SITEKEY_PROD = "0x4AAAAAADLh0P5cnBoA1u2-";
 
 /**
- * @returns {string}
+ * @returns {boolean}
  */
 function isLocalhost() {
   const { hostname } = window.location;

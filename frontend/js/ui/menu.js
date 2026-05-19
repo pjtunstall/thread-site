@@ -5,7 +5,6 @@ export function initMenu() {
   let isMenuOpen = false;
 
   /**
-   *
    * @param {boolean} nextState
    */
   const setMenuOpen = (nextState) => {
@@ -33,6 +32,10 @@ export function initMenu() {
     setMenuOpen(false);
   };
 
+  /**
+   * @param {Element} item
+   * @returns {boolean}
+   */
   const shouldCloseMenuOnClick = (item) => {
     const closePreference = item.getAttribute("data-menu-close");
     if (closePreference === null) return true;

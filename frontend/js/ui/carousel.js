@@ -59,12 +59,19 @@ export function initCarousel() {
     });
   };
 
+  /**
+   * @param {number} delta
+   */
   const moveBy = (delta) => {
     currentIndex =
       (currentIndex + delta + CAROUSEL_ITEMS.length) % CAROUSEL_ITEMS.length;
     render();
   };
 
+  /**
+   * @param {EventTarget | null} target
+   * @returns {boolean}
+   */
   const isTypingTarget = (target) => {
     if (!(target instanceof HTMLElement)) {
       return false;
@@ -80,6 +87,9 @@ export function initCarousel() {
     );
   };
 
+  /**
+   * @param {KeyboardEvent} event
+   */
   const onKeydown = (event) => {
     if (event.defaultPrevented) {
       return;

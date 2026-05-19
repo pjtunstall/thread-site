@@ -101,7 +101,6 @@ export function buildCarvePlanKruskal({ roomCols, roomRows }) {
  *
  * @template T
  * @param {Array<T>} items
- * @returns {void}
  */
 function shuffleInPlace(items) {
   for (let i = items.length - 1; i > 0; i -= 1) {
@@ -136,7 +135,6 @@ function findSetRoot(parents, index) {
  * @param {Array<number>} rank Approximate tree depths per root (mutated).
  * @param {number} a Root index of one set.
  * @param {number} b Root index of the other set.
- * @returns {void}
  */
 function unionSets(parents, rank, a, b) {
   if (a === b) {

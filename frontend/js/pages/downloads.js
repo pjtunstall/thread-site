@@ -222,7 +222,6 @@ export const DOWNLOAD_DIALOGS = [
 
 /**
  * @param {string} platform
- * @returns {void}
  */
 function triggerDownload(platform) {
   const fileName = DOWNLOAD_FILES[platform];

@@ -71,8 +71,6 @@ export class Maze {
 
   /**
    * This method is called when the page is initialized.
-   *
-   * @returns {void}
    */
   start() {
     if (!this.#enabled) {
@@ -93,8 +91,6 @@ export class Maze {
    *   - when the user clicks to request a new maze;
    *   - when the window is resized;
    *   - and when when there's a change in motion preference.
-   *
-   * @returns {void}
    */
   restart() {
     if (!this.#enabled) {
@@ -127,8 +123,6 @@ export class Maze {
    * This method is called on theme toggle. It re-reads --color-* from the
    * document and redraws what's already carved. `this.#enabled` implies
    * `this.#context` is correctly defined.
-   *
-   * @returns {void}
    */
   repaintCurrentPartialState() {
     if (!this.#enabled || this.#tilesToCarve.length === 0) {
@@ -271,7 +265,6 @@ export class Maze {
    *
    * @param {number} startIndex
    * @param {number} endIndex
-   * @returns {void}
    */
   #drawInstantCarves(startIndex, endIndex) {
     if (endIndex <= startIndex) {
@@ -289,9 +282,7 @@ export class Maze {
    * at the rate `this.#tilesPerMs`.
    *
    * @param {number} timestamp milliseconds
-   * @returns {void}
-   * */
-
+   */
   #onTick = (timestamp) => {
     this.#frameRequest = window.requestAnimationFrame(this.#onTick);
 

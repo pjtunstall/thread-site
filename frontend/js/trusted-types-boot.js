@@ -15,6 +15,7 @@ import {
 
 /**
  * Full `<svg>...</svg>` string as built by `menu-card.js` and `control-host.js`.
+ *
  * @param {string} innerMarkup
  */
 function wrapControlOrMenuSvg(innerMarkup) {
@@ -55,7 +56,6 @@ if (window.trustedTypes?.createPolicy) {
 }
 
 /**
- *
  * @param {string} html
  * @returns {string}
  */
@@ -64,7 +64,6 @@ export function trustedHtml(html) {
 }
 
 /**
- *
  * @param {string} url
  * @returns {string}
  */
@@ -73,7 +72,6 @@ export function trustedScriptURL(url) {
 }
 
 /**
- *
  * @param {string} input
  * @returns {string}
  */
@@ -84,7 +82,6 @@ function createHTML(input) {
 }
 
 /**
- *
  * @param {string} input
  * @returns {string}
  */

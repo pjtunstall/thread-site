@@ -52,6 +52,7 @@ export function buildCarvePlanPrim({ roomCols, roomRows }) {
 }
 
 /**
+ * Return `{ from, to }` with stable ordering for use as map keys.
  *
  * @param {Room} a
  * @param {Room} b
@@ -65,7 +66,6 @@ function normalizeWall(a, b) {
 }
 
 /**
- *
  * @param {Wall} wall
  * @returns {string}
  */
@@ -74,7 +74,6 @@ function wallKey(wall) {
 }
 
 /**
- *
  * @param {Room} room
  * @param {number} roomCols
  * @param {number} roomRows

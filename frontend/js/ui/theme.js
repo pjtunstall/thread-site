@@ -3,6 +3,9 @@ import { getThemeToggle } from "./dom-utils.js";
 const LOG_PREFIX = "[site-init]";
 const root = document.documentElement;
 
+/**
+ * @returns {string}
+ */
 function readThemePreference() {
   try {
     const stored = localStorage.getItem("theme-preference");
@@ -20,10 +23,8 @@ function readThemePreference() {
 }
 
 /**
- *
  * @param {string} theme
  * @param {HTMLButtonElement} themeToggle
- * @returns
  */
 function applyThemePreference(theme, themeToggle) {
   root.setAttribute("data-theme", theme);
@@ -36,7 +37,6 @@ function applyThemePreference(theme, themeToggle) {
 }
 
 /**
- *
  * @param {string} theme
  */
 function saveThemePreference(theme) {

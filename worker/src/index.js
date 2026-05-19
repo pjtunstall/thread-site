@@ -25,6 +25,14 @@ const CONTACT_LIMITS = {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONTROL_CHARS_REGEX = /[\u0000-\u001F\u007F]/;
 
+/**
+ * JSON `Response` with `Content-Type: application/json`.
+ *
+ * @param {object} body
+ * @param {number} status
+ * @param {Record<string, string>} [extraHeaders]
+ * @returns {Response}
+ */
 function jsonResponse(body, status, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
     status,
@@ -35,6 +43,10 @@ function jsonResponse(body, status, extraHeaders = {}) {
   });
 }
 
+/**
+ * @param {Request} request
+ * @returns {Promise<{ json: object } | { error: string }>}
+ */
 async function readJsonBody(request) {
   const declared = parseInt(request.headers.get("Content-Length") || "0", 10);
   if (declared > MAX_BODY_BYTES) {
@@ -51,6 +63,10 @@ async function readJsonBody(request) {
   }
 }
 
+/**
+ * @param {object} body Parsed contact form JSON.
+ * @returns {"invalid" | null} `null` when valid; `"invalid"` otherwise.
+ */
 function validateBody(body) {
   if (typeof body !== "object" || body === null) return "invalid";
 
@@ -101,6 +117,12 @@ function validateBody(body) {
   return null;
 }
 
+/**
+ * @param {string} secret Turnstile site secret.
+ * @param {string} token `cf-turnstile-response` from the client.
+ * @param {string} remoteIp `CF-Connecting-IP` (may be empty).
+ * @returns {Promise<boolean>}
+ */
 async function verifyTurnstile(secret, token, remoteIp) {
   const form = new FormData();
   form.append("secret", secret);
@@ -124,6 +146,11 @@ async function verifyTurnstile(secret, token, remoteIp) {
   }
 }
 
+/**
+ * @param {object} env Worker bindings (`RESEND_FROM`, `CONTACT_TO`, ...).
+ * @param {object} body Validated contact form fields.
+ * @returns {{ from: string, to: string[], reply_to: string, subject: string, text: string }}
+ */
 function buildEmailPayload(env, body) {
   const from = env.RESEND_FROM || "Contact <onboarding@resend.dev>";
   const subject = body.subject
@@ -147,6 +174,10 @@ function buildEmailPayload(env, body) {
   };
 }
 
+/**
+ * @param {object} env Worker bindings (`RESEND_API_KEY`, ...).
+ * @param {{ from: string, to: string[], reply_to: string, subject: string, text: string }} payload
+ */
 async function sendViaResend(env, payload) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -168,16 +199,20 @@ async function sendViaResend(env, payload) {
   }
 }
 
-/**
- * The default export is an object with a fetch method: { async fetch(request,
- * env) {} }. The workerd runtime calls this method for every HTTP request that
- * is routed to this worker. This fetch is not the global fetch, as used in
- * sendViaResend.
- *
- * Routed from by-a-thread.de or www.by-a-thread.de under "/api/*". The site
- * calls POST /api/contact. The origin is the same, hence no need for CORS.
- */
+// The default export is an object with a fetch method: { async fetch(request,
+// env) {} }. The workerd runtime calls this method for every HTTP request that
+// is routed to this worker. This fetch is not the global fetch, as used in
+// `sendViaResend`.
+//
+// The request is routed from by-a-thread.de or www.by-a-thread.de under
+// "/api/*". The client calls POST /api/contact. The origin is the same, hence
+// no need for CORS.
 export default {
+  /**
+   * @param {Request} request
+   * @param {object} env Worker bindings (rate limiter, Turnstile, Resend, ...).
+   * @returns {Promise<Response>}
+   */
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname !== "/api/contact") {
@@ -190,6 +225,7 @@ export default {
       });
     }
 
+    // Apply rate limiting.
     if (!env.RATE_LIMITER) {
       console.error("missing RATE_LIMITER binding");
       return jsonResponse({ ok: false, error: "server_misconfigured" }, 500);
@@ -205,16 +241,17 @@ export default {
       return jsonResponse({ ok: false, error: "rate_limit_unavailable" }, 503);
     }
 
+    // Parse the request body into JSON...
     const { json: body, error: parseErr } = await readJsonBody(request);
     if (parseErr) {
       return jsonResponse({ ok: false, error: parseErr }, 400);
     }
-
-    const validationErr = validateBody(body);
+    const validationErr = validateBody(body); // ...and validate it.
     if (validationErr) {
       return jsonResponse({ ok: false, error: validationErr }, 400);
     }
 
+    // Do we have permission from Turnstile?
     if (!env.TURNSTILE_SECRET) {
       console.error("missing TURNSTILE_SECRET binding");
       return jsonResponse({ ok: false, error: "server_misconfigured" }, 500);
@@ -228,6 +265,7 @@ export default {
       return jsonResponse({ ok: false, error: "turnstile_failed" }, 403);
     }
 
+    // Send message to Resend, for Resend to relay to the contact email address.
     if (!env.RESEND_API_KEY) {
       console.error("missing RESEND_API_KEY");
       return jsonResponse({ ok: false, error: "server_misconfigured" }, 500);
@@ -242,6 +280,7 @@ export default {
       return jsonResponse({ ok: false, error: "send_failed" }, 502);
     }
 
+    // Success! Let the user know.
     return jsonResponse({ ok: true }, 200);
   },
 };

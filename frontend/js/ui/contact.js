@@ -6,12 +6,18 @@ const LOG_PREFIX = "[site-init]";
 
 let turnstileScriptPromise = null;
 
+/**
+ * @returns {boolean}
+ */
 function turnstileApiReady() {
   return Boolean(
     window.turnstile && typeof window.turnstile.render === "function",
   );
 }
 
+/**
+ * @returns {Promise<void>}
+ */
 function ensureTurnstileScript() {
   if (turnstileApiReady()) {
     return Promise.resolve();
@@ -77,6 +83,10 @@ function ensureTurnstileScript() {
   return turnstileScriptPromise;
 }
 
+/**
+ * @param {HTMLFormElement} form
+ * @param {{ type?: string, name: string, label: string, required?: boolean, rows?: number, minlength?: number, maxlength?: number, autocomplete?: string }} field
+ */
 function renderFormField(form, field) {
   const wrapper = document.createElement("label");
   wrapper.className = "contact-form__field";
@@ -119,6 +129,9 @@ function renderFormField(form, field) {
   form.append(wrapper);
 }
 
+/**
+ * @param {HTMLFormElement} form
+ */
 function renderHoneypot(form) {
   // Honeypot: hidden from real users, irresistible to naive bots.
   const wrapper = document.createElement("div");
@@ -138,6 +151,11 @@ function renderHoneypot(form) {
   form.append(wrapper);
 }
 
+/**
+ * @param {HTMLElement} statusEl
+ * @param {string | null} kind
+ * @param {string} message
+ */
 function setStatus(statusEl, kind, message) {
   statusEl.textContent = message;
   statusEl.classList.remove(
@@ -153,6 +171,9 @@ function setStatus(statusEl, kind, message) {
 // of using turnstile.ready(), so we do not depend on Turnstile's ready helper
 // and load-order quirks. Dynamically appended scripts are async by default; we
 // set script.async explicitly for clarity.
+/**
+ * @param {() => void} callback
+ */
 function whenTurnstileLoaded(callback) {
   ensureTurnstileScript()
     .then(() => {
@@ -180,6 +201,11 @@ function whenTurnstileLoaded(callback) {
     });
 }
 
+/**
+ * @param {HTMLElement} container
+ * @param {(token: string | null) => void} onToken
+ * @returns {{ reset: () => void }}
+ */
 function mountTurnstile(container, onToken) {
   const handle = { widgetId: null };
   whenTurnstileLoaded(() => {
@@ -204,6 +230,10 @@ function mountTurnstile(container, onToken) {
   };
 }
 
+/**
+ * @param {HTMLElement} bodyContainer
+ * @param {{ id?: string, endpoint: string, submitLabel?: string, fields: Array<unknown> }} formDef
+ */
 export function renderForm(bodyContainer, formDef) {
   const form = document.createElement("form");
   form.className = "contact-form";

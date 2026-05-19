@@ -110,6 +110,10 @@ export const MAIN_MENU_DIALOGS = [
   },
 ];
 
+/**
+ * @param {Element} trigger
+ * @returns {HTMLDialogElement | null}
+ */
 function getDialogTargetForTrigger(trigger) {
   const id = trigger.getAttribute("data-open-dialog");
   const dialog = id ? document.getElementById(id) : null;
@@ -127,6 +131,9 @@ function getDialogTargetForTrigger(trigger) {
   return dialog;
 }
 
+/**
+ * @returns {HTMLTemplateElement}
+ */
 function getDialogTemplate() {
   let template = document.getElementById("dialog-template");
   if (!(template instanceof HTMLTemplateElement)) {
@@ -139,6 +146,10 @@ function getDialogTemplate() {
   return template;
 }
 
+/**
+ * @param {HTMLElement} parent
+ * @param {string | { type: string, text?: string, href?: string }} part
+ */
 function appendPart(parent, part) {
   if (typeof part === "string") {
     parent.append(document.createTextNode(part));
@@ -170,6 +181,10 @@ function appendPart(parent, part) {
   }
 }
 
+/**
+ * @param {HTMLElement} bodyContainer
+ * @param {{ text?: string, parts?: Array<string | { type: string, text?: string, href?: string }> }} paragraph
+ */
 function renderParagraph(bodyContainer, paragraph) {
   const p = document.createElement("p");
   p.className = "dialog__body";
@@ -185,6 +200,9 @@ function renderParagraph(bodyContainer, paragraph) {
   bodyContainer.append(p);
 }
 
+/**
+ * @param {Array<{ id: string, title: string, body: Array<unknown>, noBackdropClose?: boolean }>} dialogDefs
+ */
 function renderDialogs(dialogDefs) {
   const template = getDialogTemplate();
   if (!template) return;
@@ -230,6 +248,9 @@ function renderDialogs(dialogDefs) {
   });
 }
 
+/**
+ * @param {{ dialogs?: Array<unknown>, noBackdropClose?: boolean }} [options]
+ */
 export function initDialogs(options) {
   const config = options || {};
   const dialogDefs = Array.isArray(config.dialogs)
