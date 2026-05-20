@@ -123,6 +123,8 @@ To deploy changes made to `worker`,
 
 ```sh
 cd worker
-npm ci # if necessary, to clean install dependencies
-npm deploy
+npm ci # ...if necessary, to clean install dependencies
+npm run deploy # Runs `wrangler deploy`; see `worker/package.json`.
 ```
+
+Favor this over directly direct `npx wrangler deploy` so that dependencies will be subject to the restrictions in `.npmrc` to reduce vulnerabily to supply chain attacks.

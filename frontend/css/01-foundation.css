@@ -77,7 +77,7 @@
   --z-main: 1;
   --z-hero-image: 1;
   --z-carousel-arrow: 2;
-  /* Whole hamburger + #site-menu above other in-main content (siblings under main). */
+  /* Hamburger + #site-menu above other in-main content (siblings under main). */
   --z-menu-wrap: 10;
   /* #site-menu inside .menu-wrap: 1 avoids auto vs negative edge cases; still only sorts inside the wrap. */
   --z-site-menu: 1;

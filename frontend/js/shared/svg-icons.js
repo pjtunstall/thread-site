@@ -1,9 +1,11 @@
-/** ViewBox shared by all menu-card icons (Lucide-style 24×24 grid). */
+/** ViewBox shared by all menu-card icons (Lucide-style 24×24 grid).
+ *
+ * @type {string}
+ */
 export const MENU_CARD_SVG_VIEWBOX = "0 0 24 24";
 
 /**
- * Inner SVG markup only (no `<svg>` wrapper). The `menu-card` element applies
- * `xmlns`, `viewBox`, and optional root `class`.
+ * Inner SVG markup only (no `<svg>` wrapper). The `menu-card` element applies `xmlns`, `viewBox`, and optional root `class`.
  *
  * @typedef {{ innerMarkup: string, svgClass?: string }} MenuCardIconDef
  */
@@ -69,6 +71,8 @@ export const PRIMARY_BUTTON_ICON_INNER_HTML = {
 /**
  * Inner SVG markup for the `<menu-toggle-button>` hamburger icon.
  * Used by `svgElementFromInnerMarkup` in `control-host.js`.
+ *
+ * @type {string}
  */
 export const HAMBURGER_INNER =
   '<line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/>';
