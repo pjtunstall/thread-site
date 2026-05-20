@@ -75,7 +75,7 @@ export const PRIMARY_BUTTON_ICON_INNER_HTML = {
  * @type {string}
  */
 export const HAMBURGER_INNER =
-  '<line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/>';
+  '<line class="menu-toggle__bar menu-toggle__bar--top" x1="2" x2="22" y1="4" y2="4"/><line class="menu-toggle__bar menu-toggle__bar--middle" x1="2" x2="22" y1="12" y2="12"/><line class="menu-toggle__bar menu-toggle__bar--bottom" x1="2" x2="22" y1="20" y2="20"/>';
 
 /**
  * Inner SVG markup for `<carousel-arrow-button>`, keyed by `arrow` attribute.

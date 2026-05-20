@@ -74,6 +74,8 @@ main > [data-view][hidden] {
 
 /* Hero section screenshot frame (main game image on landing view). */
 .hero-image {
+  user-select: none;
+  -webkit-user-select: none;
   --meander-unit: 25px;
   --meander-gap: 20px;
   margin: 2.75rem auto 2.5rem;

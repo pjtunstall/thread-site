@@ -81,6 +81,8 @@
   --z-menu-wrap: 10;
   /* #site-menu inside .menu-wrap: 1 avoids auto vs negative edge cases; still only sorts inside the wrap. */
   --z-site-menu: 1;
+
+  /* Colors */
   --color-bg: #e6bf95;
   --color-ink: #23150f;
   --color-ink-muted: #5f3f30;
@@ -108,6 +110,9 @@
   --carousel-arrow-hover-shadow:
     0 0 0 2px #1a0f0ad9, 0 6px 14px #0000008c, 0 18px 38px #000000cf;
   --carousel-arrow-focus-outline: #e7bc92;
+  --color-selection-bg: color-mix(in srgb, var(--color-ink) 22%, transparent);
+  --color-selection-fg: var(--color-ink);
+
   /* Meander tiles: strokes act as mask stencils; ink color comes from
   background-color on ::before. This technique is used because SVG data URIs
   cannot read CSS variables. Otherwise, we'd have to repeat the meander
@@ -122,6 +127,7 @@
   the theta is imposed on a corner disk rather than directly on the background.
   A little repetition seemed preferable in this case. */
   --corner-theta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ctext x='14' y='14' font-family='Georgia%2Cserif' font-size='14' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='%23e6bf95'%3E%CE%98%3C/text%3E%3C/svg%3E");
+
   color-scheme: light;
 }
 
@@ -146,7 +152,11 @@
   --carousel-arrow-hover-shadow:
     0 0 0 2px #1a0f0ad9, 0 6px 14px #0000008c, 0 18px 38px #000000cf;
   --carousel-arrow-focus-outline: #e7bc92;
+  --color-selection-bg: color-mix(in srgb, var(--color-ink) 30%, transparent);
+  --color-selection-fg: var(--color-ink);
+
   --corner-theta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ctext x='14' y='14' font-family='Georgia%2Cserif' font-size='14' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='%231a0f0a'%3E%CE%98%3C/text%3E%3C/svg%3E");
+
   color-scheme: dark;
 }
 
@@ -155,6 +165,14 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+::selection {
+  background-color: var(--color-selection-bg);
+  color: var(--color-selection-fg);
+}
+::-moz-selection {
+  background-color: var(--color-selection-bg);
+  color: var(--color-selection-fg);
 }
 
 html {
