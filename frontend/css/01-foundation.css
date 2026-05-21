@@ -253,7 +253,9 @@ body {
   position: fixed;
   top: calc(-1 * var(--tile-size));
   left: calc(-1 * var(--tile-size));
-  width: calc(100% + 2 * var(--tile-size));
+  /* Note width is specified as vw so that maze width doesn't change when a
+  scrollbar appears to disappears; otherwise it would shrink or stretch. */
+  width: calc(100vw + 2 * var(--tile-size));
   height: calc(100% + 2 * var(--tile-size));
   pointer-events: none;
   z-index: var(--z-maze);
