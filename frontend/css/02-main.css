@@ -30,13 +30,26 @@ main > [data-view][hidden] {
   display: none !important;
 }
 
+/* Full visual viewport width so the menu stays the same distance from the window edge when a classic
+   scrollbar narrows the layout viewport (Chromium). .menu-wrap is absolute inside. */
+.menu-anchor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  pointer-events: none;
+  z-index: var(--z-menu-wrap);
+}
+
 /* Fixed to the viewport so the menu stays put when main height changes
    (body vertically centers main; a shorter downloads view moves main's top down). */
 .menu-wrap {
-  position: fixed;
+  position: absolute;
   top: 2.5rem;
   right: 1.25rem;
-  z-index: var(--z-menu-wrap);
+  pointer-events: auto;
 }
 
 @media (width < 768px) {

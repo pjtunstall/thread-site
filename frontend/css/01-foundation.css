@@ -99,8 +99,16 @@ fonts is available in bold and appearance and performance seem fine to me. */
   --color-primary-hover: #4f2e21;
   --color-transparent: #0000;
   --color-error: #c44;
-  --color-error-border: color-mix(in srgb, var(--color-ink) 60%, var(--color-error));
-  --color-error-text: color-mix(in srgb, var(--color-ink) 55%, var(--color-error));
+  --color-error-border: color-mix(
+    in srgb,
+    var(--color-ink) 60%,
+    var(--color-error)
+  );
+  --color-error-text: color-mix(
+    in srgb,
+    var(--color-ink) 55%,
+    var(--color-error)
+  );
   --color-focus-ring: color-mix(
     in srgb,
     var(--color-ink) 28%,
@@ -216,6 +224,13 @@ fonts is available in bold and appearance and performance seem fine to me. */
 
 html {
   height: 100%;
+  /* Standard properties only: they style overlay scrollbars on Chromium without
+     forcing a classic gutter. Don't set ::-webkit-scrollbar width/height; that
+     switches Chromium to classic scrollbars as opposed to overlay. On some
+     platforms, Chromium may show a classic scrollbar anyway. To deal with this,
+     we position the menu button with vw rather than %. */
+  scrollbar-color: var(--color-ink-muted) var(--color-bg);
+  scrollbar-width: thin;
 }
 
 body {
