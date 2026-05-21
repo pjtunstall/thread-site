@@ -152,6 +152,51 @@ function renderHoneypot(form) {
 }
 
 /**
+ * @param {HTMLFormElement} form
+ */
+function clearContactFieldInvalidState(form) {
+  form.querySelectorAll(".contact-form__control").forEach((control) => {
+    control.removeAttribute("aria-invalid");
+  });
+}
+
+/**
+ * @param {HTMLFormElement} form
+ * @param {string[]} names
+ */
+function markContactFieldsInvalid(form, names) {
+  names.forEach((name) => {
+    const item = form.elements.namedItem(name);
+    if (item instanceof HTMLElement) {
+      item.setAttribute("aria-invalid", "true");
+    }
+  });
+}
+
+/**
+ * @param {HTMLFormElement} form
+ * @returns {boolean} True when at least one control failed native validity.
+ */
+function highlightNativeInvalidFields(form) {
+  let found = false;
+  form.querySelectorAll(".contact-form__control").forEach((control) => {
+    if (
+      !(
+        control instanceof HTMLInputElement ||
+        control instanceof HTMLTextAreaElement
+      )
+    ) {
+      return;
+    }
+    if (!control.validity.valid) {
+      control.setAttribute("aria-invalid", "true");
+      found = true;
+    }
+  });
+  return found;
+}
+
+/**
  * @param {HTMLElement} statusEl
  * @param {string | null} kind
  * @param {string} message
@@ -296,6 +341,12 @@ export function renderForm(bodyContainer, formDef) {
 
   bodyContainer.append(form);
 
+  form.querySelectorAll(".contact-form__control").forEach((control) => {
+    control.addEventListener("input", () => {
+      control.removeAttribute("aria-invalid");
+    });
+  });
+
   let turnstileToken = null;
   let widget = null;
 
@@ -311,6 +362,13 @@ export function renderForm(bodyContainer, formDef) {
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    clearContactFieldInvalidState(form);
+
+    if (!form.checkValidity()) {
+      highlightNativeInvalidFields(form);
+      setStatus(statusEl, "error", "Please check the highlighted fields.");
+      return;
+    }
 
     const data = {
       name: form.elements.namedItem("name")?.value.trim() || "",
@@ -322,10 +380,18 @@ export function renderForm(bodyContainer, formDef) {
     };
 
     if (!data.email || !data.message) {
+      markContactFieldsInvalid(
+        form,
+        [
+          !data.email ? "email" : null,
+          !data.message ? "message" : null,
+        ].filter((name) => name !== null),
+      );
       setStatus(statusEl, "error", "Email and message are both required.");
       return;
     }
     if (data.message.length < CONTACT_FORM_LIMITS.messageMin) {
+      markContactFieldsInvalid(form, ["message"]);
       setStatus(
         statusEl,
         "error",
@@ -334,6 +400,7 @@ export function renderForm(bodyContainer, formDef) {
       return;
     }
     if (data.message.length > CONTACT_FORM_LIMITS.messageMax) {
+      markContactFieldsInvalid(form, ["message"]);
       setStatus(
         statusEl,
         "error",
@@ -342,6 +409,7 @@ export function renderForm(bodyContainer, formDef) {
       return;
     }
     if (data.name.length > CONTACT_FORM_LIMITS.nameMax) {
+      markContactFieldsInvalid(form, ["name"]);
       setStatus(
         statusEl,
         "error",
@@ -350,6 +418,7 @@ export function renderForm(bodyContainer, formDef) {
       return;
     }
     if (data.subject.length > CONTACT_FORM_LIMITS.subjectMax) {
+      markContactFieldsInvalid(form, ["subject"]);
       setStatus(
         statusEl,
         "error",
@@ -358,6 +427,7 @@ export function renderForm(bodyContainer, formDef) {
       return;
     }
     if (data.email.length > CONTACT_FORM_LIMITS.emailMax) {
+      markContactFieldsInvalid(form, ["email"]);
       setStatus(
         statusEl,
         "error",
@@ -393,6 +463,7 @@ export function renderForm(bodyContainer, formDef) {
 
       if (response.ok) {
         form.reset();
+        clearContactFieldInvalidState(form);
         if (widget) widget.reset();
         turnstileToken = null;
         setStatus(statusEl, "success", "Thanks! Your message is on its way.");

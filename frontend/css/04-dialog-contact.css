@@ -158,15 +158,35 @@ dialog::backdrop {
   outline: none;
 }
 
-.contact-form__control:focus {
+.contact-form__control:focus-visible {
   border-color: var(--color-ink-border-strong);
   box-shadow: 0 0 0 2px
-    color-mix(in srgb, var(--color-ink) 18%, var(--color-transparent));
+    color-mix(in srgb, var(--color-ink) 28%, var(--color-transparent));
 }
 
 .contact-form__control[aria-invalid="true"],
-.contact-form__control:invalid:not(:placeholder-shown) {
+.contact-form__control:user-invalid {
   border-color: color-mix(in srgb, var(--color-ink) 60%, #c44);
+}
+
+/* Error border + box-shadow focus ring (separate properties, both visible). */
+.contact-form__control[aria-invalid="true"]:focus-visible,
+.contact-form__control:user-invalid:focus-visible {
+  border-color: color-mix(in srgb, var(--color-ink) 60%, #c44);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--color-ink) 28%, var(--color-transparent));
+}
+
+@supports not selector(:user-invalid) {
+  .contact-form__control:invalid:not(:placeholder-shown) {
+    border-color: color-mix(in srgb, var(--color-ink) 60%, #c44);
+  }
+
+  .contact-form__control:invalid:not(:placeholder-shown):focus-visible {
+    border-color: color-mix(in srgb, var(--color-ink) 60%, #c44);
+    box-shadow: 0 0 0 2px
+      color-mix(in srgb, var(--color-ink) 28%, var(--color-transparent));
+  }
 }
 
 textarea.contact-form__control {
