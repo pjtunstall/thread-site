@@ -278,18 +278,9 @@ function scheduleInitialEntrance(view) {
   whenFontsReady(startAnimation);
 }
 
-/** Legacy hash routing (#downloads) and old downloads.html → /#downloads stubs. */
-function resolveInitialView() {
-  if (location.hash === "#downloads") {
-    history.replaceState(null, "", DOWNLOADS_PATH);
-    return "downloads";
-  }
-  return viewForPathname(location.pathname);
-}
-
 // First paint only: no View Transition; card flips run inside setView when on downloads.
 function applyPathToView() {
-  const view = resolveInitialView();
+  const view = viewForPathname(location.pathname);
   setView(view);
   scheduleInitialEntrance(view);
 }

@@ -6,9 +6,6 @@
     return pathname;
   }
   const view =
-    location.hash === "#downloads" ||
-    normalizePathname(location.pathname) === "/downloads"
-      ? "downloads"
-      : "home";
+    normalizePathname(location.pathname) === "/downloads" ? "downloads" : "home";
   document.documentElement.setAttribute("data-initial-view", view);
 })();
