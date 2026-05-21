@@ -39,7 +39,8 @@
       href="./screenshot.jpg"
       fetchpriority="high"
     />
-    <!-- Order matters! -->
+    <!-- Keep this order! The stylesheets will be loaded in parallel, and the
+    rules applied in the order the files are listed here. -->
     <link rel="stylesheet" href="./css/01-foundation.css" />
     <link rel="stylesheet" href="./css/02-main.css" />
     <link rel="stylesheet" href="./css/03-buttons-nav-motion.css" />
