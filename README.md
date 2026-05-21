@@ -115,7 +115,7 @@ npm run dev
 
 (`node serve.mjs` works too.) Plain static servers such as `python3 -m http.server` do not rewrite `/downloads` to `index.html`, so direct visits to that path will result in a 404 "page not found" error.
 
-On Cloudflare Pages, `_redirects` is **not** applied to routes handled by [Pages Functions](https://developers.cloudflare.com/pages/functions/). This project uses `frontend/functions/_middleware.js`, which rewrites `/downloads` (and `/downloads/`) to `index.html` before applying security headers.
+On Cloudflare Pages, `_redirects` is **not** applied to routes handled by [Pages Functions](https://developers.cloudflare.com/pages/functions/). This project serves `/downloads` from `index.html` via `frontend/functions/_middleware.js` and `frontend/functions/downloads.js` (so an old static `downloads.html` stub cannot win). Purging cache on the zone alone may not clear Pages asset cache (`s-maxage` on deployed files); deploy a new build after routing changes.
 
 ## Deployment
 

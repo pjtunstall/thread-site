@@ -11,7 +11,7 @@ function normalizePathname(pathname) {
 }
 
 /**
- * Pages Functions run before `_redirects`; serve index.html for /downloads.
+ * Serve index.html for /downloads via ASSETS (bypasses stale static downloads.html).
  *
  * @param {import('@cloudflare/workers-types').EventContext<unknown, string, Record<string, unknown>>} context
  * @returns {Promise<Response>}
@@ -20,15 +20,15 @@ export async function onRequest(context) {
   const request = context.request;
   const url = new URL(request.url);
 
-  let nextRequest = request;
-  if (
+  const isDownloadsRoute =
     (request.method === "GET" || request.method === "HEAD") &&
-    normalizePathname(url.pathname) === DOWNLOADS_PATH
-  ) {
-    nextRequest = new Request(new URL("/index.html", url), request);
-  }
+    normalizePathname(url.pathname) === DOWNLOADS_PATH;
 
-  const response = await context.next(nextRequest);
+  const response = isDownloadsRoute
+    ? await context.env.ASSETS.fetch(
+        new Request(new URL("/index.html", url), request),
+      )
+    : await context.next();
 
   const newHeaders = new Headers(response.headers);
   newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
