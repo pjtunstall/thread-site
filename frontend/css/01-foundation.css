@@ -1,4 +1,9 @@
 /* --- Fonts --- */
+/* Note: Best practice is to use actual bold versions of fonts, mainly for the
+sake of appearance, but also for performance, rather than asking the browser to
+fake boldness (use "synthetic bold" as it's called) by applying weight 700 to an
+inherently 400 font. This can result in fuzzy letters. However, neither of these
+fonts is available in bold and appearance and performance seem fine to me. */
 @font-face {
   font-family: "Neucha";
   src: url("../assets/fonts/Neucha-Regular.ttf") format("truetype");
