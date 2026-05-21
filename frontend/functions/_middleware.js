@@ -1,9 +1,34 @@
+const DOWNLOADS_PATH = "/downloads";
+
 /**
+ * @param {string} pathname
+ */
+function normalizePathname(pathname) {
+  if (pathname.length > 1 && pathname.endsWith("/")) {
+    return pathname.slice(0, -1);
+  }
+  return pathname;
+}
+
+/**
+ * Pages Functions run before `_redirects`; serve index.html for /downloads.
+ *
  * @param {import('@cloudflare/workers-types').EventContext<unknown, string, Record<string, unknown>>} context
  * @returns {Promise<Response>}
  */
 export async function onRequest(context) {
-  const response = await context.next();
+  const request = context.request;
+  const url = new URL(request.url);
+
+  let nextRequest = request;
+  if (
+    (request.method === "GET" || request.method === "HEAD") &&
+    normalizePathname(url.pathname) === DOWNLOADS_PATH
+  ) {
+    nextRequest = new Request(new URL("/index.html", url), request);
+  }
+
+  const response = await context.next(nextRequest);
 
   const newHeaders = new Headers(response.headers);
   newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");

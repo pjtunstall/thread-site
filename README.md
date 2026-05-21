@@ -115,6 +115,8 @@ npm run dev
 
 (`node serve.mjs` works too.) Plain static servers such as `python3 -m http.server` do not rewrite `/downloads` to `index.html`, so direct visits to that path will result in a 404 "page not found" error.
 
+On Cloudflare Pages, `_redirects` is **not** applied to routes handled by [Pages Functions](https://developers.cloudflare.com/pages/functions/). This project uses `frontend/functions/_middleware.js`, which rewrites `/downloads` (and `/downloads/`) to `index.html` before applying security headers.
+
 ## Deployment
 
 Deploy changes made to `frontend` with `git push`. Hard refresh in the browser and clear the cache if need be to see the changes.

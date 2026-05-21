@@ -11,8 +11,9 @@ import {
   revealDownloadsNavCards,
 } from "./downloads.js";
 
-const HOME_URL = new URL("./", location.href);
-const DOWNLOADS_URL = new URL("./downloads", location.href);
+/** Origin-root paths (not relative to the current URL — avoids /downloads/ bugs). */
+const HOME_PATH = "/";
+const DOWNLOADS_PATH = "/downloads";
 
 const homeView = document.querySelector('[data-view="home"]');
 const downloadsView = document.querySelector('[data-view="downloads"]');
@@ -33,10 +34,20 @@ const enterLabyrinth = document.querySelector(".view-home .hero-cta a");
 
 /**
  * @param {string} pathname
+ */
+function normalizePathname(pathname) {
+  if (pathname.length > 1 && pathname.endsWith("/")) {
+    return pathname.slice(0, -1);
+  }
+  return pathname;
+}
+
+/**
+ * @param {string} pathname
  * @returns {"home" | "downloads"}
  */
 function viewForPathname(pathname) {
-  return pathname === DOWNLOADS_URL.pathname ? "downloads" : "home";
+  return normalizePathname(pathname) === DOWNLOADS_PATH ? "downloads" : "home";
 }
 
 /**
@@ -44,7 +55,8 @@ function viewForPathname(pathname) {
  * @returns {boolean}
  */
 function isAppPathname(pathname) {
-  return pathname === HOME_URL.pathname || pathname === DOWNLOADS_URL.pathname;
+  const path = normalizePathname(pathname);
+  return path === HOME_PATH || path === DOWNLOADS_PATH;
 }
 
 /**
