@@ -88,7 +88,7 @@ Note: I've not included `xr-spatial-tracking=("https://challenges.cloudflare.com
 Non-HTML responses (JS, CSS, images, fonts) receive only the above. HTML responses additionally receive a Content Security Policy. `NONCE` here is a fresh random value per request:
 
 ```
-default-src 'self'; script-src 'nonce-NONCE' 'strict-dynamic' https: 'unsafe-inline'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests; form-action 'self'; require-trusted-types-for 'script'; trusted-types policy
+default-src 'self'; script-src 'nonce-NONCE' 'strict-dynamic' https: 'unsafe-inline'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests; form-action 'self'; trusted-types policy
 ```
 
 To evaluate with [CSP Evaluator](https://csp-evaluator.withgoogle.com/), replace `NONCE` with any non-empty string (e.g. `abc123`); the evaluator treats any nonce value as valid.
@@ -101,9 +101,8 @@ Notes on specific directives:
 - **`frame-src https://challenges.cloudflare.com`**: permits only the Turnstile iframe.
 - **`img-src 'self' data:`**: `data:` URIs are needed for canvas-rendered images (maze). CSP Evaluator flags this at low severity; the risk is accepted.
 - **`base-uri 'none'`**: stricter than `'self'`; prevents `<base>` tag injection entirely.
-- **`require-trusted-types-for 'script'; trusted-types policy`**: Allows `frontend/js/trusted-types-boot.js` to define a Trusted Types policy, called `policy`. Now, for any browser that supports Trusted Types (all modern browsers), only strings on my allowlist can be turned into HTML and added to the DOM, and likewise only permitted strings can be inserted as script URLs. (In this case, that's only the Cloudflare Turnstile script that guards the contact form.) Moreover, an attacker can't create another policy of a different name or redefine `policy`. This is overkill for the current project since user input isn't shown to other users, but I implemented it anyway as a learning exercise. If user input was displayed for other users, the Trusted Types system could be used to prevent any code from bypassing the sanitization step.
-
-Note: There's some console noise, including `TrustedTypes` violation errors. Both the policy and the violations referred to there are Cloudflare's. Their Turnstile works anyway.
+- **`trusted-types policy`**: Only a policy named `policy` may be created (see the inline boot script in `index.html` and `frontend/js/trusted-types-boot.js`), and such a policy can only be created once. Application code uses `trustedHtml()` and `trustedScriptURL()` so only allowlisted HTML and script URLs go through that policy.
+- **`require-trusted-types-for 'script'` is not set**: If set, the policy would be enforced. That is to say, every `innerHTML` / `insertAdjacentHTML` / `script.src` assignment on the page would have to use `TrustedHTML` / `TrustedScriptURL`. However, on trying it, I discovered that Cloudflare's Challenge Platform bootstrap (injected on HTML responses, `cdn-cgi/challenge-platform`) uses raw `innerHTML`, so enforcement blocked it. Without user-generated HTML on the site, mandatory sink enforcement bought little compared with keeping that injection working. The policy remains as a coding convention and allowlist for my own DOM writes; the browser does not reject third-party raw strings on those sinks.
 
 ## To run locally
 

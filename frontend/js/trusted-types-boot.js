@@ -22,42 +22,64 @@ function wrapControlOrMenuSvg(innerMarkup) {
   return `<svg xmlns="${SVG_NAMESPACE}" viewBox="${MENU_CARD_SVG_VIEWBOX}">${innerMarkup}</svg>`;
 }
 
-/** @type {Set<string>} */
-const allowedSvgHtml = new Set();
+/** @type {{ html: Set<string>, scriptUrls: string[] }} */
+const registry = globalThis.__threadTrusted ?? {
+  html: new Set(),
+  scriptUrls: [],
+};
+globalThis.__threadTrusted = registry;
 
 for (const def of Object.values(MENU_CARD_ICON_BY_ID)) {
-  allowedSvgHtml.add(wrapControlOrMenuSvg(def.innerMarkup));
+  registry.html.add(wrapControlOrMenuSvg(def.innerMarkup));
 }
 for (const inner of Object.values(PRIMARY_BUTTON_ICON_INNER_HTML)) {
-  allowedSvgHtml.add(wrapControlOrMenuSvg(inner));
+  registry.html.add(wrapControlOrMenuSvg(inner));
 }
-allowedSvgHtml.add(wrapControlOrMenuSvg(HAMBURGER_INNER));
+registry.html.add(wrapControlOrMenuSvg(HAMBURGER_INNER));
 for (const inner of Object.values(CAROUSEL_ARROW_INNER)) {
-  allowedSvgHtml.add(wrapControlOrMenuSvg(inner));
+  registry.html.add(wrapControlOrMenuSvg(inner));
 }
+
+registry.html.add(DIALOG_TEMPLATE_HTML);
+registry.html.add(MENU_CARD_TEMPLATE_HTML);
+registry.html.add(THEME_TOGGLE_INNER_HTML);
+registry.scriptUrls.push(TURNSTILE_API_URL);
 
 /** @type {TrustedTypePolicy} */
 let htmlPolicy;
 
-// Capitalization here must match what the browser expects, hence createHTML and
-// createScriptURL. Elsewhere, I've favored e.g. allowedSvgHtml to better
-// distinguish between the elements.
-if (window.trustedTypes?.createPolicy) {
-  htmlPolicy = trustedTypes.createPolicy("policy", {
-    createHTML,
-    createScriptURL,
-  });
+if (globalThis.trustedTypes?.getPolicy) {
+  htmlPolicy = globalThis.trustedTypes.getPolicy("policy");
+  if (!htmlPolicy && globalThis.trustedTypes.createPolicy) {
+    htmlPolicy = globalThis.trustedTypes.createPolicy("policy", {
+      createHTML(input) {
+        if (registry.html.has(input)) return input;
+        throw new TypeError("Can't create HTML; input is not a trusted type.");
+      },
+      createScriptURL(input) {
+        if (registry.scriptUrls.includes(input)) return input;
+        throw new TypeError(
+          "Can't create script URL; input is not a trusted type.",
+        );
+      },
+    });
+  }
 } else {
-  // Browsers without Trusted Types: no-op shim.
   htmlPolicy = {
     createHTML: (s) => s,
     createScriptURL: (s) => s,
   };
 }
 
+if (!htmlPolicy) {
+  throw new Error(
+    "[trusted-types-boot] Trusted Types policy 'policy' is missing.",
+  );
+}
+
 /**
  * @param {string} html
- * @returns {string}
+ * @returns {TrustedHTML | string}
  */
 export function trustedHtml(html) {
   return htmlPolicy.createHTML(html);
@@ -65,37 +87,8 @@ export function trustedHtml(html) {
 
 /**
  * @param {string} url
- * @returns {string}
+ * @returns {TrustedScriptURL | string}
  */
 export function trustedScriptURL(url) {
   return htmlPolicy.createScriptURL(url);
 }
-
-/**
- * @param {string} input
- * @returns {string}
- */
-function createHTML(input) {
-  if (trustedHtmlArray.includes(input) || allowedSvgHtml.has(input))
-    return input;
-  throw new TypeError(`Can't create HTML; ${input} is not a trusted type.`);
-}
-
-/**
- * @param {string} input
- * @returns {string}
- */
-function createScriptURL(input) {
-  if (trustedScriptUrlsArray.includes(input)) return input;
-  throw new TypeError(
-    `Can't create script URL; ${input} is not a trusted type.`,
-  );
-}
-
-const trustedScriptUrlsArray = [TURNSTILE_API_URL];
-
-const trustedHtmlArray = [
-  DIALOG_TEMPLATE_HTML,
-  MENU_CARD_TEMPLATE_HTML,
-  THEME_TOGGLE_INNER_HTML,
-];

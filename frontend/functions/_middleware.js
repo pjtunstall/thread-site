@@ -86,7 +86,7 @@ export async function onRequest(context) {
       `object-src 'none'`,
       `upgrade-insecure-requests`,
       `form-action 'self'`,
-      `require-trusted-types-for 'script'; trusted-types policy`,
+      `trusted-types policy`,
     ].join("; "),
   );
 
