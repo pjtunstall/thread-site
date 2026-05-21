@@ -344,17 +344,17 @@ button). */
       opacity 0.2s ease;
   }
 
-  .hero-cta {
+  .view-home .hero-cta {
     opacity: 0;
     animation: fade-in-up 0.9s ease 0.2s forwards;
   }
 
-  .downloads-note {
+  .view-downloads .downloads-note {
     opacity: 0;
     animation: fade-in-up 0.9s ease 0.2s forwards;
   }
 
-  .downloads-back-link {
+  .view-downloads .downloads-back-link {
     opacity: 0;
     animation: fade-in-up 0.9s ease 0.2s forwards;
   }

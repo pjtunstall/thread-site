@@ -30,6 +30,20 @@ main > [data-view][hidden] {
   display: none !important;
 }
 
+/* view-boot.js: /downloads first paint before index.js (static home h1/p are in HTML). */
+html[data-initial-view="downloads"] main > [data-view="home"] {
+  display: none !important;
+}
+
+html[data-initial-view="downloads"] main > [data-view="downloads"][hidden] {
+  display: flex !important;
+}
+
+/* No visible copy until index.js clears data-initial-view (fonts/JS race on first paint). */
+html[data-initial-view] main > [data-view] {
+  opacity: 0;
+}
+
 /* Full visual viewport width so the menu stays the same distance from the window edge when a classic
    scrollbar narrows the layout viewport (Chromium). .menu-wrap is absolute inside. */
 .menu-anchor {
@@ -57,6 +71,12 @@ main > [data-view][hidden] {
     top: 1rem;
     right: 1rem;
   }
+}
+
+/* No title/tagline until Neucha is ready (fonts-boot.js). */
+html:not(.fonts-ready) .hero-title,
+html:not(.fonts-ready) .hero-tagline {
+  opacity: 0;
 }
 
 .hero-title {
@@ -211,11 +231,11 @@ main > [data-view][hidden] {
 }
 
 .carousel-arrow--left {
-  left: calc(var(--meander-gap) + 0.35rem);
+  left: calc(var(--meander-gap) + 0.2rem);
 }
 
 .carousel-arrow--right {
-  right: calc(var(--meander-gap) + 0.35rem);
+  right: calc(var(--meander-gap) + 0.2rem);
 }
 
 .carousel-arrow:hover {
@@ -240,22 +260,27 @@ main > [data-view][hidden] {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .menu-wrap {
+  /* First paint: match fade-in-up "from" before animation runs (index.js). */
+  [data-view].initial-entrance .hero-title,
+  [data-view].initial-entrance .hero-tagline {
     opacity: 0;
-    animation: fade-in-up 0.9s ease 0.4s forwards;
+    transform: translateY(12px);
+    animation: none;
   }
 
-  .hero-title {
-    opacity: 0;
-    animation: fade-in-up 0.9s ease forwards;
+  html.fonts-ready
+    [data-view].initial-entrance.initial-entrance--run
+    .hero-title {
+    animation: fade-in-up 0.9s ease-out forwards;
   }
 
-  .hero-tagline {
-    opacity: 0;
-    animation: fade-in-up 0.9s ease 0.1s forwards;
+  html.fonts-ready
+    [data-view].initial-entrance.initial-entrance--run
+    .hero-tagline {
+    animation: fade-in-up 0.9s ease-out 0.1s forwards;
   }
 
-  .hero-image {
+  .view-home .hero-image {
     opacity: 0;
     animation: fade-in-up 0.9s ease 0.2s forwards;
   }
@@ -270,5 +295,36 @@ main > [data-view][hidden] {
 
   .carousel-arrow:active {
     transform: translateY(calc(-50% + 1px));
+  }
+
+  /* Home <-> downloads (View Transitions API; paired with runViewChange in index.js). */
+  main > [data-view] {
+    view-transition-name: spa-view;
+  }
+
+  .hero-title {
+    view-transition-name: hero-heading;
+  }
+
+  @keyframes spa-view-fade-out {
+    to {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes spa-view-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  ::view-transition-old(spa-view) {
+    animation: spa-view-fade-out 0.2s ease both;
+  }
+
+  ::view-transition-new(spa-view) {
+    animation: spa-view-fade-in 0.2s ease both;
   }
 }

@@ -25,6 +25,8 @@ if (
   );
 }
 
+const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
 defineSiteControlElements();
 
 const enterLabyrinth = document.querySelector(".view-home .hero-cta a");
@@ -77,8 +79,13 @@ function focusFirstInScope(scope) {
  * intercepted `navigate` handler for `<a href>` links and browser back/forward.
  *
  * @param {"home" | "downloads"} view
+ * @param {{ revealDownloadsCards?: boolean }} [options]
  */
-function setView(view) {
+function setView(view, options = {}) {
+  document.documentElement.removeAttribute("data-initial-view");
+
+  const revealDownloadsCards = options.revealDownloadsCards !== false;
+
   if (view === "downloads") {
     homeView.hidden = true;
     homeView.setAttribute("inert", "");
@@ -89,7 +96,9 @@ function setView(view) {
     downloadsView.setAttribute("aria-hidden", "false");
 
     resetDownloadsNavCards();
-    revealDownloadsNavCards();
+    if (revealDownloadsCards) {
+      revealDownloadsNavCards();
+    }
 
     if (containsOrIs(homeView, document.activeElement)) {
       focusFirstInScope(downloadsView);
@@ -114,6 +123,38 @@ function setView(view) {
       focusFirstInScope(homeView);
     }
   }
+}
+
+/**
+ * Swap home/downloads views, with a View Transition when supported and allowed.
+ *
+ * @param {"home" | "downloads"} view
+ * @returns {Promise<void>}
+ */
+function runViewChange(view) {
+  if (
+    reduceMotionQuery.matches ||
+    typeof document.startViewTransition !== "function"
+  ) {
+    setView(view);
+    return Promise.resolve();
+  }
+
+  const deferDownloadsCardReveal = view === "downloads";
+
+  return new Promise((resolve, reject) => {
+    const transition = document.startViewTransition(() => {
+      setView(view, { revealDownloadsCards: !deferDownloadsCardReveal });
+    });
+    transition.finished
+      .then(() => {
+        if (deferDownloadsCardReveal) {
+          revealDownloadsNavCards();
+        }
+        resolve();
+      })
+      .catch(reject);
+  });
 }
 
 const maze = new Maze();
@@ -169,13 +210,66 @@ navigation.addEventListener("navigate", (event) => {
 
   event.intercept({
     handler() {
-      setView(viewForPathname(dest.pathname));
+      return runViewChange(viewForPathname(dest.pathname));
     },
   });
 });
 
-// Set view on initial page load, based on URL: `/` or `/downloads`.
+/** Longest initial title/tagline entrance (tagline delay + fade-in-up duration). */
+const INITIAL_ENTRANCE_MS = 1000;
+
+/**
+ * @param {() => void} callback
+ */
+function whenFontsReady(callback) {
+  if (document.documentElement.classList.contains("fonts-ready")) {
+    callback();
+    return;
+  }
+  const observer = new MutationObserver(() => {
+    if (document.documentElement.classList.contains("fonts-ready")) {
+      observer.disconnect();
+      callback();
+    }
+  });
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+}
+
+/**
+ * One-shot entrance for hero title/tagline on first paint. Pose matches
+ * fade-in-up "from" (02-main.css); animation starts after the view is visible.
+ *
+ * @param {"home" | "downloads"} view
+ */
+function scheduleInitialEntrance(view) {
+  if (reduceMotionQuery.matches) return;
+  const section = view === "downloads" ? downloadsView : homeView;
+  section.classList.add("initial-entrance");
+
+  const startAnimation = () => {
+    // Two frames: the first to paint the posed state (opacity 0, translateY), and the
+    //second to starts the fade-in-up.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        section.classList.add("initial-entrance--run");
+      });
+    });
+  };
+
+  window.setTimeout(() => {
+    section.classList.remove("initial-entrance", "initial-entrance--run");
+  }, INITIAL_ENTRANCE_MS);
+
+  whenFontsReady(startAnimation);
+}
+
+// First paint only: no View Transition; card flips run inside setView when on downloads.
 function applyPathToView() {
-  setView(viewForPathname(location.pathname));
+  const view = viewForPathname(location.pathname);
+  setView(view);
+  scheduleInitialEntrance(view);
 }
 applyPathToView();
