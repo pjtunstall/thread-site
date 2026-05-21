@@ -37,8 +37,6 @@ main > [data-view][hidden] {
   top: 2.5rem;
   right: 1.25rem;
   z-index: var(--z-menu-wrap);
-  opacity: 0;
-  animation: fade-in-up 0.9s ease 0.4s forwards;
 }
 
 .hero-title {
@@ -48,8 +46,6 @@ main > [data-view][hidden] {
   font-size: clamp(2.25rem, 6vw, 4.25rem);
   letter-spacing: 0.06em;
   line-height: 1.15;
-  opacity: 0;
-  animation: fade-in-up 0.9s ease forwards;
   text-shadow:
     0 1px 0 color-mix(in srgb, var(--color-bg) 75%, var(--color-transparent)),
     0 2px 10px
@@ -68,8 +64,6 @@ main > [data-view][hidden] {
     0 1px 0 color-mix(in srgb, var(--color-bg) 75%, var(--color-transparent)),
     0 2px 10px
       color-mix(in srgb, var(--color-ink) 42%, var(--color-transparent));
-  opacity: 0;
-  animation: fade-in-up 0.9s ease 0.1s forwards;
 }
 
 /* Hero section screenshot frame (main game image on landing view). */
@@ -83,8 +77,6 @@ main > [data-view][hidden] {
   width: 100%;
   max-width: min(36rem, 92vw);
   padding: var(--meander-gap);
-  opacity: 0;
-  animation: fade-in-up 0.9s ease 0.2s forwards;
 }
 
 /* Decorative Greek-key meander border strips around the screenshot frame. */
@@ -191,11 +183,6 @@ main > [data-view][hidden] {
   box-shadow: var(--carousel-arrow-shadow);
   cursor: pointer;
   transform: translateY(-50%);
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.15s ease;
 }
 
 .carousel-arrow--left {
@@ -212,10 +199,6 @@ main > [data-view][hidden] {
   box-shadow: var(--carousel-arrow-hover-shadow);
 }
 
-.carousel-arrow:active {
-  transform: translateY(calc(-50% + 1px));
-}
-
 .carousel-arrow:focus-visible {
   outline: 2px solid var(--carousel-arrow-focus-outline);
   outline-offset: 2px;
@@ -229,4 +212,38 @@ main > [data-view][hidden] {
   stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu-wrap {
+    opacity: 0;
+    animation: fade-in-up 0.9s ease 0.4s forwards;
+  }
+
+  .hero-title {
+    opacity: 0;
+    animation: fade-in-up 0.9s ease forwards;
+  }
+
+  .hero-tagline {
+    opacity: 0;
+    animation: fade-in-up 0.9s ease 0.1s forwards;
+  }
+
+  .hero-image {
+    opacity: 0;
+    animation: fade-in-up 0.9s ease 0.2s forwards;
+  }
+
+  .carousel-arrow {
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.15s ease;
+  }
+
+  .carousel-arrow:active {
+    transform: translateY(calc(-50% + 1px));
+  }
 }

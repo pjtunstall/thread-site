@@ -1,12 +1,17 @@
 (function () {
+  function themeFromSystemPreference() {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+
+  let resolved = themeFromSystemPreference();
   try {
     const stored = localStorage.getItem("theme-preference");
-    const resolved =
-      stored === "light" || stored === "dark"
-        ? stored
-        : window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
-    document.documentElement.setAttribute("data-theme", resolved);
+    if (stored === "light" || stored === "dark") {
+      resolved = stored;
+    }
   } catch (_) {}
+
+  document.documentElement.setAttribute("data-theme", resolved);
 })();

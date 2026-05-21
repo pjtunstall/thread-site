@@ -2,24 +2,43 @@ import { getThemeToggle } from "./dom-utils.js";
 
 const LOG_PREFIX = "[site-init]";
 const root = document.documentElement;
+const darkSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
 /**
- * @returns {string}
+ * @returns {boolean}
  */
-function readThemePreference() {
+function hasExplicitThemePreference() {
   try {
     const stored = localStorage.getItem("theme-preference");
-    if (stored === "light" || stored === "dark") return stored;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  } catch (error) {
-    console.warn(
-      `${LOG_PREFIX} Could not access localStorage for theme preference; using system/default theme.`,
-      error,
-    );
-    return "light";
+    return stored === "light" || stored === "dark";
+  } catch {
+    return false;
   }
+}
+
+/**
+ * @returns {"light" | "dark"}
+ */
+function themeFromSystemPreference() {
+  return darkSchemeQuery.matches ? "dark" : "light";
+}
+
+/**
+ * @returns {"light" | "dark"}
+ */
+function readThemePreference() {
+  if (hasExplicitThemePreference()) {
+    try {
+      const stored = localStorage.getItem("theme-preference");
+      if (stored === "light" || stored === "dark") return stored;
+    } catch (error) {
+      console.warn(
+        `${LOG_PREFIX} Could not read theme preference from localStorage; using system theme.`,
+        error,
+      );
+    }
+  }
+  return themeFromSystemPreference();
 }
 
 /**
@@ -73,6 +92,13 @@ export function initTheme(options = {}) {
   }
 
   let currentTheme = applyStoredThemePreference({ themeToggle });
+
+  darkSchemeQuery.addEventListener("change", () => {
+    if (hasExplicitThemePreference()) return;
+    currentTheme = themeFromSystemPreference();
+    applyThemePreference(currentTheme, themeToggle);
+    if (typeof onThemeChange === "function") onThemeChange(currentTheme);
+  });
 
   themeToggle.addEventListener("click", () => {
     currentTheme = currentTheme === "dark" ? "light" : "dark";

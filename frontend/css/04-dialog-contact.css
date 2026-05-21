@@ -156,9 +156,6 @@ dialog::backdrop {
   border: 1px solid var(--color-ink-faint);
   border-radius: var(--radius-btn);
   outline: none;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
 .contact-form__control:focus {
@@ -239,20 +236,11 @@ input will trip it. */
   border: 1px solid var(--color-ink);
   border-radius: var(--radius-btn);
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.15s ease,
-    opacity 0.2s ease;
 }
 
 .contact-form__submit:hover:not(:disabled) {
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
-}
-
-.contact-form__submit:active:not(:disabled) {
-  transform: translateY(1px);
 }
 
 .contact-form__submit:focus-visible {
@@ -263,6 +251,26 @@ input will trip it. */
 .contact-form__submit:disabled {
   opacity: 0.6;
   cursor: progress;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .contact-form__control {
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .contact-form__submit {
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.15s ease,
+      opacity 0.2s ease;
+  }
+
+  .contact-form__submit:active:not(:disabled) {
+    transform: translateY(1px);
+  }
 }
 
 @media (width >= 768px) {
