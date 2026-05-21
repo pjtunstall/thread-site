@@ -30,13 +30,20 @@ main > [data-view][hidden] {
   display: none !important;
 }
 
-/* Fixed to the viewport so the control stays put when main height changes
-   (body centers main; shorter downloads content was shifting main upward). */
+/* Fixed to the viewport so the menu stays put when main height changes
+   (body vertically centers main; a shorter downloads view moves main's top down). */
 .menu-wrap {
   position: fixed;
   top: 2.5rem;
   right: 1.25rem;
   z-index: var(--z-menu-wrap);
+}
+
+@media (width < 768px) {
+  .menu-wrap {
+    top: 1rem;
+    right: 1rem;
+  }
 }
 
 .hero-title {
@@ -162,6 +169,13 @@ main > [data-view][hidden] {
   object-position: center;
   border-radius: var(--radius-image);
   box-shadow: var(--shadow-soft);
+}
+
+@media (width >= 768px) {
+  .hero-image {
+    margin: 3.25rem 0 2.75rem;
+    max-width: min(40rem, 88vw);
+  }
 }
 
 .carousel-arrow {

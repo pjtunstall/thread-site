@@ -375,22 +375,12 @@ button). */
 }
 
 @media (width < 768px) {
-  .menu-wrap {
-    top: 1rem;
-    right: 1rem;
-  }
-
   .downloads-nav {
     width: min(30rem, calc(100vw - 2.5rem));
   }
 }
 
 @media (width >= 768px) {
-  .hero-image {
-    margin: 3.25rem 0 2.75rem;
-    max-width: min(40rem, 88vw);
-  }
-
   .btn--primary {
     padding: 1.05rem 2rem;
     font-size: var(--font-size-btn-primary);
