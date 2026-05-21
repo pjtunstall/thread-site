@@ -49,12 +49,19 @@ export function initCarousel() {
     const item = CAROUSEL_ITEMS[currentIndex];
     image.src = item.src;
     image.alt = item.alt;
+    if (currentIndex === 0) {
+      image.setAttribute("fetchpriority", "high");
+    } else {
+      image.setAttribute("fetchpriority", "low");
+    }
   };
 
   const warmImageCache = () => {
-    CAROUSEL_ITEMS.forEach((item) => {
+    CAROUSEL_ITEMS.forEach((item, index) => {
+      if (index === currentIndex) return;
       const preloadImage = new Image();
       preloadImage.decoding = "async";
+      preloadImage.fetchPriority = "low";
       preloadImage.src = item.src;
     });
   };
