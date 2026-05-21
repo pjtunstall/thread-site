@@ -29,9 +29,9 @@ dialog::backdrop {
 @media (prefers-reduced-motion: no-preference) {
   dialog {
     transition:
-      opacity 0.3s ease-out,
-      display 0.3s ease-out allow-discrete,
-      overlay 0.3s ease-out allow-discrete;
+      opacity 0.2s ease-out,
+      display 0.2s ease-out allow-discrete,
+      overlay 0.2s ease-out allow-discrete;
   }
 
   dialog:not([open]) {
@@ -44,9 +44,9 @@ dialog::backdrop {
 
   dialog::backdrop {
     transition:
-      opacity 0.3s ease-out,
-      display 0.3s ease-out allow-discrete,
-      overlay 0.3s ease-out allow-discrete;
+      opacity 0.2s ease-out,
+      display 0.2s ease-out allow-discrete,
+      overlay 0.2s ease-out allow-discrete;
     opacity: 0;
   }
 
@@ -186,17 +186,12 @@ dialog::backdrop {
 }
 
 .contact-form__control {
-  --contact-control-bg: color-mix(
-    in srgb,
-    var(--color-bg) 92%,
-    var(--color-ink)
-  );
   font-family: var(--font-dialog-body);
   font-size: var(--font-size-contact-control);
   font-weight: var(--font-weight-contact-control);
   color: var(--color-ink);
   padding: 0.55rem 0.7rem;
-  background: var(--contact-control-bg);
+  background: var(--color-control-bg);
   border: 1px solid var(--color-ink-faint);
   border-radius: var(--radius-btn);
   outline: none;
@@ -211,8 +206,8 @@ a long background-color transition stops Chromium from animating over it. */
 .contact-form__control:-webkit-autofill:active {
   -webkit-text-fill-color: var(--color-ink);
   caret-color: var(--color-ink);
-  -webkit-box-shadow: 0 0 0 1000px var(--contact-control-bg) inset;
-  box-shadow: 0 0 0 1000px var(--contact-control-bg) inset;
+  -webkit-box-shadow: 0 0 0 1000px var(--color-control-bg) inset;
+  box-shadow: 0 0 0 1000px var(--color-control-bg) inset;
   transition: background-color 99999s ease-out 0s;
 }
 
@@ -220,54 +215,51 @@ a long background-color transition stops Chromium from animating over it. */
 usually works; inset shadow and the same transition cover engines that still
 animate autofill background. */
 .contact-form__control:autofill {
-  background-color: var(--contact-control-bg);
+  background-color: var(--color-control-bg);
   color: var(--color-ink);
   caret-color: var(--color-ink);
-  box-shadow: 0 0 0 1000px var(--contact-control-bg) inset;
+  box-shadow: 0 0 0 1000px var(--color-control-bg) inset;
   transition: background-color 99999s ease-out 0s;
 }
 
-/* Autofill background mimicking hack uses box-shadow; add a second shadow so
+/* Autofill background-mimicking hack uses box-shadow; add a second shadow so
 :focus-visible ring still shows on autofilled fields. */
 .contact-form__control:-webkit-autofill:focus-visible,
 .contact-form__control:autofill:focus-visible {
   border-color: var(--color-ink-border-strong);
   -webkit-box-shadow:
-    0 0 0 1000px var(--contact-control-bg) inset,
-    0 0 0 2px color-mix(in srgb, var(--color-ink) 28%, var(--color-transparent));
+    0 0 0 1000px var(--color-control-bg) inset,
+    0 0 0 2px var(--color-focus-ring);
   box-shadow:
-    0 0 0 1000px var(--contact-control-bg) inset,
-    0 0 0 2px color-mix(in srgb, var(--color-ink) 28%, var(--color-transparent));
+    0 0 0 1000px var(--color-control-bg) inset,
+    0 0 0 2px var(--color-focus-ring);
 }
 
 .contact-form__control:focus-visible {
   border-color: var(--color-ink-border-strong);
-  box-shadow: 0 0 0 2px
-    color-mix(in srgb, var(--color-ink) 28%, var(--color-transparent));
+  box-shadow: 0 0 0 2px var(--color-focus-ring);
 }
 
 .contact-form__control[aria-invalid="true"],
 .contact-form__control:user-invalid {
-  border-color: color-mix(in srgb, var(--color-ink) 60%, #c44);
+  border-color: var(--color-error-border);
 }
 
 /* Error border + box-shadow focus ring (separate properties, both visible). */
 .contact-form__control[aria-invalid="true"]:focus-visible,
 .contact-form__control:user-invalid:focus-visible {
-  border-color: color-mix(in srgb, var(--color-ink) 60%, #c44);
-  box-shadow: 0 0 0 2px
-    color-mix(in srgb, var(--color-ink) 28%, var(--color-transparent));
+  border-color: var(--color-error-border);
+  box-shadow: 0 0 0 2px var(--color-focus-ring);
 }
 
 @supports not selector(:user-invalid) {
   .contact-form__control:invalid:not(:placeholder-shown) {
-    border-color: color-mix(in srgb, var(--color-ink) 60%, #c44);
+    border-color: var(--color-error-border);
   }
 
   .contact-form__control:invalid:not(:placeholder-shown):focus-visible {
-    border-color: color-mix(in srgb, var(--color-ink) 60%, #c44);
-    box-shadow: 0 0 0 2px
-      color-mix(in srgb, var(--color-ink) 28%, var(--color-transparent));
+    border-color: var(--color-error-border);
+    box-shadow: 0 0 0 2px var(--color-focus-ring);
   }
 }
 
@@ -308,7 +300,7 @@ input will trip it. */
 
 .contact-form__status--error {
   font-weight: var(--font-weight-contact-status-error);
-  color: color-mix(in srgb, var(--color-ink) 55%, #c44);
+  color: var(--color-error-text);
 }
 
 .contact-form__actions {

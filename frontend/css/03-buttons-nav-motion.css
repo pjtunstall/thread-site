@@ -13,14 +13,12 @@
   text-decoration: none;
   border: 1px solid var(--color-transparent);
   border-radius: var(--radius-btn);
-  box-shadow: 0 6px 16px
-    color-mix(in srgb, var(--color-ink) 34%, var(--color-transparent));
+  box-shadow: 0 6px 16px var(--color-btn-shadow);
   cursor: pointer;
 }
 
 .btn:hover {
-  box-shadow: 0 10px 24px
-    color-mix(in srgb, var(--color-ink) 44%, var(--color-transparent));
+  box-shadow: 0 10px 24px var(--color-btn-shadow-hover);
 }
 
 .btn:focus-visible {
@@ -135,7 +133,7 @@ square. We then rotate them ±45deg about their right ends: transform-origin:
 }
 
 .btn--ghost.menu-toggle:hover {
-  background: color-mix(in srgb, var(--color-bg) 88%, var(--color-ink));
+  background: var(--color-menu-toggle-hover-bg);
 }
 
 .menu-panel {
@@ -342,13 +340,13 @@ button). */
 
   .menu-toggle__bar {
     transition:
-      transform 0.3s ease,
+      transform 0.2s ease,
       opacity 0.2s ease;
   }
 
   .hero-cta {
     opacity: 0;
-    animation: fade-in-up 0.9s ease 0.3s forwards;
+    animation: fade-in-up 0.9s ease 0.2s forwards;
   }
 
   .downloads-note {
@@ -358,7 +356,7 @@ button). */
 
   .downloads-back-link {
     opacity: 0;
-    animation: fade-in-up 0.9s ease 0.4s forwards;
+    animation: fade-in-up 0.9s ease 0.2s forwards;
   }
 
   .menu-card {

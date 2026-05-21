@@ -47,9 +47,8 @@ main > [data-view][hidden] {
   letter-spacing: 0.06em;
   line-height: 1.15;
   text-shadow:
-    0 1px 0 color-mix(in srgb, var(--color-bg) 75%, var(--color-transparent)),
-    0 2px 10px
-      color-mix(in srgb, var(--color-ink) 42%, var(--color-transparent));
+    0 1px 0 var(--color-hero-text-shadow-bg),
+    0 2px 10px var(--color-hero-text-shadow-ink);
 }
 
 .hero-tagline {
@@ -61,9 +60,8 @@ main > [data-view][hidden] {
   text-transform: uppercase;
   color: var(--color-ink);
   text-shadow:
-    0 1px 0 color-mix(in srgb, var(--color-bg) 75%, var(--color-transparent)),
-    0 2px 10px
-      color-mix(in srgb, var(--color-ink) 42%, var(--color-transparent));
+    0 1px 0 var(--color-hero-text-shadow-bg),
+    0 2px 10px var(--color-hero-text-shadow-ink);
 }
 
 /* Hero section screenshot frame (main game image on landing view). */

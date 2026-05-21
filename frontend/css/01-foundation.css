@@ -98,6 +98,40 @@ fonts is available in bold and appearance and performance seem fine to me. */
   --color-ink-border-strong: #23150f4a;
   --color-primary-hover: #4f2e21;
   --color-transparent: #0000;
+  --color-error: #c44;
+  --color-error-border: color-mix(in srgb, var(--color-ink) 60%, var(--color-error));
+  --color-error-text: color-mix(in srgb, var(--color-ink) 55%, var(--color-error));
+  --color-focus-ring: color-mix(
+    in srgb,
+    var(--color-ink) 28%,
+    var(--color-transparent)
+  );
+  --color-control-bg: color-mix(in srgb, var(--color-bg) 92%, var(--color-ink));
+  --color-btn-shadow: color-mix(
+    in srgb,
+    var(--color-ink) 34%,
+    var(--color-transparent)
+  );
+  --color-btn-shadow-hover: color-mix(
+    in srgb,
+    var(--color-ink) 44%,
+    var(--color-transparent)
+  );
+  --color-menu-toggle-hover-bg: color-mix(
+    in srgb,
+    var(--color-bg) 88%,
+    var(--color-ink)
+  );
+  --color-hero-text-shadow-bg: color-mix(
+    in srgb,
+    var(--color-bg) 75%,
+    var(--color-transparent)
+  );
+  --color-hero-text-shadow-ink: color-mix(
+    in srgb,
+    var(--color-ink) 42%,
+    var(--color-transparent)
+  );
   --font-display: var(--font-stack-ui);
   --font-body: var(--font-stack-ui);
   --font-dialog-body: var(--font-stack-prose);
