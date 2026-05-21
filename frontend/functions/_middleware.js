@@ -11,8 +11,32 @@ function normalizePathname(pathname) {
 }
 
 /**
- * Serve index.html for /downloads via ASSETS.
+ * SPA shell for /downloads. ASSETS.fetch("/index.html") 308s to /; fetch / and
+ * return 200 so the browser keeps /downloads in the address bar.
  *
+ * @param {import('@cloudflare/workers-types').Env} env
+ * @param {URL} url
+ * @param {Request} request
+ */
+async function fetchSpaIndex(env, url, request) {
+  const assetResponse = await env.ASSETS.fetch(
+    new Request(new URL("/", url), {
+      method: request.method,
+      headers: request.headers,
+    }),
+  );
+
+  const headers = new Headers(assetResponse.headers);
+  headers.delete("Location");
+
+  return new Response(assetResponse.body, {
+    status: 200,
+    statusText: "OK",
+    headers,
+  });
+}
+
+/**
  * @param {import('@cloudflare/workers-types').EventContext<unknown, string, Record<string, unknown>>} context
  * @returns {Promise<Response>}
  */
@@ -25,9 +49,7 @@ export async function onRequest(context) {
     normalizePathname(url.pathname) === DOWNLOADS_PATH;
 
   const response = isDownloadsRoute
-    ? await context.env.ASSETS.fetch(
-        new Request(new URL("/index.html", url), request),
-      )
+    ? await fetchSpaIndex(context.env, url, request)
     : await context.next();
 
   const newHeaders = new Headers(response.headers);

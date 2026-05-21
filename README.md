@@ -115,8 +115,6 @@ npm run dev
 
 (`node serve.mjs` works too.) Plain static servers such as `python3 -m http.server` do not rewrite `/downloads` to `index.html`, so direct visits to that path will result in a 404 "page not found" error.
 
-On Cloudflare Pages, `_redirects` is **not** applied to routes handled by [Pages Functions](https://developers.cloudflare.com/pages/functions/). This project serves `/downloads` from `index.html` via `frontend/functions/_middleware.js` and `frontend/functions/downloads.js` (so an old static `downloads.html` stub cannot win). Purging cache on the zone alone may not clear Pages asset cache (`s-maxage` on deployed files); deploy a new build after routing changes.
-
 ## Deployment
 
 Deploy changes made to `frontend` with `git push`. Hard refresh in the browser and clear the cache if need be to see the changes.
@@ -130,3 +128,15 @@ npm run deploy # Runs `wrangler deploy`; see `worker/package.json`.
 ```
 
 Favor this over directly direct `npx wrangler deploy` so that dependencies will be subject to the restrictions in `.npmrc` to reduce vulnerabily to supply chain attacks.
+
+##Cloudflare Pages build settings
+
+| Setting                | Value      |
+| ---------------------- | ---------- |
+| Root directory         | `frontend` |
+| Build command          | _(empty)_  |
+| Build output directory | `.`        |
+
+I.e. set "build output directory" to the project root, and "root directory" (for deploying the frontend) to `frontend`.
+
+Pages also 308-redirects `/index.html` to `/`; `functions/_middleware.js` serves the HTML for `/` as 200 on `/downloads` so the address bar stays on that path.

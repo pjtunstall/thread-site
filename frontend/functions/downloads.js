@@ -1,6 +1,10 @@
-/** Serve index.html for /downloads (Pages matches this before static assets). */
+/** Fallback route for /downloads (middleware normally serves the SPA shell). */
 export async function onRequest(context) {
   const url = new URL(context.request.url);
-  const indexRequest = new Request(new URL("/index.html", url), context.request);
-  return context.env.ASSETS.fetch(indexRequest);
+  const assetResponse = await context.env.ASSETS.fetch(
+    new Request(new URL("/", url), context.request),
+  );
+  const headers = new Headers(assetResponse.headers);
+  headers.delete("Location");
+  return new Response(assetResponse.body, { status: 200, headers });
 }
