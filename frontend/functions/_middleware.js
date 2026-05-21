@@ -11,7 +11,7 @@ function normalizePathname(pathname) {
 }
 
 /**
- * Serve index.html for /downloads via ASSETS (bypasses stale static downloads.html).
+ * Serve index.html for /downloads via ASSETS.
  *
  * @param {import('@cloudflare/workers-types').EventContext<unknown, string, Record<string, unknown>>} context
  * @returns {Promise<Response>}
