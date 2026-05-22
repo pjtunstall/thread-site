@@ -82,7 +82,16 @@ export class Maze {
       return;
     }
     document.body.prepend(this.#canvas);
+
+    // Redraw maze if the window changes width or height. "resize" events
+    // include zoom on desktop (Brave, Ubuntu)--the number of CSS pixels
+    // changes, which is interpreted as a change of size--but not mobile
+    // (Brave, Android). To make mobile behavior match desktop, we could use
+    // `VisualViewport.scale`, but I think it looks alright, and it might be
+    // better not to interfere with the user's expectation of what zoom does by
+    // default there.
     window.addEventListener("resize", this.#onResize);
+
     this.#reduceMotionQuery.addEventListener(
       "change",
       this.#onMotionPreferenceChange,
