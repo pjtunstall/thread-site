@@ -20,7 +20,8 @@ import { pickRandomFrom } from "./grid.js";
 export class Maze {
   #baseTileSize = 12; // pixels
   #tileSize = 12; // We'll multiply this by devicePixelRatio.
-  #resizeDebounceMs = 220;
+  #restartDebounceMs = 220;
+  #lastDpr = 1;
 
   #tilesPerMs = 32 / (1000 / 60); // Animation speed: 32 per 16.67ms frame.
 
@@ -45,7 +46,7 @@ export class Maze {
   #frameRequest = null; // `requestAnimationFrame` request ID.
 
   /** @type {number | null} */
-  #resizeTimer = null; // Timer ID to throttle restart animation on resize.
+  #restartTimer = null; // Timer ID to throttle restart animation on resize, etc.
 
   #reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   #enabled = false; // Set to `true` when constructor gets canvas context.
@@ -55,6 +56,9 @@ export class Maze {
 
   /** @type {HTMLCanvasElement} */
   #canvas;
+
+  /** @type {MediaQueryList} */
+  #mediaQueryList;
 
   constructor() {
     this.#canvas = document.createElement("canvas");
@@ -83,12 +87,14 @@ export class Maze {
       "change",
       this.#onMotionPreferenceChange,
     );
+
+    this.#armDprListener();
     this.restart();
   }
 
   /**
    * This method is called:
-   *   - on initialization by `this.start`;
+   *   - on initialization by `this.start` via `this.#onDprChange`;
    *   - when the user clicks to request a new maze;
    *   - when the window is resized;
    *   - and when when there's a change in motion preference.
@@ -121,37 +127,86 @@ export class Maze {
   }
 
   /**
-   * This method is called on theme toggle. It re-reads --color-* from the
-   * document and redraws what's already carved. `this.#enabled` implies
-   * `this.#context` is correctly defined.
+   * This internal method prevents repeated calls to restart if neither the
+   * dimensions nor `window.devicePixelRatio` have changed, e.g. due to an
+   * occasional resize false positive or in case I ever accidentally call
+   * `this.restart` directly and
+   * either-directly-or-debounced-via-`this.#scheduleRestart` without any change
+   * in between.
+   *
+   * @returns {void}
    */
-  repaintCurrentPartialState() {
-    if (!this.#enabled || this.#tilesToCarve.length === 0) {
+  #restartIfLayoutChanged() {
+    const dpr = window.devicePixelRatio;
+    const width = this.#width(dpr);
+    const height = this.#height(dpr);
+    if (
+      width === this.#canvas.width &&
+      height === this.#canvas.height &&
+      dpr === this.#lastDpr
+    ) {
       return;
     }
+    this.#lastDpr = dpr;
+    this.restart();
+  }
 
-    // Repaint with opaque background color so that the partially transparent
-    // --color-ink-wall does not stack on old pixels each toggle.
-    this.#context.fillStyle = this.#getBackgroundFillColor();
-    this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
+  /**
+   * This internal method gets a fresh `MediaQueryList` so that we can handle a
+   * change of `window.devicePixelRatio`, as might happen if the window is
+   * dragged onto a different screen.
+   *
+   * @returns {void}
+   */
+  #armDprListener = () => {
+    this.#mediaQueryList = window.matchMedia(
+      `(resolution: ${window.devicePixelRatio}dppx)`,
+    );
+    this.#mediaQueryList.addEventListener("change", this.#onDprChange, {
+      once: true,
+    });
+  };
 
-    this.#paintWholeCanvasWallColor();
-    this.#drawInstantCarves(0, this.#nextCarveIndex);
+  /**
+   * Set up a fresh devicePixelRatio change listener, then schedule `restart`
+   * via the debouncing path.
+   *
+   * @returns {void}
+   */
+  #onDprChange = () => {
+    this.#armDprListener();
+    this.#scheduleRestart();
+  };
+
+  /**
+   * This internal method wraps `restart` to debounce it.
+   *
+   * @returns {void}
+   */
+  #scheduleRestart() {
+    if (this.#restartTimer !== null) {
+      window.clearTimeout(this.#restartTimer);
+    }
+    this.#restartTimer = window.setTimeout(() => {
+      this.#restartTimer = null;
+      this.#restartIfLayoutChanged();
+    }, this.#restartDebounceMs);
   }
 
   #onResize = () => {
-    if (this.#resizeTimer !== null) {
-      window.clearTimeout(this.#resizeTimer);
-    }
-    this.#resizeTimer = window.setTimeout(() => {
-      this.#resizeTimer = null;
-      this.restart();
-    }, this.#resizeDebounceMs);
+    this.#scheduleRestart();
   };
 
   #onMotionPreferenceChange = () => {
     this.restart();
   };
+
+  #resizeCanvas() {
+    const dpr = window.devicePixelRatio;
+    this.#tileSize = this.#baseTileSize * dpr;
+    this.#canvas.width = this.#width(dpr);
+    this.#canvas.height = this.#height(dpr);
+  }
 
   /**
    * This internal method returns the width of the maze in physical pixels.
@@ -179,11 +234,25 @@ export class Maze {
     return dpr * window.innerHeight + 2 * this.#tileSize;
   }
 
-  #resizeCanvas() {
-    const dpr = window.devicePixelRatio;
-    this.#tileSize = this.#baseTileSize * dpr;
-    this.#canvas.width = this.#width(dpr);
-    this.#canvas.height = this.#height(dpr);
+  /**
+   * This method is called on theme toggle. It re-reads --color-* from the
+   * document and redraws what's already carved. `this.#enabled` implies
+   * `this.#context` is correctly defined.
+   *
+   * @returns {void}
+   */
+  repaintCurrentPartialState() {
+    if (!this.#enabled || this.#tilesToCarve.length === 0) {
+      return;
+    }
+
+    // Repaint with opaque background color so that the partially transparent
+    // --color-ink-wall does not stack on old pixels each toggle.
+    this.#context.fillStyle = this.#getBackgroundFillColor();
+    this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
+
+    this.#paintWholeCanvasWallColor();
+    this.#drawInstantCarves(0, this.#nextCarveIndex);
   }
 
   /**
