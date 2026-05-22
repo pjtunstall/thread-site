@@ -6,7 +6,7 @@ const LOG_PREFIX = "[site-init]";
  * @template {Element} T
  * @param {Element | null} candidate
  * @param {string} selector
- * @param {new (...args: any[]) => T} expectedType
+ * @param {new (...args: Array<any>) => T} expectedType
  * @returns {T}
  */
 function requireElement(candidate, selector, expectedType) {

@@ -1,0 +1,14 @@
+---
+alwaysApply: true
+---
+
+# Style
+
+## Code
+
+- In JSDoc, use `Array<T>` rather than `T[]`.
+
+## Comments and markdown
+
+- Stick to symbols that are available on a normal keyboard: instead of `→`, use `->`. For `↔`, use `<->`. For an emdash, use `--`.
+- Address a general reader, not me. Don't refer to the previous state of the code or to our conversations; that's context a general reader won't have access to.

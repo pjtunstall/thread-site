@@ -162,7 +162,7 @@ function clearContactFieldInvalidState(form) {
 
 /**
  * @param {HTMLFormElement} form
- * @param {string[]} names
+ * @param {Array<string>} names
  */
 function markContactFieldsInvalid(form, names) {
   names.forEach((name) => {
@@ -382,10 +382,9 @@ export function renderForm(bodyContainer, formDef) {
     if (!data.email || !data.message) {
       markContactFieldsInvalid(
         form,
-        [
-          !data.email ? "email" : null,
-          !data.message ? "message" : null,
-        ].filter((name) => name !== null),
+        [!data.email ? "email" : null, !data.message ? "message" : null].filter(
+          (name) => name !== null,
+        ),
       );
       setStatus(statusEl, "error", "Email and message are both required.");
       return;

@@ -149,7 +149,7 @@ async function verifyTurnstile(secret, token, remoteIp) {
 /**
  * @param {object} env Worker bindings (`RESEND_FROM`, `CONTACT_TO`, ...).
  * @param {object} body Validated contact form fields.
- * @returns {{ from: string, to: string[], reply_to: string, subject: string, text: string }}
+ * @returns {{ from: string, to: Array<string>, reply_to: string, subject: string, text: string }}
  */
 function buildEmailPayload(env, body) {
   const from = env.RESEND_FROM || "Contact <onboarding@resend.dev>";
@@ -176,7 +176,7 @@ function buildEmailPayload(env, body) {
 
 /**
  * @param {object} env Worker bindings (`RESEND_API_KEY`, ...).
- * @param {{ from: string, to: string[], reply_to: string, subject: string, text: string }} payload
+ * @param {{ from: string, to: Array<string>, reply_to: string, subject: string, text: string }} payload
  */
 async function sendViaResend(env, payload) {
   const res = await fetch("https://api.resend.com/emails", {

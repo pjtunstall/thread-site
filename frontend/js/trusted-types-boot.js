@@ -22,59 +22,62 @@ function wrapControlOrMenuSvg(innerMarkup) {
   return `<svg xmlns="${SVG_NAMESPACE}" viewBox="${MENU_CARD_SVG_VIEWBOX}">${innerMarkup}</svg>`;
 }
 
-/** @type {{ html: Set<string>, scriptUrls: string[] }} */
-const registry = globalThis.__threadTrusted ?? {
-  html: new Set(),
-  scriptUrls: [],
-};
-globalThis.__threadTrusted = registry;
+/** @type {Set<string>} */
+const allowedSvgHtml = new Set();
 
 for (const def of Object.values(MENU_CARD_ICON_BY_ID)) {
-  registry.html.add(wrapControlOrMenuSvg(def.innerMarkup));
+  allowedSvgHtml.add(wrapControlOrMenuSvg(def.innerMarkup));
 }
 for (const inner of Object.values(PRIMARY_BUTTON_ICON_INNER_HTML)) {
-  registry.html.add(wrapControlOrMenuSvg(inner));
+  allowedSvgHtml.add(wrapControlOrMenuSvg(inner));
 }
-registry.html.add(wrapControlOrMenuSvg(HAMBURGER_INNER));
+allowedSvgHtml.add(wrapControlOrMenuSvg(HAMBURGER_INNER));
 for (const inner of Object.values(CAROUSEL_ARROW_INNER)) {
-  registry.html.add(wrapControlOrMenuSvg(inner));
+  allowedSvgHtml.add(wrapControlOrMenuSvg(inner));
 }
 
-registry.html.add(DIALOG_TEMPLATE_HTML);
-registry.html.add(MENU_CARD_TEMPLATE_HTML);
-registry.html.add(THEME_TOGGLE_INNER_HTML);
-registry.scriptUrls.push(TURNSTILE_API_URL);
+const trustedScriptUrlsArray = [TURNSTILE_API_URL];
+
+const trustedHtmlArray = [
+  DIALOG_TEMPLATE_HTML,
+  MENU_CARD_TEMPLATE_HTML,
+  THEME_TOGGLE_INNER_HTML,
+];
+
+/**
+ * @param {string} input
+ * @returns {string}
+ */
+function createHTML(input) {
+  if (trustedHtmlArray.includes(input) || allowedSvgHtml.has(input))
+    return input;
+  throw new TypeError(`Can't create HTML; ${input} is not a trusted type.`);
+}
+
+/**
+ * @param {string} input
+ * @returns {string}
+ */
+function createScriptURL(input) {
+  if (trustedScriptUrlsArray.includes(input)) return input;
+  throw new TypeError(
+    `Can't create script URL; ${input} is not a trusted type.`,
+  );
+}
 
 /** @type {TrustedTypePolicy} */
 let htmlPolicy;
 
-if (globalThis.trustedTypes?.getPolicy) {
-  htmlPolicy = globalThis.trustedTypes.getPolicy("policy");
-  if (!htmlPolicy && globalThis.trustedTypes.createPolicy) {
-    htmlPolicy = globalThis.trustedTypes.createPolicy("policy", {
-      createHTML(input) {
-        if (registry.html.has(input)) return input;
-        throw new TypeError("Can't create HTML; input is not a trusted type.");
-      },
-      createScriptURL(input) {
-        if (registry.scriptUrls.includes(input)) return input;
-        throw new TypeError(
-          "Can't create script URL; input is not a trusted type.",
-        );
-      },
-    });
-  }
+if (window.trustedTypes?.createPolicy) {
+  htmlPolicy = window.trustedTypes.createPolicy("policy", {
+    createHTML,
+    createScriptURL,
+  });
 } else {
   htmlPolicy = {
     createHTML: (s) => s,
     createScriptURL: (s) => s,
   };
-}
-
-if (!htmlPolicy) {
-  throw new Error(
-    "[trusted-types-boot] Trusted Types policy 'policy' is missing.",
-  );
 }
 
 /**

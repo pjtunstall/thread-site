@@ -2,25 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script>
-      (function () {
-        globalThis.__threadTrusted = { html: new Set(), scriptUrls: [] };
-        if (!globalThis.trustedTypes?.createPolicy) return;
-        globalThis.trustedTypes.createPolicy("policy", {
-          createHTML(input) {
-            if (globalThis.__threadTrusted.html.has(input)) return input;
-            throw new TypeError("Can't create HTML; input is not a trusted type.");
-          },
-          createScriptURL(input) {
-            if (globalThis.__threadTrusted.scriptUrls.includes(input))
-              return input;
-            throw new TypeError(
-              "Can't create script URL; input is not a trusted type.",
-            );
-          },
-        });
-      })();
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>By a Thread</title>
     <meta
@@ -219,7 +200,7 @@
 
         <p class="downloads-back-link">
           <primary-button
-            label="BACK TO MAIN PAGE"
+            label="HOME"
             icon="back-home"
             href="/"
           ></primary-button>

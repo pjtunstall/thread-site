@@ -6,6 +6,7 @@
 - [Secrets](#secrets)
 - [To run locally](#to-run-locally)
 - [Deployment](#deployment)
+- [Cloudflare Pages build settings](#cloudflare-pages-build-settings)
 
 ## Overview
 
@@ -101,7 +102,7 @@ Notes on specific directives:
 - **`frame-src https://challenges.cloudflare.com`**: permits only the Turnstile iframe.
 - **`img-src 'self' data:`**: `data:` URIs are needed for canvas-rendered images (maze). CSP Evaluator flags this at low severity; the risk is accepted.
 - **`base-uri 'none'`**: stricter than `'self'`; prevents `<base>` tag injection entirely.
-- **`trusted-types policy`**: Only a policy named `policy` may be created (see the inline boot script in `index.html` and `frontend/js/trusted-types-boot.js`), and such a policy can only be created once. Application code uses `trustedHtml()` and `trustedScriptURL()` so only allowlisted HTML and script URLs go through that policy.
+- **`trusted-types policy`**: Only a policy named `policy` may be created (`frontend/js/trusted-types-boot.js`). Application code uses `trustedHtml()` and `trustedScriptURL()` so only allowlisted HTML and script URLs go through that policy.
 - **`require-trusted-types-for 'script'` is not set**: If set, the policy would be enforced. That is to say, every `innerHTML` / `insertAdjacentHTML` / `script.src` assignment on the page would have to use `TrustedHTML` / `TrustedScriptURL`. However, on trying it, I discovered that Cloudflare's Challenge Platform bootstrap (injected on HTML responses, `cdn-cgi/challenge-platform`) uses raw `innerHTML`, so enforcement blocked it. Without user-generated HTML on the site, mandatory sink enforcement bought little compared with keeping that injection working. The policy remains as a coding convention and allowlist for my own DOM writes; the browser does not reject third-party raw strings on those sinks.
 
 ## To run locally
@@ -126,9 +127,9 @@ npm ci # ...if necessary, to clean install dependencies
 npm run deploy # Runs `wrangler deploy`; see `worker/package.json`.
 ```
 
-Favor this over directly direct `npx wrangler deploy` so that dependencies will be subject to the restrictions in `.npmrc` to reduce vulnerabily to supply chain attacks.
+Favor this over direct `npx wrangler deploy` so that dependencies will be subject to the restrictions in `.npmrc` to reduce vulnerabily to supply chain attacks.
 
-##Cloudflare Pages build settings
+## Cloudflare Pages build settings
 
 | Setting                | Value      |
 | ---------------------- | ---------- |
@@ -138,4 +139,4 @@ Favor this over directly direct `npx wrangler deploy` so that dependencies will 
 
 I.e. set "build output directory" to the project root, and "root directory" (for deploying the frontend) to `frontend`.
 
-Pages also 308-redirects `/index.html` to `/`; `functions/_middleware.js` serves the HTML for `/` as 200 on `/downloads` so the address bar stays on that path.
+The downloads screen is a second client-side view in the same `index.html` shell, but it should be reachable at `/downloads` (shareable URL, correct back/forward behavior). Serving that path by fetching the `/index.html` asset would not work on Cloudflare Pages: the platform responds to `/index.html` with a 308 redirect to `/`, which would replace `/downloads` in the address bar. Instead, `functions/_middleware.js` handles GET and HEAD `/downloads` by fetching `/` (the same HTML) and returning it as 200 without a `Location` header, so the browser keeps `/downloads` while `view-boot.js` selects the downloads view on first paint.
