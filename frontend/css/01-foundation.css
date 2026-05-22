@@ -151,13 +151,13 @@ fonts is available in bold and appearance and performance seem fine to me. */
   --carousel-arrow-bg: oklch(0.182 0.021 45.35 / 0.94);
   --carousel-arrow-color: oklch(0.823 0.074 65.815);
   --carousel-arrow-shadow:
-    0 0 0 2px oklch(0.182 0.021 45.35 / 0.76),
-    0 4px 12px oklch(0 0 0 / 0.46), 0 14px 34px oklch(0 0 0 / 0.75);
+    0 0 0 2px oklch(0.182 0.021 45.35 / 0.76), 0 4px 12px oklch(0 0 0 / 0.46),
+    0 14px 34px oklch(0 0 0 / 0.75);
   --carousel-arrow-hover-bg: oklch(0.324 0.053 46.184 / 0.95);
   --carousel-arrow-hover-border: oklch(0.868 0.062 64.461 / 0.66);
   --carousel-arrow-hover-shadow:
-    0 0 0 2px oklch(0.182 0.021 45.35 / 0.85),
-    0 6px 14px oklch(0 0 0 / 0.55), 0 18px 38px oklch(0 0 0 / 0.81);
+    0 0 0 2px oklch(0.182 0.021 45.35 / 0.85), 0 6px 14px oklch(0 0 0 / 0.55),
+    0 18px 38px oklch(0 0 0 / 0.81);
   --carousel-arrow-focus-outline: oklch(0.823 0.074 65.815);
   --color-selection-bg: color-mix(in srgb, var(--color-ink) 22%, transparent);
   --color-selection-fg: var(--color-ink);
@@ -193,13 +193,13 @@ fonts is available in bold and appearance and performance seem fine to me. */
   --carousel-arrow-bg: oklch(0.182 0.021 45.35 / 0.94);
   --carousel-arrow-color: oklch(0.823 0.074 65.815);
   --carousel-arrow-shadow:
-    0 0 0 2px oklch(0.182 0.021 45.35 / 0.76),
-    0 4px 12px oklch(0 0 0 / 0.46), 0 14px 34px oklch(0 0 0 / 0.75);
+    0 0 0 2px oklch(0.182 0.021 45.35 / 0.76), 0 4px 12px oklch(0 0 0 / 0.46),
+    0 14px 34px oklch(0 0 0 / 0.75);
   --carousel-arrow-hover-bg: oklch(0.324 0.053 46.184 / 0.95);
   --carousel-arrow-hover-border: oklch(0.868 0.062 64.461 / 0.66);
   --carousel-arrow-hover-shadow:
-    0 0 0 2px oklch(0.182 0.021 45.35 / 0.85),
-    0 6px 14px oklch(0 0 0 / 0.55), 0 18px 38px oklch(0 0 0 / 0.81);
+    0 0 0 2px oklch(0.182 0.021 45.35 / 0.85), 0 6px 14px oklch(0 0 0 / 0.55),
+    0 18px 38px oklch(0 0 0 / 0.81);
   --carousel-arrow-focus-outline: oklch(0.823 0.074 65.815);
   --color-selection-bg: color-mix(in srgb, var(--color-ink) 30%, transparent);
   --color-selection-fg: var(--color-ink);
@@ -256,10 +256,10 @@ body {
   position: fixed;
   top: calc(-1 * var(--tile-size));
   left: calc(-1 * var(--tile-size));
-  /* Note width is specified as vw so that maze width doesn't change when a
-  scrollbar appears to disappears; otherwise it would shrink or stretch. */
+  /* We use vw and vh so that maze width doesn't change whenever a
+  scrollbar appears or disappears; otherwise the maze would shrink or stretch. */
   width: calc(100vw + 2 * var(--tile-size));
-  height: calc(100% + 2 * var(--tile-size));
+  height: calc(100vh + 2 * var(--tile-size));
   pointer-events: none;
   z-index: var(--z-maze);
 }

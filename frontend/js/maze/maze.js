@@ -18,7 +18,8 @@ import { pickRandomFrom } from "./grid.js";
 /** @import { Tile, CarvePlan } from "./grid.js" */
 
 export class Maze {
-  #tileSize = 12; // pixels
+  #baseTileSize = 12; // pixels
+  #tileSize = 12; // We'll multiply this by devicePixelRatio.
   #resizeDebounceMs = 220;
 
   #tilesPerMs = 32 / (1000 / 60); // Animation speed: 32 per 16.67ms frame.
@@ -153,31 +154,36 @@ export class Maze {
   };
 
   /**
-   * This internal method returns the width of the maze in pixels. The addition
+   * This internal method returns the width of the maze in physical pixels.
+   * (Note that dpr has already be factored into `this.#tileSize`.) The addition
    * of twice the tile size is so that we can hide the boundary walls offscreen.
    * The top edge of the canvas is positioned one tile above the top edge of the
    * window, and the left edge of the canvas one tile to the left of the window
    * edge. See the ruleset for `.maze` in `01-foundation.css`.
    *
+   * @param {number} dpr window.devicePixelRatio
    * @returns {number}
    */
-  #width() {
-    return window.innerWidth + 2 * this.#tileSize;
+  #width(dpr) {
+    return dpr * window.innerWidth + 2 * this.#tileSize;
   }
 
   /**
-   * This internal method returns the height of the maze in pixels. See the
-   * comment on `this.#width` regarding `+ 2 * this.#tileSize`.
+   * This internal method returns the height of the maze in physical pixels. See the
+   * comment on `this.#width` (above) regarding `+ 2 * this.#tileSize`.
    *
+   * @param {number} dpr window.devicePixelRatio
    * @returns {number}
    */
-  #height() {
-    return window.innerHeight + 2 * this.#tileSize;
+  #height(dpr) {
+    return dpr * window.innerHeight + 2 * this.#tileSize;
   }
 
   #resizeCanvas() {
-    this.#canvas.width = this.#width();
-    this.#canvas.height = this.#height();
+    const dpr = window.devicePixelRatio;
+    this.#tileSize = this.#baseTileSize * dpr;
+    this.#canvas.width = this.#width(dpr);
+    this.#canvas.height = this.#height(dpr);
   }
 
   /**
@@ -197,7 +203,7 @@ export class Maze {
   /**
    * This internal method gets the background color directly from the DOM. It
    * does this so that the CSS can be our single source of truth for the color,
-   * and to ensure that we use the correct color for the current theme. Compare `this.##getWallFillColor`.
+   * and to ensure that we use the correct color for the current theme. Compare `this.#getWallFillColor`.
    *
    * @returns {string}
    */
@@ -216,8 +222,8 @@ export class Maze {
    * @returns {CarvePlan}
    */
   #buildCarvePlan() {
-    const cols = Math.max(7, Math.ceil(this.#width() / this.#tileSize));
-    const rows = Math.max(7, Math.ceil(this.#height() / this.#tileSize));
+    const cols = Math.max(7, Math.ceil(this.#canvas.width / this.#tileSize));
+    const rows = Math.max(7, Math.ceil(this.#canvas.height / this.#tileSize));
     const tileCols = cols % 2 === 0 ? cols + 1 : cols;
     const tileRows = rows % 2 === 0 ? rows + 1 : rows;
     const roomCols = Math.floor((tileCols - 1) / 2);

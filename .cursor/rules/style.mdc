@@ -6,9 +6,16 @@ alwaysApply: true
 
 ## Code
 
-- In JSDoc, use `Array<T>` rather than `T[]`.
+- JSDoc: Use `Array<T>` rather than `T[]`.
+- Variable names: Avoid abbreviations except for common conventions like init or config.
+- No `var`.
+- Function style: For top-level and module-level functions, use `function f() { ... }`. For nested functions, `const f = () => { ... }`. For inline callbacks, `() => { ... }`. For methods, `f() { ... }` unless we need `this` to refer to the class instance, in which case, use `f = () => { ... }` rather than attaching `this` with `bind`.
+- Class fields and methods: Make whatever can be private private with `#`.
 
 ## Comments and markdown
 
-- Stick to symbols that are available on a normal keyboard: instead of `→`, use `->`. For `↔`, use `<->`. For an emdash, use `--`; instead of endash, `-`.
+- For comments in JavaScript, reserve `/** ... */` for JSDoc. Use `//` for other comments.
+- Use trailing punctuation in comments except where the comment is just an isolated word or so.
+- Stick to symbols that are available on a normal keyboard, thus instead of `→`, use `->`. For `↔`, use `<->`. For an emdash, use `--` instead of `—`. Use `-` instead of an endash, e.g. "Fisher-Yates".
 - Address a general reader, not me. Don't refer to the previous state of the code or to our conversations; that's context a general reader won't have access to.
+- Use the casual forms "that's", "I'm", "they're", except for emphasis, e.g. "but that is the case" (in spite of what was claimed). Use "can't" not "cannot".
