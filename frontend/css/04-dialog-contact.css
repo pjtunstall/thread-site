@@ -23,7 +23,17 @@ dialog[open] {
 }
 
 dialog::backdrop {
+  background: transparent;
+}
+
+.dialog__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background: var(--color-ink-overlay);
+  -webkit-backdrop-filter: blur(var(--dialog-backdrop-blur));
+  backdrop-filter: blur(var(--dialog-backdrop-blur));
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -46,15 +56,13 @@ dialog::backdrop {
     transform: scale(1);
   }
 
-  dialog::backdrop {
-    transition:
-      opacity 0.2s ease-out,
-      display 0.2s ease-out allow-discrete,
-      overlay 0.2s ease-out allow-discrete;
+  /* We only animate opacity, not blur, as browsers can be inconsistent about blur. */
+  .dialog__scrim {
     opacity: 0;
+    transition: opacity 0.2s ease-out;
   }
 
-  dialog[open]::backdrop {
+  dialog[open] .dialog__scrim {
     opacity: 1;
   }
 
@@ -63,13 +71,15 @@ dialog::backdrop {
       transform: scale(0);
     }
 
-    dialog[open]::backdrop {
+    dialog[open] .dialog__scrim {
       opacity: 0;
     }
   }
 }
 
 .dialog__panel {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: min(32rem, calc(100vw - 2rem));
   border: 1px solid var(--color-ink-faint);

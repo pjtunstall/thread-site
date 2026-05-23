@@ -5,6 +5,7 @@ export const TURNSTILE_API_URL =
 
 export const DIALOG_TEMPLATE_HTML = `
   <dialog data-dialog>
+    <div class="dialog__scrim" aria-hidden="true"></div>
     <div class="dialog__panel">
       <div class="dialog__inner">
         <h2 class="dialog__title" data-dialog-title></h2>
