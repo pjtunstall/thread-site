@@ -88,11 +88,11 @@
 }
 
 /* On opening the menu, we scale the top and bottom bars, initially length 20px
-and 16px apart,
-horizontally by 0.8, so that they're length 16px and thus form the edges of a
-square. We also scale them by sqrt(2), so that they're long enough to be the diagonals of that
-square. We then rotate them ±45deg about their right ends: transform-origin:
-100% 50% so that they become the diagonals of a square X. */
+and 16px apart, horizontally by 0.8, so that they're length 16px and thus form
+the edges of a square. We also scale them by sqrt(2), so that they're long
+enough to be the diagonals of that square. We then rotate them plus or minus
+45deg about their right ends: transform-origin: 100% 50% so that they become the
+diagonals of a square X. */
 .menu-toggle {
   --menu-toggle-bar-scale: calc(1.414213562 * 0.8);
 }
@@ -189,6 +189,11 @@ main .view-downloads.downloads-page {
   line-height: 1.55;
   color: var(--color-ink-muted);
   text-align: center;
+}
+
+/* No downloads note till Macondo is ready on downloads first paint (fonts-boot.js). */
+html:not(.fonts-ready) .downloads-note {
+  opacity: 0;
 }
 
 .downloads-nav {
@@ -349,7 +354,7 @@ button). */
     animation: fade-in-up 0.9s ease 0.2s forwards;
   }
 
-  .view-downloads .downloads-note {
+  html.fonts-ready .view-downloads .downloads-note {
     opacity: 0;
     animation: fade-in-up 0.9s ease 0.2s forwards;
   }

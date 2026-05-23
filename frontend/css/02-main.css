@@ -30,7 +30,7 @@ main > [data-view][hidden] {
   display: none !important;
 }
 
-/* view-boot.js: /downloads first paint before index.js (static home h1/p are in HTML). */
+/* `view-boot.js`: `/downloads` first paint before `index.js` (static home h1/p are in HTML). */
 html[data-initial-view="downloads"] main > [data-view="home"] {
   display: none !important;
 }
@@ -39,13 +39,13 @@ html[data-initial-view="downloads"] main > [data-view="downloads"][hidden] {
   display: flex !important;
 }
 
-/* No visible copy until index.js clears data-initial-view (fonts/JS race on first paint). */
+/* No visible text till `index.js` clears data-initial-view (fonts/JS race on first paint). */
 html[data-initial-view] main > [data-view] {
   opacity: 0;
 }
 
 /* Full visual viewport width so the menu stays the same distance from the window edge when a classic
-   scrollbar narrows the layout viewport (Chromium). .menu-wrap is absolute inside. */
+   scrollbar narrows the layout viewport (Chromium). `.menu-wrap` is absolute inside. */
 .menu-anchor {
   position: fixed;
   top: 0;
@@ -73,7 +73,7 @@ html[data-initial-view] main > [data-view] {
   }
 }
 
-/* No title/tagline until Neucha is ready (fonts-boot.js). */
+/* No title/tagline until Neucha is ready; see `fonts-boot.js`. */
 html:not(.fonts-ready) .hero-title,
 html:not(.fonts-ready) .hero-tagline {
   opacity: 0;

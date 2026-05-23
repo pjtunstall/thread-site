@@ -1,4 +1,4 @@
-/** ViewBox shared by all menu-card icons (Lucide-style 24×24 grid).
+/** ViewBox shared by all menu-card icons (Lucide-style 24x24 grid).
  *
  * @type {string}
  */
@@ -69,10 +69,10 @@ export const PRIMARY_BUTTON_ICON_INNER_HTML = {
 };
 
 /**
- * Inner SVG markup for the `<menu-toggle-button>` hamburger icon.
- * Outer bars are the top/bottom edges of a 16×16 unit square (length 16, gap 16);
- * open state uses scaleX(√2) + rotate(±45°) about the right end — see
- * `.menu-toggle` rules in `03-buttons-nav-motion.css`.
+ * Inner SVG markup for the `<menu-toggle-button>` hamburger icon. Outer bars
+ * are the top/bottom edges of a 16x16 unit square (length 16, gap 16); open
+ * state uses scaleX(sqrt(2)) + rotate(plus or minus 45deg) about the right end.
+ * See `.menu-toggle` rules in `03-buttons-nav-motion.css`.
  *
  * @type {string}
  */

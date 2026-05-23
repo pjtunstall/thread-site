@@ -1,9 +1,16 @@
-// The purpose of this script is to ensure that the font for the title and
-// tagline is available before starting its animation on initial page load.
+// Wait for Neucha (hero title/tagline) before first paint animations. On the
+// downloads view, also wait for Macondo (note + platform labels).
 (function () {
+  const fonts = [document.fonts.load('400 1rem "Neucha"')];
+  if (
+    document.documentElement.getAttribute("data-initial-view") === "downloads"
+  ) {
+    fonts.push(document.fonts.load('400 1rem "Macondo"'));
+  }
+
   // We use `finally` here rather than `then` because, if the promise rejects
   // and we need a fallback font, we want to proceed to display the page anyway.
-  document.fonts.load('400 1rem "Neucha"').finally(() => {
+  Promise.all(fonts).finally(() => {
     document.documentElement.classList.add("fonts-ready");
   });
 })();
