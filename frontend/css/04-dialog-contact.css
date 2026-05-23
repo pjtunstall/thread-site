@@ -29,17 +29,21 @@ dialog::backdrop {
 @media (prefers-reduced-motion: no-preference) {
   dialog {
     transition:
-      opacity 0.2s ease-out,
       display 0.2s ease-out allow-discrete,
       overlay 0.2s ease-out allow-discrete;
   }
 
-  dialog:not([open]) {
-    opacity: 0;
+  .dialog__panel {
+    transform-origin: center;
+    transition: transform 0.2s ease-out;
   }
 
-  dialog[open] {
-    opacity: 1;
+  dialog:not([open]) .dialog__panel {
+    transform: scale(0);
+  }
+
+  dialog[open] .dialog__panel {
+    transform: scale(1);
   }
 
   dialog::backdrop {
@@ -55,8 +59,8 @@ dialog::backdrop {
   }
 
   @starting-style {
-    dialog[open] {
-      opacity: 0;
+    dialog[open] .dialog__panel {
+      transform: scale(0);
     }
 
     dialog[open]::backdrop {
