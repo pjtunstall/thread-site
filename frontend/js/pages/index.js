@@ -11,7 +11,6 @@ import {
   revealDownloadsNavCards,
 } from "./downloads.js";
 
-/** Origin-root paths (not relative to the current URL — avoids /downloads/ bugs). */
 const HOME_PATH = "/";
 const DOWNLOADS_PATH = "/downloads";
 

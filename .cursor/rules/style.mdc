@@ -16,6 +16,6 @@ alwaysApply: true
 
 - For comments in JavaScript, reserve `/** ... */` for JSDoc. Use `//` for other comments.
 - Use trailing punctuation in comments except where the comment is just an isolated word or so.
-- Stick to symbols that are available on a normal keyboard, thus instead of `→`, use `->`. For `↔`, use `<->`. For an emdash, use `--` instead of `—`. Use `-` instead of an endash, e.g. "Fisher-Yates".
+- Stick to symbols that are available on a normal UK English keyboard, thus instead of `→`, use `->`. For `↔`, use `<->`. For an emdash, use `--` instead of `—`. Use `-` instead of an endash, e.g. "Fisher-Yates", "key-value". Likewise, spell out Greek letters: `alpha` not `α`.
 - Address a general reader, not me. Don't refer to the previous state of the code or to our conversations; that's context a general reader won't have access to.
 - Use the casual forms "that's", "I'm", "they're", except for emphasis, e.g. "but that is the case" (in spite of what was claimed). Use "can't" not "cannot".
