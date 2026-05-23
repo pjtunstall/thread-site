@@ -255,11 +255,6 @@ export class Maze {
       return;
     }
 
-    // Repaint with opaque background color so that the partially transparent
-    // --color-ink-wall does not stack on old pixels each toggle.
-    this.#context.fillStyle = this.#getBackgroundFillColor();
-    this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
-
     this.#paintWholeCanvasWallColor();
     this.#drawInstantCarves(0, this.#nextCarveIndex);
   }
