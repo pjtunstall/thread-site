@@ -7,6 +7,7 @@
 - [To run locally](#to-run-locally)
 - [Deployment](#deployment)
 - [Cloudflare Pages build settings](#cloudflare-pages-build-settings)
+- [Modern Web Guidance (Cursor agents)](#modern-web-guidance-cursor-agents)
 
 ## Overview
 
@@ -140,3 +141,9 @@ Favor this over direct `npx wrangler deploy` so that dependencies will be subjec
 I.e. set "build output directory" to the project root, and "root directory" (for deploying the frontend) to `frontend`.
 
 The downloads screen is a second client-side view in the same `index.html` shell, but it should be reachable at `/downloads` (shareable URL, correct back/forward behavior). Serving that path by fetching the `/index.html` asset would not work on Cloudflare Pages: the platform responds to `/index.html` with a 308 redirect to `/`, which would replace `/downloads` in the address bar. Instead, `functions/_middleware.js` handles GET and HEAD `/downloads` by fetching `/` (the same HTML) and returning it as 200 without a `Location` header, so the browser keeps `/downloads` while `view-boot.js` selects the downloads view on first paint.
+
+## Modern Web Guidance (Cursor agents)
+
+**This section is about a development tool. You can ignore it if you just want to run or deploy the site locally.**
+
+I use Google's [Modern Web Guidance](https://github.com/GoogleChrome/modern-web-guidance) plugin in Cursor for frontend work. The upstream CLI (`npx` search/retrieve) was too slow and unreliable for agents here, so [`.cursor/rules/modern-web-guidance.mdc`](.cursor/rules/modern-web-guidance.mdc) tells agents to read the plugin's cached guides on disk instead. See [docs/modern-web-guidance.md](docs/modern-web-guidance.md) for installing the plugin and how that differs from the stock workflow.

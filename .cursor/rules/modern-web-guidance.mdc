@@ -1,0 +1,25 @@
+---
+description: Modern Web Guidance via plugin guides on disk
+globs: frontend/**/*.{html,css,js}
+alwaysApply: false
+---
+
+# Modern Web Guidance
+
+For HTML/CSS/client JS work, use guides from the **Modern Web Guidance** Cursor plugin.
+
+**Do not** run `npx modern-web-guidance`. The upstream CLI (`search` then `retrieve` via `npx`) is the standard workflow the designers intended, but, in our case, each call is slow (~1 minute) unreliable in the agent sandbox. This project uses the same content the plugin already caches locally.
+
+## Read guides from disk
+
+Guides live under (the middle folder changes when the plugin updates):
+
+```text
+~/.cursor/plugins/cache/cursor-public/modern-web-guidance/*/skills/modern-web-guidance/guides/
+```
+
+1. **Find candidates** — Glob `**/*.md` under that directory, or Grep for keywords (e.g. `dialog`, `::backdrop`, `popover`).
+2. **Open guides** — Use-case files are `<category>/<guide-id>.md` (e.g. `user-experience/animate-to-from-top-layer.md`). Broad category overviews are `<category>/<category>.md` (e.g. `html/html.md`).
+3. **Read** the relevant file(s) and follow them; do not skip or contradict them.
+
+If that path is missing, ask the user to install or update the plugin (from the marketplace: [modern-web-guidance](https://github.com/GoogleChrome/modern-web-guidance)).

@@ -33,7 +33,7 @@ fonts is available in bold and appearance and performance seem fine to me. */
   --z-site-menu: 1;
 
   /* Blur on .dialog__scrim, not dialog::backdrop (Chrome ignores blur() there);
-  see `01-dialog-contact.css`. */
+  see `04-dialog-contact.css`. */
   --dialog-backdrop-blur: 3px;
 
   /* Maze */
