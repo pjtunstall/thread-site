@@ -1,0 +1,3 @@
+- If asked about Modern Web Guidance, don't run any `npx` commands; instead, see `.cursor/rules/modern-web-guidance.mdc`.
+- If writing (or planning to write) JavaScript, CSS, or HTML, see `.cursor/rules/modern-web-guidance.mdc`.
+- If writing JavaScript, CSS, HTML, or Markdown, see `./style.mdc`.

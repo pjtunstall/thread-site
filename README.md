@@ -30,7 +30,7 @@
   - [Which elements exist](#which-elements-exist)
 - [Modern Web Guidance (Cursor agents)](#modern-web-guidance-cursor-agents)
   - [Install the plugin](#install-the-plugin)
-  - [What agents do here (not the upstream CLI)](#what-agents-do-here-not-the-upstream-cli)
+  - [My workaround](#my-workaround)
 
 ## Overview
 
@@ -383,10 +383,6 @@ In Cursor, install the **Modern Web Guidance** plugin ([Google Chrome / modern-w
 
 Update the plugin occasionally if you want newer guides; the hash folder name changes when the cache is refreshed.
 
-### What agents do here (not the upstream CLI)
+### My workaround
 
-The plugin's skill tells agents to run `npx modern-web-guidance@latest search ...` and then `retrieve ...` for full markdown. Search is supposed to return ids; retrieve is supposed to load one guide at a time. But in practice each `npx` call took about a minute and often failed in the sandbox.
-
-This repo's rule [`.cursor/rules/modern-web-guidance.mdc`](.cursor/rules/modern-web-guidance.mdc) tells agents to **read those same markdown files directly** (Glob/Grep/Read on the path above) instead of calling the CLI. @-mention this rule to ask about Modern Web Guidance in chat and prevent agents from trying to fetch the guide again with `npx`.
-
-In general, I find I need to explicitly remind Cursor agents to consult rules while generating text or code. It may be better to do a style pass afterwards, to apply my own `.cursor/rules/style.mdc`, rather than letting the style compete for context.
+The plugin's skill tells agents to run `npx modern-web-guidance@latest search ...` (to fetch document ids) and then `retrieve ...` for full markdown of the relevant sections. But, for me, each `npx` call took about a minute and often failed in the sandbox. Therefore this repo's rule [`.cursor/rules/modern-web-guidance.mdc`](.cursor/rules/modern-web-guidance.mdc) tells agents to **read those same markdown files directly** (Glob/Grep/Read on the path above) instead of calling the CLI. Note: Agents need `AGENTS.md` to direct them to read the rule.

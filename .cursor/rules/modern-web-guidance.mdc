@@ -8,7 +8,7 @@ alwaysApply: false
 
 For HTML/CSS/client JS work, use guides from the **Modern Web Guidance** Cursor plugin.
 
-**Do not** run `npx modern-web-guidance`. The upstream CLI (`search` then `retrieve` via `npx`) is the standard workflow the designers intended, but, in our case, each call is slow (~1 minute) unreliable in the agent sandbox. This project uses the same content the plugin already caches locally.
+**Do not** run `npx modern-web-guidance`. The upstream CLI (`search` then `retrieve` via `npx`) is the standard workflow the designers intended, but, in our case, is slow and unreliable in the agent sandbox. Instead, read the cached content from disk.
 
 ## Read guides from disk
 
