@@ -1,7 +1,7 @@
 ---
 description: Style guide for this Project (code, comments, markdown)
 globs: **/*.{html,css,js,md,sh}
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Style
@@ -13,13 +13,15 @@ alwaysApply: false
 - No `var`.
 - Function style: For top-level and module-level functions, use `function f() { ... }`. For nested functions, `const f = () => { ... }`. For inline callbacks, `() => { ... }`. For methods, `f() { ... }` unless we need `this` to refer to the class instance, in which case, use `f = () => { ... }` rather than attaching `this` with `bind`.
 - Class fields and methods: Make whatever can be private private with `#`.
+- Use US spelling in variable names.
 
 ## Comments and markdown
 
 - For comments in JavaScript, reserve `/** ... */` for JSDoc. Use `//` for other comments.
 - Enclose quoted code, variable, file, or folder names etc. in back ticks.
 - Use trailing punctuation in comments except where the comment is just an isolated word or so.
-- Stick to symbols that are available on a normal UK English keyboard, thus instead of `→`, use `->`. For `↔`, use `<->`. Use `...` not `…`. Use `'` instead of `’`. Use `sqrt(2)`, for example, not `√2`, and `2deg` rather than `2°`. Use `x` instead of `×` beween width and height values, and `*` instead of `×` or the center dot for multiplication. Use `+/-2` not `±2`; . For an emdash, use `--` instead of `—`. Use `-` instead of an endash, e.g. "Fisher-Yates", "key-value". Likewise, spell out Greek letters: `alpha` not `α`.
+- Stick to symbols that are available on a normal UK English keyboard, thus instead of `→`, use `->`. For `↔`, use `<->`. Use `...` not `…`. Use `'` instead of `’`. Use `sqrt(2)`, for example, not `√2`, and `2deg` rather than `2°`. Use `x` instead of `×` beween width and height values, and `*` instead of `×` or the center dot for multiplication. Use `+/-2` not `±2`; . Instead of `–` flanked by spaces, use `--` with no spaces. Use `-` instead of an endash, e.g. "Fisher-Yates", "key-value". Likewise, spell out Greek letters: `alpha` not `α`.
 - Address a general reader, not me. Don't refer to the previous state of the code or to our conversations; that's context a general reader won't have access to.
 - Use the casual forms "that's", "I'm", "they're", except for emphasis, e.g. "but that is the case" (in spite of what was claimed). Use "can't" not "cannot".
-- Use "till" not "until".
+- Use US spelling except in quotes that use another style.
+- Use "till" not "until". This does not negate the last point. "till" is acceptable US English.
