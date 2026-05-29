@@ -25,7 +25,9 @@ export class Maze {
 
   #tilesPerMs = 32 / (1000 / 60); // Animation speed: 32 per 16.67ms frame.
 
-  // Live {@link CarvePlan} iterator: each `next()` yields a {@link Tile} to carve.
+  // Live {@link CarvePlan} iterator: each `next()` yields a {@link Tile} to
+  // carve. We set this field back to `null` when the iterator is done and the
+  // whole maze is painted.
   /** @type {Iterator<Tile> | null} */
   #tileIterator = null;
 
@@ -376,7 +378,6 @@ export class Maze {
    * the carve plan is exhausted. With `advanceProgress: false` (replay after
    * theme-toggle), it only repaints without advancing `#tilesCarved`.
    *
-   * @param {Iterator<Tile> | null} iterator
    * @param {number} count
    * @param {{ advanceProgress?: boolean }} [options]
    * @returns {boolean} `true` when the iterator is exhausted
@@ -384,6 +385,14 @@ export class Maze {
   #carveTiles(count, { advanceProgress = false } = {}) {
     if (count <= 0) {
       return false;
+    }
+
+    if (!this.#tileIterator) {
+      console.error(
+        "[maze] Attempted to carve tiles, but there is no `tileIterator`",
+      );
+      // Treat as if maze-painiting worked and has finished.
+      return true;
     }
 
     this.#context.fillStyle = this.#getBackgroundFillColor();

@@ -169,7 +169,11 @@ function runViewChange(view) {
 }
 
 const maze = new Maze();
-maze.start();
+try {
+  maze.start();
+} catch (e) {
+  console.error(e);
+}
 const newMazeButton = document.querySelector("button[data-new-maze]");
 if (newMazeButton instanceof HTMLButtonElement) {
   newMazeButton.addEventListener("click", () => {
