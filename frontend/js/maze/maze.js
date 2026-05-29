@@ -127,13 +127,13 @@ export class Maze {
     this.#paintWholeCanvasWallColor();
 
     if (this.#reduceMotionQuery.matches) {
-      this.#carveTiles(this.#tileIterator, Number.POSITIVE_INFINITY, {
+      this.#carveTiles(Number.POSITIVE_INFINITY, {
         advanceProgress: true,
       });
       return;
     }
 
-    this.#carveTiles(this.#tileIterator, this.#iterativeStartIndex, {
+    this.#carveTiles(this.#iterativeStartIndex, {
       advanceProgress: true,
     });
     this.#frameRequest = window.requestAnimationFrame(this.#onTick);
@@ -263,15 +263,12 @@ export class Maze {
     }
 
     this.#paintWholeCanvasWallColor();
-
-    const newTileIterator = this.#createTileIterator();
-    const { finished } = this.#carveTiles(newTileIterator, this.#tilesCarved, {
+    this.#tileIterator = this.#createTileIterator();
+    const finished = this.#carveTiles(this.#tilesCarved, {
       advanceProgress: false,
     });
 
-    if (this.#frameRequest !== null && !finished) {
-      this.#tileIterator = newTileIterator;
-    } else {
+    if (this.#frameRequest == null || finished) {
       this.#tileIterator = null;
     }
   }
@@ -382,39 +379,34 @@ export class Maze {
    * @param {Iterator<Tile> | null} iterator
    * @param {number} count
    * @param {{ advanceProgress?: boolean }} [options]
-   * @returns {{ consumed: number, finished: boolean }}
+   * @returns {boolean} `true` when the iterator is exhausted
    */
-  #carveTiles(iterator, count, { advanceProgress = false } = {}) {
+  #carveTiles(count, { advanceProgress = false } = {}) {
     if (count <= 0) {
-      return { consumed: 0, finished: false };
-    }
-
-    const activeIterator = advanceProgress ? this.#tileIterator : iterator;
-    if (activeIterator === null) {
-      return { consumed: 0, finished: true };
+      return false;
     }
 
     this.#context.fillStyle = this.#getBackgroundFillColor();
-    let consumed = 0;
+    let carvedThisCall = 0;
 
-    while (consumed < count) {
-      const { value, done } = activeIterator.next();
+    while (carvedThisCall < count) {
+      const { value, done } = this.#tileIterator.next();
       if (done) {
         if (advanceProgress) {
-          this.#tilesCarved += consumed;
+          this.#tilesCarved += carvedThisCall;
           this.#tileIterator = null;
         }
-        return { consumed, finished: true };
+        return true;
       }
       this.#paintCarvedTile(value);
-      consumed += 1;
+      carvedThisCall += 1;
     }
 
     if (advanceProgress) {
-      this.#tilesCarved += consumed;
+      this.#tilesCarved += carvedThisCall;
     }
 
-    return { consumed, finished: false };
+    return false;
   }
 
   /**
@@ -452,11 +444,9 @@ export class Maze {
     const howManyTilesToCarveThisFrame = Math.floor(elapsed * this.#tilesPerMs);
     if (howManyTilesToCarveThisFrame > 0) {
       this.#lastStepAt += howManyTilesToCarveThisFrame / this.#tilesPerMs;
-      const { finished } = this.#carveTiles(
-        this.#tileIterator,
-        howManyTilesToCarveThisFrame,
-        { advanceProgress: true },
-      );
+      const finished = this.#carveTiles(howManyTilesToCarveThisFrame, {
+        advanceProgress: true,
+      });
       if (finished) {
         window.cancelAnimationFrame(this.#frameRequest);
         this.#frameRequest = null;
