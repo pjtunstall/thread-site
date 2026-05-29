@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-/**
- * Static file server with SPA fallback for app routes (e.g. /downloads).
- */
+
+// Static file server with SPA fallback for app routes (e.g. /downloads).
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createServer } from "node:http";

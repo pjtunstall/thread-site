@@ -11,10 +11,8 @@ import { Room } from "../room.js";
  * @returns {CarvePlan}
  */
 export function buildCarvePlanBacktracker({ roomCols, roomRows }) {
-  /** @type {Array<Array<boolean>>} */
-  const visited = Array.from({ length: roomRows }, () =>
-    Array.from({ length: roomCols }, () => false),
-  );
+  /** @type {Array<boolean>} */
+  const visited = Array(roomCols * roomRows).fill(false);
 
   /** @type {Array<Room>} */
   const stack = [];
@@ -26,7 +24,7 @@ export function buildCarvePlanBacktracker({ roomCols, roomRows }) {
   const startRoom = Room.random(roomCols, roomRows);
 
   stack.push(startRoom);
-  visited[startRoom.y][startRoom.x] = true;
+  visited[startRoom.y * roomCols + startRoom.x] = true;
   carveOrder.push(startRoom.toTile());
 
   while (stack.length > 0) {
@@ -36,7 +34,7 @@ export function buildCarvePlanBacktracker({ roomCols, roomRows }) {
     /** @type {Array<Room>} */
     const unvisitedNeighbors = current
       .neighboringRooms(roomCols, roomRows)
-      .filter((neighbor) => !visited[neighbor.y][neighbor.x]);
+      .filter((neighbor) => !visited[neighbor.y * roomCols + neighbor.x]);
 
     if (unvisitedNeighbors.length === 0) {
       stack.pop();
@@ -46,7 +44,7 @@ export function buildCarvePlanBacktracker({ roomCols, roomRows }) {
     /** @type {Room} */
     const nextNeighbor = pickRandomFrom(unvisitedNeighbors);
 
-    visited[nextNeighbor.y][nextNeighbor.x] = true;
+    visited[nextNeighbor.y * roomCols + nextNeighbor.x] = true;
 
     carveOrder.push(nextNeighbor.toTile());
     carveOrder.push(current.passageTo(nextNeighbor));
