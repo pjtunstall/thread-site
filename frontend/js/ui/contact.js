@@ -219,31 +219,31 @@ function setStatus(statusEl, kind, message) {
 /**
  * @param {() => void} callback
  */
-function whenTurnstileLoaded(callback) {
-  ensureTurnstileScript()
-    .then(() => {
-      if (turnstileApiReady()) {
-        callback();
-        return;
-      }
-      let attempts = 0;
-      const tick = () => {
-        if (turnstileApiReady()) {
-          callback();
-          return;
-        }
-        attempts += 1;
-        if (attempts > 100) {
-          console.error(`${LOG_PREFIX} Turnstile failed to load.`);
-          return;
-        }
-        setTimeout(tick, 100);
-      };
-      tick();
-    })
-    .catch(() => {
-      // ensureTurnstileScript already logged a script network/load failure.
-    });
+async function whenTurnstileLoaded(callback) {
+  try {
+    await ensureTurnstileScript();
+  } catch {
+    // Script load failure already logged by `ensureTurnstileScript`.
+    return;
+  }
+  if (turnstileApiReady()) {
+    callback();
+    return;
+  }
+  let attempts = 0;
+  const tick = () => {
+    if (turnstileApiReady()) {
+      callback();
+      return;
+    }
+    attempts += 1;
+    if (attempts > 100) {
+      console.error(`${LOG_PREFIX} Turnstile failed to load.`);
+      return;
+    }
+    setTimeout(tick, 100);
+  };
+  tick();
 }
 
 /**
