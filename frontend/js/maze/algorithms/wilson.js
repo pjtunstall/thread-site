@@ -1,16 +1,37 @@
-import { pickRandomFrom } from "../grid.js";
+import { createRng, pickRandomFrom, pickRandomNeighbor } from "../grid.js";
 import { Room } from "../room.js";
 
-/** @import { CarvePlan, Tile } from "../grid.js" */
+/** @import { BuildCarvePlanOptions, CarvePlan, Tile } from "../grid.js" */
 
 /**
  * Wilson's algorithm: add loop-erased random walks from unvisited rooms.
- * Appearance: like Backtracker, but draws many paths simultaneously.
+ * Appearance on screen: like Backtracker, but many paths appear at once.
  *
- * @param {{ roomCols: number, roomRows: number }} options
+ * This function returns a {@link CarvePlan}. `maze.js` calls
+ * `createIterator()` to obtain a generator; each yielded {@link Tile} is the
+ * next cell to reveal. A fresh `createRng(seed)` is passed into the generator so
+ * the same sequence can be replayed after a theme change.
+ *
+ * @param {BuildCarvePlanOptions} options
  * @returns {CarvePlan}
  */
-export function buildCarvePlanWilson({ roomCols, roomRows }) {
+export function buildCarvePlanWilson({ roomCols, roomRows, seed }) {
+  return {
+    iterativeStartIndex: 0,
+    createIterator() {
+      return carve({ roomCols, roomRows, rng: createRng(seed) });
+    },
+  };
+}
+
+/**
+ * This generator performs the Wilson carve. It yields room tiles and passage
+ * tiles in the order they should be revealed. Random choices use `rng` so that
+ * replaying with the same `seed` reproduces the same maze.
+ *
+ * @param {BuildCarvePlanOptions & { rng: () => number }} options
+ */
+function* carve({ roomCols, roomRows, rng }) {
   /** @type {Array<Room>} */
   const allRooms = [];
 
@@ -22,14 +43,10 @@ export function buildCarvePlanWilson({ roomCols, roomRows }) {
 
   /** @type {Set<string>} */
   const finalized = new Set();
-
-  /** @type {Array<Tile>} */
-  const carveOrder = [];
-
-  const initialRoom = Room.random(roomCols, roomRows);
-
+  const initialRoom = Room.random(roomCols, roomRows, rng);
   finalized.add(initialRoom.toString());
-  carveOrder.push(initialRoom.toTile());
+
+  yield initialRoom.toTile();
 
   while (finalized.size < allRooms.length) {
     /** @type {Array<Room>} */
@@ -37,8 +54,7 @@ export function buildCarvePlanWilson({ roomCols, roomRows }) {
       (room) => !finalized.has(room.toString()),
     );
 
-    /** @type {Room} */
-    const startOfWalk = pickRandomFrom(candidates);
+    const startOfWalk = pickRandomFrom(candidates, rng);
 
     /** @type {Array<Room>} */
     const walk = [startOfWalk];
@@ -50,7 +66,7 @@ export function buildCarvePlanWilson({ roomCols, roomRows }) {
     let current = startOfWalk;
 
     while (!finalized.has(current.toString())) {
-      const next = pickRandomFrom(current.neighboringRooms(roomCols, roomRows));
+      const next = pickRandomNeighbor(current, roomCols, roomRows, rng);
       const nextKey = next.toString();
 
       if (walkPositions.has(nextKey)) {
@@ -77,11 +93,9 @@ export function buildCarvePlanWilson({ roomCols, roomRows }) {
 
       if (!finalized.has(fromKey)) {
         finalized.add(fromKey);
-        carveOrder.push(from.toTile());
+        yield from.toTile();
       }
-      carveOrder.push(from.passageTo(to));
+      yield from.passageTo(to);
     }
   }
-
-  return { tiles: carveOrder, iterativeStartIndex: 0 };
 }

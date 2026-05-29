@@ -1,3 +1,5 @@
+import { randomIntBelow } from "./grid.js";
+
 export class Room {
   x; // Coordinates in the coarse grid, consisting only of `Room`s.
   y;
@@ -9,15 +11,16 @@ export class Room {
 
   /**
    * This static method returns a random `Room`, given the dimensions of the
-   * (coarse) grid of `Room`s.
+   * (coarse) grid of `Room`s and a seeded random number generator.
    *
    * @param {number} roomCols
    * @param {number} roomRows
+   * @param {() => number} rng returns a value in [0, 1) on each call
    * @returns {Room}
    */
-  static random(roomCols, roomRows) {
-    const x = Math.floor(Math.random() * roomCols);
-    const y = Math.floor(Math.random() * roomRows);
+  static random(roomCols, roomRows, rng) {
+    const x = randomIntBelow(rng, roomCols);
+    const y = randomIntBelow(rng, roomRows);
     return new Room(x, y);
   }
 
@@ -25,7 +28,7 @@ export class Room {
    * This method returns the `Tile` on the fine grid that corresponds to this
    * `Room` on the coarse grid.
    *
-   * @returns {Tile}
+   * @returns {import("./grid.js").Tile}
    */
   toTile() {
     return { x: this.x * 2 + 1, y: this.y * 2 + 1 };
@@ -39,7 +42,6 @@ export class Room {
    * different reference, making comparison and look-up inconvenient. Strings
    * are fine because they give value-based identity.
    *
-   * @param {Room} room
    * @returns {string}
    */
   toString() {
@@ -61,7 +63,7 @@ export class Room {
    * rooms: from this `Room` to the parameter `Room` labeled `to`.
    *
    * @param {Room} to
-   * @returns {Tile}
+   * @returns {import("./grid.js").Tile}
    */
   passageTo(to) {
     if (

@@ -180,7 +180,7 @@ Rough sequence after the module loads:
 | --- | --- |
 | [`maze.js`](../frontend/js/maze/maze.js) | Canvas lifecycle, random algorithm pick, carve animation (or instant draw when `prefers-reduced-motion`), resize/DPR, `repaintCurrentPartialState` on theme change. |
 | [`grid.js`](../frontend/js/maze/grid.js), [`room.js`](../frontend/js/maze/room.js), [`wall.js`](../frontend/js/maze/wall.js) | Room grid vs tile grid; shared carve-plan types. |
-| [`algorithms/*.js`](../frontend/js/maze/algorithms/) | Pure `buildCarvePlan*` functions return an ordered tile list; `maze.js` animates from that list. How each algorithm looks on screen is summarized under [Maze-generating algorithms](../README.md#maze-generating-algorithms). |
+| [`algorithms/*.js`](../frontend/js/maze/algorithms/) | Pure `buildCarvePlan*` functions return a seeded tile iterator factory; `maze.js` animates by consuming it (replay on theme change uses the same algorithm and seed). How each algorithm looks on screen is summarized under [Maze-generating algorithms](../README.md#maze-generating-algorithms). |
 
 ## Shared and trusted types
 

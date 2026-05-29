@@ -1,53 +1,60 @@
+import { createRng, randomIntBelow } from "../grid.js";
 import { Room } from "../room.js";
 
-/** @import { CarvePlan, Tile, Wall } from "../grid.js" */
+/** @import { BuildCarvePlanOptions, CarvePlan, Tile, Wall } from "../grid.js" */
 
 /**
- * Kruskal's algorithm: Start with the `Rooms` already carved out, all
- * separated. Then iterate through their adjoining walls in a random order, and,
- * at each step, remove the wall if and only if the two `Rooms` that the wall
- * separates still belong to unconnected sets of `Rooms`.
+ * Kruskal's algorithm: start with every `Room` already carved out, all
+ * separated. Then consider adjoining walls in a random order, and remove a wall
+ * only when the two rooms it separates still belong to different connected
+ * components.
  *
- * Appearance: starts with a grid of detached rooms, then carves out passages
- * between them.
+ * Appearance on screen: a grid of detached rooms appears first, then passages
+ * are revealed between them.
  *
- * @param {{ roomCols: number, roomRows: number }} options
+ * This function returns a {@link CarvePlan} with `iterativeStartIndex` set to
+ * the room count so `maze.js` can reveal every room tile instantly before
+ * animating passage tiles. `createIterator()` yields each {@link Tile} in
+ * reveal order; a fresh `createRng(seed)` inside `createIterator()` allows
+ * theme replay.
+ *
+ * @param {BuildCarvePlanOptions} options
  * @returns {CarvePlan}
  */
-export function buildCarvePlanKruskal({ roomCols, roomRows }) {
-  /** @type {Array<Tile>} */
-  const carveOrder = [];
+export function buildCarvePlanKruskal({ roomCols, roomRows, seed }) {
+  const roomCount = roomCols * roomRows;
+  return {
+    iterativeStartIndex: roomCount,
+    createIterator() {
+      return carve({ roomCols, roomRows, rng: createRng(seed) });
+    },
+  };
+}
 
+/**
+ * This generator performs the Kruskal carve. It yields every room tile first
+ * (row by row), then passage tiles for walls that join two components. Wall
+ * order is shuffled with `rng`. Replaying with the same `seed` reproduces the
+ * same maze.
+ *
+ * @param {BuildCarvePlanOptions & { rng: () => number }} options
+ */
+function* carve({ roomCols, roomRows, rng }) {
   const roomCount = roomCols * roomRows;
 
-  // We use the union-find data structure to represent collection of
-  // disconnected sets. It has two operatons: union and find. See the functions
-  // `setUnion` and `findSetRoot` below.
-
-  // Each `Room` starts out as its own parent. As the connected
-  // components get
-  // bigger, we'll use follow the chain from parent to parent of parent and so
-  // on till we come to the set "root".
   /** @type {Array<number>} */
   const parents = Array.from({ length: roomCount }, (_, i) => i);
 
-  // Each `Room` starts with rank 0. As we join separate sets of `Room`s, we'll
-  // use rank to decide which of their roots will be the parent of the other,
-  // and hence the root of the union.
   /** @type {Array<number>} */
   const ranks = Array.from({ length: roomCount }, () => 0);
 
   /** @type {Array<Wall>} */
   const walls = [];
 
-  // Add all the `Wall`s to the `walls` array.
   for (let y = 0; y < roomRows; y += 1) {
     for (let x = 0; x < roomCols; x += 1) {
       const room = new Room(x, y);
-
-      // Along the way, we assign this order to carve the `Room`s. The order
-      // doesn't matter; they'll all appear intially already carved.
-      carveOrder.push(room.toTile());
+      yield room.toTile();
 
       if (x + 1 < roomCols) {
         walls.push({
@@ -64,55 +71,43 @@ export function buildCarvePlanKruskal({ roomCols, roomRows }) {
     }
   }
 
-  // Randomize the order of the `Wall`s.
-  shuffleInPlace(walls);
+  shuffleInPlace(walls, rng);
 
   for (const wall of walls) {
     const fromIndex = wall.from.index(roomCols);
     const toIndex = wall.to.index(roomCols);
 
-    // Find the index of the "root" (representative element) of the connected
-    // componnet that the "from" `Room` belongs to; likewise the "to" `Room`.
     const fromRoot = findSetRoot(parents, fromIndex);
     const toRoot = findSetRoot(parents, toIndex);
 
-    // If they have the same root, they belong to the same connected component.
-    // In that case, continue without removing the wall.
     if (fromRoot === toRoot) {
       continue;
     }
 
-    // Otherwise, they belong to subsets that are still disconnected. Knock down
-    // the wall ...
-    carveOrder.push(wall.from.passageTo(wall.to));
-
-    // ... and replace the two separate subsets with their union.
+    yield wall.from.passageTo(wall.to);
     unionSets(parents, ranks, fromRoot, toRoot);
   }
-
-  return {
-    tiles: carveOrder,
-    iterativeStartIndex: roomCount,
-  };
 }
 
 /**
- * Fisher-Yates shuffle: randomize array order in place.
+ * This function randomizes `items` in place using the Fisher-Yates shuffle.
+ * Order depends on `rng` so that the same seed produces the same wall sequence.
  *
  * @template T
  * @param {Array<T>} items
+ * @param {() => number} rng returns a value in [0, 1) on each call
  */
-function shuffleInPlace(items) {
+function shuffleInPlace(items, rng) {
   for (let i = items.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = randomIntBelow(rng, i + 1);
     [items[i], items[j]] = [items[j], items[i]];
   }
 }
 
 /**
  * This function returns the root of the set containing `index`. It recursively
- * follows parent pointers until `parent[r] === r`, and path-compresses on the
- * way back to speed up the search next time.
+ * follows parent pointers until `parents[r] === r`, and path-compresses on the
+ * way back to speed up later lookups.
  *
  * @param {Array<number>} parents Parent pointers.
  * @param {number} index `Room` index whose set root is needed.
@@ -127,9 +122,8 @@ function findSetRoot(parents, index) {
 
 /**
  * This function joins the two sets whose roots are `a` and `b`. Whichever root
- * has the greater rank becomes the parent of the other. If their ranks are
- * equal, we choose `a` (passed as `fromRoot`) to be the parent and increment
- * its rank by one.
+ * has the greater rank becomes the parent of the other. If the ranks are equal,
+ * `a` becomes the parent and its rank is incremented by one.
  *
  * @param {Array<number>} parents Parent-pointer forest (mutated).
  * @param {Array<number>} rank Approximate tree depths per root (mutated).

@@ -1,31 +1,48 @@
-import { pickRandomFrom } from "../grid.js";
+import { createRng, pickRandomFrom } from "../grid.js";
 import { Room } from "../room.js";
 
-/** @import { CarvePlan, Tile } from "../grid.js" */
+/** @import { BuildCarvePlanOptions, CarvePlan, Tile } from "../grid.js" */
 
 /**
  * Depth-first backtracking: walk forward randomly until stuck, then backtrack.
- * Appearance: draws the maze in one long, winding path.
+ * Appearance on screen: the maze is revealed in one long, winding path.
  *
- * @param {{ roomCols: number, roomRows: number }} options
+ * This function returns a {@link CarvePlan}. `maze.js` calls
+ * `createIterator()` to obtain a generator; each yielded {@link Tile} is the
+ * next cell to reveal. A fresh `createRng(seed)` is passed into the generator so
+ * the same sequence can be replayed after a theme change.
+ *
+ * @param {BuildCarvePlanOptions} options
  * @returns {CarvePlan}
  */
-export function buildCarvePlanBacktracker({ roomCols, roomRows }) {
+export function buildCarvePlanBacktracker({ roomCols, roomRows, seed }) {
+  return {
+    iterativeStartIndex: 0,
+    createIterator() {
+      return carve({ roomCols, roomRows, rng: createRng(seed) });
+    },
+  };
+}
+
+/**
+ * This generator performs the backtracker carve. It yields room tiles and
+ * passage tiles in the order they should be revealed. Random choices use
+ * `rng` so that replaying with the same `seed` reproduces the same maze.
+ *
+ * @param {BuildCarvePlanOptions & { rng: () => number }} options
+ */
+function* carve({ roomCols, roomRows, rng }) {
   /** @type {Array<boolean>} */
   const visited = Array(roomCols * roomRows).fill(false);
 
   /** @type {Array<Room>} */
   const stack = [];
 
-  /** @type {Array<Tile>} */
-  const carveOrder = [];
-
-  /** @type {Room} */
-  const startRoom = Room.random(roomCols, roomRows);
+  const startRoom = Room.random(roomCols, roomRows, rng);
 
   stack.push(startRoom);
   visited[startRoom.y * roomCols + startRoom.x] = true;
-  carveOrder.push(startRoom.toTile());
+  yield startRoom.toTile();
 
   while (stack.length > 0) {
     /** @type {Room} */
@@ -41,16 +58,13 @@ export function buildCarvePlanBacktracker({ roomCols, roomRows }) {
       continue;
     }
 
-    /** @type {Room} */
-    const nextNeighbor = pickRandomFrom(unvisitedNeighbors);
+    const nextNeighbor = pickRandomFrom(unvisitedNeighbors, rng);
 
     visited[nextNeighbor.y * roomCols + nextNeighbor.x] = true;
 
-    carveOrder.push(nextNeighbor.toTile());
-    carveOrder.push(current.passageTo(nextNeighbor));
+    yield nextNeighbor.toTile();
+    yield current.passageTo(nextNeighbor);
 
-    stack.push(new Room(nextNeighbor.x, nextNeighbor.y)); // What if we just push nextNeighbor? Would that prevent freeing of the `unvisitedNeighbors` array?
+    stack.push(new Room(nextNeighbor.x, nextNeighbor.y));
   }
-
-  return { tiles: carveOrder, iterativeStartIndex: 0 };
 }
