@@ -142,30 +142,24 @@ function setView(view, options = {}) {
  * @param {"home" | "downloads"} view
  * @returns {Promise<void>}
  */
-function runViewChange(view) {
+async function runViewChange(view) {
   if (
     reduceMotionQuery.matches ||
     typeof document.startViewTransition !== "function"
   ) {
     setView(view);
-    return Promise.resolve();
+    return;
   }
 
   const deferDownloadsCardReveal = view === "downloads";
 
-  return new Promise((resolve, reject) => {
-    const transition = document.startViewTransition(() => {
-      setView(view, { revealDownloadsCards: !deferDownloadsCardReveal });
-    });
-    transition.finished
-      .then(() => {
-        if (deferDownloadsCardReveal) {
-          revealDownloadsNavCards();
-        }
-        resolve();
-      })
-      .catch(reject);
+  const transition = document.startViewTransition(() => {
+    setView(view, { revealDownloadsCards: !deferDownloadsCardReveal });
   });
+  await transition.finished;
+  if (deferDownloadsCardReveal) {
+    revealDownloadsNavCards();
+  }
 }
 
 const maze = new Maze();
