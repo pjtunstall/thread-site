@@ -5,7 +5,7 @@
  *
  * We define a coarse grid of {@link Room}s (`roomCols` × `roomRows`) and a fine
  * grid of {@link Tile}s (`tileCols` x `tileRows`, always odd). See the
- * `#buildCarvePlan` method of `Maze` in `maze.js`.
+ * `#beginCarve` method of `Maze` in `maze.js`.
  *
  * Algorithms visit rooms and carve out passages between them. We define a
  * {@link Wall} as a link between `Room`s.

@@ -179,13 +179,12 @@ if (newMazeButton instanceof HTMLButtonElement) {
 
 initTheme({
   onThemeChange: () => {
-    // If the theme changes while the maze is still being revealed, repaint
-    // tiles revealed so far in the new colors. The method returns immediately
-    // if no canvas context of the correct type exists or if nothing has been
-    // revealed yet. When the user prefers reduced motion, the full maze is
-    // revealed in one go at restart, so a theme toggle repaints that complete
-    // maze.
-    maze.repaintCurrentPartialState();
+    // If the theme changes while the maze is still being carved, repaint tiles
+    // carved so far in the new colors. The method returns immediately if no
+    // canvas context of the correct type exists or if nothing has been carved
+    // yet. When the user prefers reduced motion, the full maze is carved in one
+    // go at restart, so a theme toggle repaints that complete maze.
+    maze.repaintPartialMazeAfterThemeToggle();
   },
 });
 

@@ -250,7 +250,7 @@ export class Maze {
    *
    * @returns {void}
    */
-  repaintCurrentPartialState() {
+  repaintPartialMazeAfterThemeToggle() {
     if (
       !this.#enabled ||
       this.#tilesCarved === 0 ||
@@ -454,9 +454,7 @@ export class Maze {
     }
 
     const elapsed = timestamp - this.#lastStepAt;
-    const howManyTilesToCarveThisFrame = Math.floor(
-      elapsed * this.#tilesPerMs,
-    );
+    const howManyTilesToCarveThisFrame = Math.floor(elapsed * this.#tilesPerMs);
     if (howManyTilesToCarveThisFrame > 0) {
       this.#lastStepAt += howManyTilesToCarveThisFrame / this.#tilesPerMs;
       const { finished } = this.#carveNextTiles(howManyTilesToCarveThisFrame);

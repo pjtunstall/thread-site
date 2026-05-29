@@ -132,7 +132,7 @@ Rough sequence after the module loads:
 
 1. `defineSiteControlElements()`: Custom elements must exist before code queries inner controls.
 2. `Maze` construction, `start()`, and `data-new-maze` listener.
-3. `initTheme()` (including `onThemeChange` -> maze repaint).
+3. `initTheme()` (including `onThemeChange` -> `maze.repaintPartialMazeAfterThemeToggle()`).
 4. `initMenu()`, `initCarousel()`, `initDialogs()`, `initPlatformDownloads()`.
 5. `navigation` `intercept` registration.
 6. `applyPathToView()`: clears `data-initial-view`, shows the correct view, schedules hero `initial-entrance` after `fonts-ready`.
@@ -176,11 +176,20 @@ Rough sequence after the module loads:
 
 ## `maze/`
 
+Algorithms build a `CarvePlan` on the coarse `Room` grid using a seeded RNG (`createRng`). `maze.js` walks the plan's tile iterator and carves the fine `Tile` grid on a canvas (background-colored cells). Appearance of each algorithm on screen is summarized under [Maze-generating algorithms](../README.md#maze-generating-algorithms).
+
 | Module | Covers |
 | --- | --- |
-| [`maze.js`](../frontend/js/maze/maze.js) | Canvas lifecycle, random algorithm pick, carve animation (or instant draw when `prefers-reduced-motion`), resize/DPR, `repaintCurrentPartialState` on theme change. |
-| [`grid.js`](../frontend/js/maze/grid.js), [`room.js`](../frontend/js/maze/room.js), [`wall.js`](../frontend/js/maze/wall.js) | Room grid vs tile grid; shared carve-plan types. |
-| [`algorithms/*.js`](../frontend/js/maze/algorithms/) | Pure `buildCarvePlan*` functions return a seeded tile iterator factory; `maze.js` animates by consuming it (replay on theme change uses the same algorithm and seed). How each algorithm looks on screen is summarized under [Maze-generating algorithms](../README.md#maze-generating-algorithms). |
+| [`maze.js`](../frontend/js/maze/maze.js) | Canvas lifecycle. On `restart`, `#beginCarve()` picks a random `buildCarvePlan*`, draws `createRngSeed()`, and opens `#tileIterator`. Further carving uses `#carveNextTiles` (advances the live iterator and `#tilesCarved`). `#carveTilesFromIterator` pulls from any iterator and paints tiles; it is shared by the initial batch, animation frames, reduced motion, and theme replay. Kruskal's `iterativeStartIndex` is carved in one batch before `requestAnimationFrame`. With `prefers-reduced-motion`, the iterator is drained in one call. `repaintPartialMazeAfterThemeToggle()` rebuilds an iterator from the stored algorithm, seed, and grid size, repaints `#tilesCarved` tiles in the new theme, and resumes animation if needed. Resize and `devicePixelRatio` changes debounce `restart`. |
+| [`grid.js`](../frontend/js/maze/grid.js) | Types: `Tile`, `CarvePlan` (`createIterator`, `iterativeStartIndex`), `BuildCarvePlanOptions` (`roomCols`, `roomRows`, `seed`). Seeded RNG: `createRng`, `createRngSeed`. Helpers: `pickRandomFrom`, `pickRandomNeighbor`, `randomIntBelow`. |
+| [`room.js`](../frontend/js/maze/room.js) | Coarse-grid `Room` (`toTile`, `passageTo`, `neighboringRooms`, `Room.random` with `rng`). |
+| [`wall.js`](../frontend/js/maze/wall.js) | Adjoining `Wall` between two `Room`s (used by Prim). |
+| [`algorithms/backtracker.js`](../frontend/js/maze/algorithms/backtracker.js) | `buildCarvePlanBacktracker`; `function* carve` yields room and passage tiles in DFS order; `iterativeStartIndex` 0. |
+| [`algorithms/wilson.js`](../frontend/js/maze/algorithms/wilson.js) | `buildCarvePlanWilson`; loop-erased random walks; `iterativeStartIndex` 0. |
+| [`algorithms/prim.js`](../frontend/js/maze/algorithms/prim.js) | `buildCarvePlanPrim`; random frontier walls; `iterativeStartIndex` 0. |
+| [`algorithms/kruskal.js`](../frontend/js/maze/algorithms/kruskal.js) | `buildCarvePlanKruskal`; union–find; yields all room tiles then shuffled walls; `iterativeStartIndex` = room count (instant room grid on canvas). |
+
+Each `buildCarvePlan*` returns a `CarvePlan` whose `createIterator()` calls `createRng(seed)` and returns a fresh generator from that algorithm's `carve`. Theme replay must reuse the same builder function, seed, and grid dimensions so the tile sequence matches `#tilesCarved`.
 
 ## Shared and trusted types
 
