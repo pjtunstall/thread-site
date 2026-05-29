@@ -20,19 +20,20 @@ export function buildCarvePlanPrim({ roomCols, roomRows, seed }) {
   return {
     iterativeStartIndex: 0,
     createIterator() {
-      return carve({ roomCols, roomRows, rng: createRng(seed) });
+      return createIterator({ roomCols, roomRows, rng: createRng(seed) });
     },
   };
 }
 
 /**
- * This generator performs the Prim carve. It yields passage tiles and room
- * tiles in the order they should be revealed. Random choices use `rng` so that
- * replaying with the same `seed` reproduces the same maze.
+ * This generator function returns an iterator for the Prim algorithm. It yields
+ * passage tiles and room tiles in the order they should be revealed. Random
+ * choices use `rng` so that replaying with the same `seed` reproduces the same
+ * maze.
  *
  * @param {BuildCarvePlanOptions & { rng: () => number }} options
  */
-function* carve({ roomCols, roomRows, rng }) {
+function* createIterator({ roomCols, roomRows, rng }) {
   /** @type {Set<string>} */
   const visited = new Set();
 

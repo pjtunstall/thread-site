@@ -19,19 +19,20 @@ export function buildCarvePlanWilson({ roomCols, roomRows, seed }) {
   return {
     iterativeStartIndex: 0,
     createIterator() {
-      return carve({ roomCols, roomRows, rng: createRng(seed) });
+      return createIterator({ roomCols, roomRows, rng: createRng(seed) });
     },
   };
 }
 
 /**
- * This generator performs the Wilson carve. It yields room tiles and passage
- * tiles in the order they should be revealed. Random choices use `rng` so that
- * replaying with the same `seed` reproduces the same maze.
+ * This generator function returns an iterator for Wilson's algorithm. It yields
+ * room tiles and passage tiles in the order they should be revealed. Random
+ * choices use `rng` so that replaying with the same `seed` reproduces the same
+ * maze.
  *
  * @param {BuildCarvePlanOptions & { rng: () => number }} options
  */
-function* carve({ roomCols, roomRows, rng }) {
+function* createIterator({ roomCols, roomRows, rng }) {
   /** @type {Array<Room>} */
   const allRooms = [];
 

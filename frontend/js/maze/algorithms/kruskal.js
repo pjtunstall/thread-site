@@ -26,20 +26,20 @@ export function buildCarvePlanKruskal({ roomCols, roomRows, seed }) {
   return {
     iterativeStartIndex: roomCount,
     createIterator() {
-      return carve({ roomCols, roomRows, rng: createRng(seed) });
+      return createIterator({ roomCols, roomRows, rng: createRng(seed) });
     },
   };
 }
 
 /**
- * This generator performs the Kruskal carve. It yields every room tile first
- * (row by row), then passage tiles for walls that join two components. Wall
- * order is shuffled with `rng`. Replaying with the same `seed` reproduces the
- * same maze.
+ * This generator function creates an iterator for Kruskal's algorithm. It
+ * yields every room tile first (row by row), then passage tiles for walls that
+ * join two components. Wall order is shuffled with `rng`. Replaying with the
+ * same `seed` reproduces the same maze.
  *
  * @param {BuildCarvePlanOptions & { rng: () => number }} options
  */
-function* carve({ roomCols, roomRows, rng }) {
+function* createIterator({ roomCols, roomRows, rng }) {
   const roomCount = roomCols * roomRows;
 
   /** @type {Array<number>} */
