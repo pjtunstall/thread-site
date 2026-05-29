@@ -202,9 +202,9 @@ initDialogs({
 initPlatformDownloads();
 
 // Set view on navigation events: browser forward or back buttons, or clicking
-// on in-app buttons "Enter the labyrinth" to move from "home" to "downloads", or "Back to main
-// page" to move from "downloads" to "home" (both of which rely on `href` to get
-// the destination URL).
+// on in-app buttons "Enter the labyrinth" to move from "home" to "downloads",
+// or "Back to main page" to move from "downloads" to "home" (both of which rely
+// on `href` to get the destination URL).
 navigation.addEventListener("navigate", (event) => {
   if (!event.canIntercept || event.hashChange || event.downloadRequest) {
     return;
@@ -212,8 +212,10 @@ navigation.addEventListener("navigate", (event) => {
 
   const dest = new URL(event.destination.url);
 
-  // Return before intercepting if the destination is off site. (Actually if the
-  // desitination has a different origin, but in practice this means off site; There's no reason for the scheme or port to change.)
+  // Return before intercepting if the destination is off site. (Strictly
+  // speaking, return if the desitination has a different origin, but in
+  // practice that would imply off site; there's no reason for my scheme or port
+  // to change.)
   if (dest.origin !== location.origin) return;
 
   // Likewise if the destination is not recognized.
@@ -226,7 +228,8 @@ navigation.addEventListener("navigate", (event) => {
   });
 });
 
-/** Longest initial title/tagline entrance (tagline delay + fade-in-up duration). */
+/** Longest initial title/tagline entrance (tagline delay + fade-in-up
+ * duration). */
 const INITIAL_ENTRANCE_MS = 1000;
 
 /**
@@ -261,8 +264,8 @@ function scheduleInitialEntrance(view) {
   section.classList.add("initial-entrance");
 
   const startAnimation = () => {
-    // Two frames: the first to paint the posed state (opacity 0, translateY), and the
-    //second to starts the fade-in-up.
+    // Two frames: the first to paint the posed state (opacity 0, translateY),
+    //and the second to starts the fade-in-up.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         section.classList.add("initial-entrance--run");
@@ -277,7 +280,8 @@ function scheduleInitialEntrance(view) {
   whenFontsReady(startAnimation);
 }
 
-// First paint only: no View Transition; card flips run inside setView when on downloads.
+// First paint only: no View Transition; card flips run inside setView when on
+// downloads.
 function applyPathToView() {
   const view = viewForPathname(location.pathname);
   setView(view);
