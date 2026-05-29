@@ -2,7 +2,9 @@
 
 - [Overview](#overview)
 - [Maze-generating algorithms](#maze-generating-algorithms)
-- [Content Security Policy](#content-security-policy)
+- [Security Headers](#security-headers)
+  - [General security headers](#general-security-headers)
+  - [Content Security Policy](#content-security-policy)
 - [Secrets](#secrets)
 - [To run locally](#to-run-locally)
 - [Deployment](#deployment)
@@ -49,9 +51,11 @@ The static files are hosted on Cloudflare. They link to the downloads on GitHub 
 - Prim: expands in all directions
 - Wilson: like Backtracker, but draws many paths simultaneously
 
-## Content Security Policy
+## Security Headers
 
 `frontend/functions/_middleware.js` (a Cloudflare Pages Function) applies security headers to every response, with an additional Content Security Policy on HTML responses only.
+
+### General security headers
 
 All responses receive:
 
@@ -61,13 +65,13 @@ X-Content-Type-Options: nosniff
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
 
-Notes on these headers:
-
 - **`Referrer-Policy: strict-origin-when-cross-origin`**: sends the full URL as `Referer` for same-origin requests (useful for analytics and server logs) but strips the path and query string for cross-origin requests, sending only the origin. This prevents leaking URL parameters (which may contain tokens or identifiers) to third parties.
 - **`X-Content-Type-Options: nosniff`**: instructs the browser not to guess a resource's content type from its bytes if the declared `Content-Type` disagrees. Without this, some browsers would execute a JavaScript file served as `text/plain`, for example.
 - **`Permissions-Policy: camera=(), microphone=(), geolocation=()`**: explicitly disables access to the camera, microphone, geolocation APIs for this origin and any embedded iframes. The site does not use them; declaring this prevents a script injection from silently requesting them.
 
 Note: I've not included `xr-spatial-tracking=("https://challenges.cloudflare.com")` in the `Permissions-Policy`; the console errors that refer to spatial tracking come from the Cloudflare Turnstile widget failing to comply with its own policy.
+
+### Content Security Policy
 
 Non-HTML responses (JS, CSS, images, fonts) receive only the above. HTML responses additionally receive a Content Security Policy. `NONCE` here is a fresh random value per request:
 
@@ -75,7 +79,7 @@ Non-HTML responses (JS, CSS, images, fonts) receive only the above. HTML respons
 default-src 'self'; script-src 'nonce-NONCE' 'strict-dynamic' https: 'unsafe-inline'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests; form-action 'self'; trusted-types policy
 ```
 
-To evaluate with [CSP Evaluator](https://csp-evaluator.withgoogle.com/), replace `NONCE` with any non-empty string (e.g. `abc123`); the evaluator treats any nonce value as valid.
+If you want to check how will this adheres to best practices, using [CSP Evaluator](https://csp-evaluator.withgoogle.com/), replace `NONCE` with any non-empty string (e.g. `abc123`); the evaluator treats any nonce value as valid.
 
 Notes on specific directives:
 
@@ -85,8 +89,11 @@ Notes on specific directives:
 - **`frame-src https://challenges.cloudflare.com`**: permits only the Turnstile iframe.
 - **`img-src 'self' data:`**: `data:` URIs are needed for canvas-rendered images (maze). CSP Evaluator flags this at low severity; the risk is accepted.
 - **`base-uri 'none'`**: stricter than `'self'`; prevents `<base>` tag injection entirely.
+
+As you can read in what follows, the next item doesn't serve much purpose in the website as it stands. It was added as a learning excerise and to satisfy CSP evaluatior rather than to meet an actual need on this site. As it turns out, it can't be activated without blocking the genuinely functional Cloudflare's challenge. I've left it in place but unactivated as a record of how it would be done.
+
 - **`trusted-types policy`**: Only a policy named `policy` may be created ([`frontend/js/trusted-types-boot.js`](frontend/js/trusted-types-boot.js)). Application code uses `trustedHtml()` and `trustedScriptURL()` so only allowlisted HTML and script URLs go through that policy. See [Shared and trusted types](#shared-and-trusted-types).
-- **`require-trusted-types-for 'script'` is not set**: Only if it were set, would the policy be enforced. That is to say, every `innerHTML` / `insertAdjacentHTML` / `script.src` assignment on the page would have to use `TrustedHTML` / `TrustedScriptURL`. However, after creating the policy, I discovered that Cloudflare's Challenge Platform bootstrap (injected on HTML responses, `cdn-cgi/challenge-platform`) injects a script as raw `innerHTML`, so enforcement would block Cloudflare's script. Without user-generated HTML on the site, mandatory sink enforcement would have little benefit, not worth breaking Cloudflare protections. I've left the policy for now as a coding convention and allowlist for my own DOM writes.
+- **`require-trusted-types-for 'script'` is not set**: Only if it were set, would the policy be enforced. That is to say, every `innerHTML` / `insertAdjacentHTML` / `script.src` assignment on the page would have to use `TrustedHTML` / `TrustedScriptURL`. However, after creating the policy, I discovered that Cloudflare's Challenge Platform (`cdn-cgi/challenge-platform`) bootstrap injects a script as raw `innerHTML`, so that, if I actually enforce my trusted types policy, it would block Cloudflare's script. Without user-generated HTML on the site, mandatory sink enforcement has little benefit, and is not worth breaking Cloudflare protections. I've left the policy for now as a coding convention and allowlist for my own DOM writes.
 
 ## Secrets
 
