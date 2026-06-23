@@ -27,7 +27,7 @@ export const MAIN_MENU_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "I made it as coursework at a coding bootcamp. You can read more on ",
+          "You can read more about it on ",
           {
             type: "link",
             href: "https://github.com/pjtunstall/by-a-thread",
@@ -38,7 +38,11 @@ export const MAIN_MENU_DIALOGS = [
       },
       {
         type: "paragraph",
-        text: "It's mainly intended as a multiplayer game. The only server is in Germany, so there might be too much lag if you're outside Europe. Maybe one day, I'll add AI opponents, but, for now, if you're a single player, just try to escape the maze in time.",
+        text: "It's mainly intended as a multiplayer game. Maybe one day, I'll add AI opponents, but, for now, if you're a single player, just try to escape the maze in time.",
+      },
+      {
+        type: "paragraph",
+        text: "Currently, the only server is in Germany. You should ideally be in Europe, especially for multiplayer matches.",
       },
     ],
   },
