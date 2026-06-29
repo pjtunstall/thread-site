@@ -5,6 +5,20 @@ import { renderForm } from "./contact.js";
 
 const LOG_PREFIX = "[site-init]";
 
+/**
+ * @typedef {{ type: "code", text?: string }} DialogCodePart
+ * @typedef {{
+ *   type: "link",
+ *   text?: string,
+ *   href?: string,
+ *   openInNewTab?: boolean,
+ *   closeDialogOnClick?: boolean
+ * }} DialogLinkPart
+ * @typedef {{ type: "strong", text?: string }} DialogStrongPart
+ * @typedef {string | DialogCodePart | DialogLinkPart | DialogStrongPart} DialogPart
+ * @typedef {{ text?: string, parts?: Array<DialogPart> }} DialogParagraph
+ */
+
 export const MAIN_MENU_DIALOGS = [
   {
     id: "dlg-story",
@@ -32,6 +46,7 @@ export const MAIN_MENU_DIALOGS = [
             type: "link",
             href: "https://github.com/pjtunstall/by-a-thread",
             text: "GitHub",
+            openInNewTab: true,
           },
           ".",
         ],
@@ -52,7 +67,19 @@ export const MAIN_MENU_DIALOGS = [
     body: [
       {
         type: "paragraph",
-        text: "Launch the app and press ENTER. One player picks Create Game and shares the access code. The others choose Join Game.",
+        parts: [
+          {
+            type: "link",
+            href: "/downloads",
+            text: "Download",
+            closeDialogOnClick: true,
+          },
+          " and install the game.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Launch it and press ENTER. One player picks Create Game and shares the access code. The others choose Join Game.",
       },
       {
         type: "paragraph",
@@ -152,7 +179,7 @@ function getDialogTemplate() {
 
 /**
  * @param {HTMLElement} parent
- * @param {string | { type: string, text?: string, href?: string }} part
+ * @param {DialogPart} part
  */
 function appendPart(parent, part) {
   if (typeof part === "string") {
@@ -172,6 +199,19 @@ function appendPart(parent, part) {
     link.className = "dialog__link";
     link.href = part.href;
     link.textContent = part.text;
+
+    if (part.openInNewTab === true) {
+      link.target = "_blank";
+      link.rel = "noreferrer";
+    }
+
+    if (part.closeDialogOnClick === true) {
+      link.addEventListener("click", () => {
+        const dialog = parent.closest("dialog");
+        if (dialog instanceof HTMLDialogElement) dialog.close();
+      });
+    }
+
     parent.append(link);
     return;
   }
@@ -187,7 +227,7 @@ function appendPart(parent, part) {
 
 /**
  * @param {HTMLElement} bodyContainer
- * @param {{ text?: string, parts?: Array<string | { type: string, text?: string, href?: string }> }} paragraph
+ * @param {DialogParagraph} paragraph
  */
 function renderParagraph(bodyContainer, paragraph) {
   const p = document.createElement("p");
