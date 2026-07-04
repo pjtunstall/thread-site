@@ -89,6 +89,14 @@ export const MAIN_MENU_DIALOGS = [
         type: "paragraph",
         text: "W, A, S, D keys to glide, ARROW keys to turn, SPACE to fire. At any time, you can press ESCAPE to exit.",
       },
+      {
+        type: "paragraph",
+        parts: [
+          "NOTE: On a restrictive network or VPN, you might need to adjust your firewall allow outbound UDP to ",
+          { type: "code", text: "game.by-a-thread.de" },
+          " on ports 7777-7786 inclusive. For school or corporate wifi, ask your network administrator.",
+        ],
+      },
     ],
   },
   {
@@ -97,7 +105,7 @@ export const MAIN_MENU_DIALOGS = [
     body: [
       {
         type: "paragraph",
-        text: "Bug reports, questions, offers of marriage/string? Drop me a line.",
+        text: "Bug reports, questions, offers of marriage or string? Drop me a line.",
       },
       {
         type: "form",
