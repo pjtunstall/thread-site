@@ -83,7 +83,7 @@ const server = createServer(handleRequest);
 server.on("error", (err) => {
   if (err.code === "EADDRINUSE") {
     console.error(
-      `Port ${PORT} is already in use. Stop the other server (e.g. an old \`npm run dev\` or \`python3 -m http.server\`) or run PORT=${PORT + 1} npm run dev`,
+      `Port ${PORT} is already in use. Did you leave another instance of the server running?\r\n\r\nIf it's not obvious what's using the port, find the listener:\r\n  ss -ltnp 'sport = :${PORT}' \r\n\r\nThen stop it (replacing <pid> with the PID you just found):\r\n  kill <pid>\r\n\r\nOr use another port:\r\n  PORT=${PORT + 1} npm run dev`,
     );
     process.exit(1);
   }

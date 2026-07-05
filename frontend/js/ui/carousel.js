@@ -4,28 +4,12 @@ const CAROUSEL_ITEMS = [
     alt: "By a Thread game screenshot featuring a maze with Minoan-style octopus frescoes",
   },
   {
-    src: "./assets/images/antikythera.jpg",
-    alt: "By a Thread game screenshot featuring the player avatar as a bronze sphere with mechanical surface features in the style of the Antikythera Mechanism",
-  },
-  {
     src: "./assets/images/griffin.webp",
     alt: "By a Thread game screencast featuring the Minoan griffin fresco from Knossos",
   },
   {
-    src: "./assets/images/circuits.jpg",
-    alt: "By a Thread game screenshot featuring glowing circuits on a Minoan-style fresco",
-  },
-  {
     src: "./assets/images/octopus.webp",
     alt: "By a Thread screencast featuring a maze of Minoan-style octopus frescoes",
-  },
-  {
-    src: "./assets/images/ants.jpg",
-    alt: "By a Thread game screenshot featuring a maze with Minoan-style ant frescoes",
-  },
-  {
-    src: "./assets/images/marble.jpg",
-    alt: "By a Thread game screenshot featuring a maze with black marble walls under a starry sky",
   },
 ];
 

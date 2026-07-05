@@ -92,7 +92,7 @@ export const MAIN_MENU_DIALOGS = [
       {
         type: "paragraph",
         parts: [
-          "NOTE: On a restrictive network or VPN, you might need to adjust your firewall allow outbound UDP to ",
+          "NOTE: On a restrictive network or VPN, you might need to adjust your firewall to allow outbound UDP to ",
           { type: "code", text: "game.by-a-thread.de" },
           " on ports 7777-7786 inclusive. For school or corporate wifi, ask your network administrator.",
         ],
