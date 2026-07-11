@@ -149,28 +149,7 @@ export const DOWNLOAD_DIALOGS = [
         parts: [
           "When ",
           { type: "code", text: "ByAThread-linux.rpm" },
-          " has finished downloading, install with your distro tools when you can, for example ",
-          {
-            type: "code",
-            text: "sudo dnf install ./ByAThread-linux.rpm",
-          },
-          " on Fedora or ",
-          {
-            type: "code",
-            text: "sudo zypper install ./ByAThread-linux.rpm",
-          },
-          " on openSUSE.",
-        ],
-      },
-      {
-        type: "paragraph",
-        parts: [
-          "Otherwise use ",
-          {
-            type: "code",
-            text: "sudo rpm -Uvh ./ByAThread-linux.rpm",
-          },
-          ".",
+          " has finished downloading, double click on the file and follow the installer, then launch from your app menu.",
         ],
       },
       {
