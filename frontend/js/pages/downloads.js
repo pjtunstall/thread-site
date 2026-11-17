@@ -149,12 +149,8 @@ export const DOWNLOAD_DIALOGS = [
         parts: [
           "When ",
           { type: "code", text: "ByAThread-linux.rpm" },
-          " has finished downloading, double click on the file and follow the installer, then launch from your app menu.",
+          " has finished downloading, double click on the file and follow the installer, then launch the game from your app menu.",
         ],
-      },
-      {
-        type: "paragraph",
-        parts: ["Then launch the game from your app menu."],
       },
     ],
   },
